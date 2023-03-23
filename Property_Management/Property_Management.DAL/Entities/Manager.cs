@@ -12,7 +12,7 @@ namespace Property_Management.DAL.Entities
         public string Email { get; set; }
         public string? Address { get; set; }
         public byte[]? Concurrency { get; set; }
-        public InspectionCheck? InspectionCheck { get; set; }  
+        public ICollection<InspectionCheck> InspectionChecks { get; set; }
 
     }
 }
