@@ -15,4 +15,9 @@
     <ProjectReference Include="..\Property_Management.Shared\Property_Management.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>
