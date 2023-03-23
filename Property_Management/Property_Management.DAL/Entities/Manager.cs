@@ -13,6 +13,5 @@ namespace Property_Management.DAL.Entities
         public string? Address { get; set; }
         public byte[]? Concurrency { get; set; }
         public ICollection<InspectionCheck> InspectionChecks { get; set; }
-
     }
 }
