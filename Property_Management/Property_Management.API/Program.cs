@@ -1,3 +1,10 @@
+using Property_Management.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using Property_Management.DAL;
+using Property_Management.DAL.Context;
+
 namespace Property_Management.API
 {
     public class Program
@@ -11,7 +18,11 @@ namespace Property_Management.API
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(); builder.Services.AddDbContext<PMSDbContext>(dbOption =>
+               {
+                   var ConnectionString = builder.Configuration.GetSection("ConnectionStrings")["ConnString"];
+                   dbOption.UseSqlServer(ConnectionString);
+               });
 
             var app = builder.Build();
 

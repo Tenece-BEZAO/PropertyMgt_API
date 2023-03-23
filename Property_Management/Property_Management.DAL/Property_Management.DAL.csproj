@@ -7,9 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="MappingConfigurations\" />
+    <ProjectReference Include="..\Property_Management.Shared\Property_Management.Shared.csproj" />
+
   </ItemGroup>
 
 </Project>
