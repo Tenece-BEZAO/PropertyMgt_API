@@ -2,7 +2,7 @@
 
 namespace Property_Management.DAL.Entities
 {
-    public  class TenantDetail
+    public  class Tenant
     {
         [Key]
         public  string TenantId { get; set; }

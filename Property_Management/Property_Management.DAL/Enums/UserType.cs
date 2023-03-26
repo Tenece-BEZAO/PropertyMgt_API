@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Property_Management.DAL.Enums
+﻿namespace Property_Management.DAL.Enums
 {
     public enum UserType
     {
@@ -13,9 +7,9 @@ namespace Property_Management.DAL.Enums
         Tenant
     }
 
-    public static partial class GetStringValue
+    public static class GetUserType
     {
-        public static string? UserTypeEnum(this UserType userType)
+        public static string? GetStringValue(this UserType userType)
         {
             return userType switch
             {

@@ -8,9 +8,9 @@
         PreferNotToSay,
     }
 
-   public static partial class GetStringValue
+   public static class GetGenderType
     {
-        public static string? GenderType(this Gender gender)
+        public static string? GetStringValue(this Gender gender)
         {
             return gender switch
             {

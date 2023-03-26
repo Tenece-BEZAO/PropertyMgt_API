@@ -16,7 +16,7 @@ namespace Property_Management.DAL.Entities
         public string managerId { get; set; }  
         public bool Status { get; set; }
         public byte[]? Concurrency { get; set; }
-        public TenantDetail?  TenantDetail { get; set; }  
+        public Tenant?  TenantDetail { get; set; }  
 
     }
 }

@@ -20,8 +20,8 @@ namespace Property_Management.DAL.Entities
         [Precision(18, 2)]
         public decimal LateFees { get; set; }
         public string? PaidBy { get; set; }
-        public TenantDetail? TenantDetails { get; set; }
-        public LeaseDetail? LeaseDetails { get; set; }
+        public Tenant? TenantDetails { get; set; }
+        public Lease? LeaseDetails { get; set; }
         public byte[]? Concurrency { get; set; }
 
 

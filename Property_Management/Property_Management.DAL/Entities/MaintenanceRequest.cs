@@ -16,7 +16,7 @@ namespace Property_Management.DAL.Entities
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DueDate { get; set; }
-        public TenantDetail? TenantDetails { get; set; }
+        public Tenant? TenantDetails { get; set; }
         public byte[]? Concurrency { get; set; }
 
     }

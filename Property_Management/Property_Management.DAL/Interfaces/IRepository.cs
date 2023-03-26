@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using System.Linq.Expressions;
 
 namespace Property_Management.DAL.Interfaces
 {
@@ -83,4 +84,3 @@ namespace Property_Management.DAL.Interfaces
         void UpdateRange(IEnumerable<T> records);
     }
 }
-

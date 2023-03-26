@@ -3,17 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Property_Management.DAL.Entities
 {
-    public class LeaseDetail
+    public class Lease
     {
         [Key]
         public string LeaseId { get; set; }
-        /* public int Id { get; set; }*/
-
         public string TenantId { get; set; }
-
         public string PropertyId { get; set; }
         public string Tenant_Property_Number { get; set; }
-
         public string Tenant_Unit_Number { get; set; }
         public string Upcoming_Tenant { get; set; } = string.Empty;
         [DataType(DataType.Date)]
