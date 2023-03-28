@@ -54,7 +54,6 @@ namespace Property_Management.BLL.Implementations
             {
                 Id = Guid.NewGuid().ToString(),
                 SecurityStamp = Guid.NewGuid().ToString(),
-                FirstName = regRequest.Firstname,
                 UserName = regRequest.UserName,
                 NormalizedUserName = regRequest.UserName.ToUpper(),
                 Email = regRequest.Email,
@@ -62,7 +61,6 @@ namespace Property_Management.BLL.Implementations
                 BirthDay = DateTime.UtcNow,
                 PhoneNumber = regRequest.MobileNumber,
                 Password = regRequest.Password,
-                Occupation = regRequest.Occupation,
                 Active = true,
                 EmailConfirmed = true,
                 UserTypeId = regRequest.UserTypeId,
@@ -107,18 +105,17 @@ namespace Property_Management.BLL.Implementations
                 var userRoles = await _userManager.GetRolesAsync(user);
             string? userType = user.UserTypeId.GetStringValue();   
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
-            string fullName = $"{user.LastName} {user.FirstName}";
            string userToken = await _jwtGenToken.CreateToken(user, _userManager, _configuration);
 
             var authClaims = new List<Claim>();
             authClaims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            string userRole = userRoles.FirstOrDefault();
+            string userRole = userRoles?.FirstOrDefault();
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            if (userType?.ToLower() == "tenant")
+            if (UserRole.User.GetStringValue()?.ToLower() == "user")
             {
-                return new AuthenticationResponse { JwtToken = userToken, UserType = userType, FullName = fullName, Birthday = birthday, TwoFactor = false, UserId = user.Id };
+                return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false, UserId = user.Id };
             }
-            return new AuthenticationResponse { UserType = userType, FullName = fullName, UserId = user.Id, TwoFactor = true };
+            return new AuthenticationResponse { UserType = userType, UserName = user.UserName, UserId = user.Id, TwoFactor = true };
 
             //await _emailService.SendTwoFactorAuthenticationEmail(user);
 

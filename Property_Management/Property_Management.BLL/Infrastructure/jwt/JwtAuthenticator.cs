@@ -4,9 +4,9 @@ using Property_Management.BLL.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Property_Management.DAL.Entities;
 using Property_Management.BLL.DTOs.Response;
 using Property_Management.BLL.Infrastructures.jwt;
+using Property_Management.DAL.Entities;
 
 namespace Property_Management.BLL.Infrastructure.jwt
 {

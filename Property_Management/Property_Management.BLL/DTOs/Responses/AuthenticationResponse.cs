@@ -4,7 +4,7 @@ public class AuthenticationResponse
 {
     public string JwtToken { get; set; }
     public string UserType { get; set; }
-    public string FullName { get; set; }
+    public string UserName { get; set; }
     public IEnumerable<string> MenuItems { get; set; }
     public bool? Birthday { get; set; }
     public bool TwoFactor { get; set; }

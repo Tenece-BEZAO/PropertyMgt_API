@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Property_Management.DAL.Entities;
 using Property_Management.DAL.Enums;
 using Property_Management.DAL.Interfaces;
 using System.Security.Claims;
@@ -10,6 +9,7 @@ using AutoMapper;
 using Property_Management.BLL.Interfaces;
 using MessageEncoder;
 using Microsoft.AspNetCore.Authentication;
+using Property_Management.DAL.Entities;
 
 namespace Property_Management.BLL.Implementations
 {
@@ -48,8 +48,6 @@ namespace Property_Management.BLL.Implementations
                 Id = Guid.NewGuid().ToString(),
                 Email = request.Email.ToLower(),
                 UserName = request.UserName.Trim().ToLower(),
-                FirstName = request.Firstname.Trim(),
-                LastName = request.LastName.Trim(),
                 UserTypeId = request.UserTypeId,
                 PhoneNumber = request.MobileNumber,
                 Active = true
@@ -182,7 +180,6 @@ namespace Property_Management.BLL.Implementations
             List<string> claims = userClaims.Select(x => x.Value).ToList();
             string? userType = user.UserTypeId.GetStringValue();
             bool? birthday = user.UserTypeId == UserType.Tenant && user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
-            string fullName = $"{user.LastName} {user.FirstName}";
 
             if (userType.ToLower() == "User")
             {
@@ -196,7 +193,7 @@ namespace Property_Management.BLL.Implementations
                { FullName = fullName, UserType = userType, UserId = user.Id, TwoFactor = true },
              destructureObject: true)).Information("2FA Sent");
 */
-            return new AuthenticationResponse { UserType = userType, FullName = fullName, UserId = user.Id, TwoFactor = true };
+            return new AuthenticationResponse { UserType = userType, UserName = user.UserName, UserId = user.Id, TwoFactor = true };
         }
 
 

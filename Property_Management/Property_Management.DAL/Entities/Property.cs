@@ -1,21 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 namespace Property_Management.DAL.Entities
 {
-    public  class Property
+    
+
+
+    public class Property
     {
-        [Key]
-        public string PropertyId {  get; set; }    
-        public string? PropertyName { get; set; }   
-        public string Description { get; set; }   = string.Empty;
+
+        public string PropertyId { get; set; }
+        public string Name { get; set; }
+        public string LeaseId { get; set; }
+        public string? LandLordId { get; set; }
+        public string Address { get; set; }
+        public string? City { get; set; }
+        public string? State { get; set; }
+        public string? Zipcode { get; set; }
+        public string NumOfUnits { get; set; }
 
         [Precision(18, 2)]
-        public decimal Price { get; set; }  
-        public string UserId { get; set; }
-        public bool Status { get; set; }
-        public byte[]? Concurrency { get; set; }
-        public Lease Lease { get; set; }
-        public ApplicationUser?  User { get; set; }  
+        public decimal Price { get; set; }
+
+        public ICollection<Unit> Units { get; set; }
+        public LandLord LandLords { get; set; }
+
+        public string OwnedBy { get; set; }
+        public string Image { get; set; }
+        public Lease Leases { get; set; }
+
     }
 }

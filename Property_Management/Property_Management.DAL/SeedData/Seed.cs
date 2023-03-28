@@ -28,7 +28,6 @@ namespace Property_Management.DAL.SeedData
                 {
                     Id = Guid.NewGuid().ToString(),
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Kellyn",
                     UserName = "Kelly",
                     NormalizedUserName = "KELLY",
                     Email = "k.amos@genesystechhub.com",
@@ -36,10 +35,9 @@ namespace Property_Management.DAL.SeedData
                     BirthDay = DateTime.UtcNow,
                     PhoneNumber = "09403820483",
                     Password = "*Admin@KellY#",
-                    Occupation = "Manager",
                     Active = true,
                     EmailConfirmed = true,
-                    UserTypeId = UserType.Manager,
+                    UserTypeId = UserType.Staff,
                     UserRole = UserRole.Admin
                 },
 
@@ -47,8 +45,6 @@ namespace Property_Management.DAL.SeedData
                 {
                     Id = Guid.NewGuid().ToString(),
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Gideon",
-                    LastName = "Gideon Smith",
                     UserName = "GideonSmith",
                     NormalizedUserName = "GIDEONSMITH",
                     Email = "gideon@gmail.com",
@@ -56,7 +52,6 @@ namespace Property_Management.DAL.SeedData
                     BirthDay = DateTime.UtcNow,
                     PhoneNumber = "09334028430842",
                     Password = "*Gideonite@Smith#",
-                    Occupation = "Footballer",
                     Active = true,
                     EmailConfirmed =true,
                     UserTypeId = UserType.LandLord,
@@ -67,8 +62,6 @@ namespace Property_Management.DAL.SeedData
                 {
                     Id = Guid.NewGuid().ToString(),
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Kennedy",
-                    LastName = "bizz",
                     UserName = "BizzMan",
                     NormalizedUserName = "BIZZMAN",
                     Email = "bizz@gmail.com",
@@ -76,7 +69,6 @@ namespace Property_Management.DAL.SeedData
                     BirthDay = DateTime.UtcNow,
                     PhoneNumber = "09334028430842",
                     Password = "*BussinessMan@bizz#",
-                    Occupation = "Bussiness man",
                     Active = true,
                     EmailConfirmed =true,
                     UserTypeId = UserType.Tenant,

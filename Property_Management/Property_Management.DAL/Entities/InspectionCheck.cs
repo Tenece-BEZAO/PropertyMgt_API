@@ -11,12 +11,13 @@ namespace Property_Management.DAL.Entities
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DateLogged { get; set; }
 
-        public string UserId { get; set; }
-        public int NoOfUnits { get; set; }
-        public int UnitIdNumber { get; set; }
+        public string InspectedBy { get; set; } = "";
+        public string NoOfUnits { get; set; }
+        public string UnitId { get; set; }
         public int NoOfDevicesDamaged { get; set; }
+        public  Unit Units {get; set;}
+        public  Staff Employees { get; set; }
 
-        public ApplicationUser? User { get; set; }
-        public byte[]? Concurrency { get; set; }
+
     }
 }

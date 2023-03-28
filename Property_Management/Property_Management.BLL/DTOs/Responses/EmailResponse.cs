@@ -1,5 +1,4 @@
-﻿
-using Property_Management.DAL.Entities;
+﻿using Property_Management.DAL.Entities;
 
 namespace Property_Management.BLL.DTOs.Response;
 
