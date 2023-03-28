@@ -12,11 +12,12 @@ namespace Property_Management.DAL.Entities
         public DateTime DateLogged { get; set; }
 
         public string InspectedBy { get; set; } = "";
-        public int NoOfUnits { get; set; }
-        public int UnitIdNumber { get; set; }
+        public string NoOfUnits { get; set; }
+        public string UnitId { get; set; }
         public int NoOfDevicesDamaged { get; set; }
+        public  Unit Units {get; set;}
+        public  Staff Employees { get; set; }
 
-        public Manager? Manager { get; set; }
-        public byte[]? Concurrency { get; set; }
+
     }
 }

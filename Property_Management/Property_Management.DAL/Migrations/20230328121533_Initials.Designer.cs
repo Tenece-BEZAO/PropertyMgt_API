@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Property_Management.DAL.Context;
 
@@ -11,9 +12,10 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    partial class PMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230328121533_Initials")]
+    partial class Initials
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,19 +39,20 @@ namespace Property_Management.DAL.Migrations
                     b.Property<int>("NoOfDevicesDamaged")
                         .HasColumnType("int");
 
-                    b.Property<string>("NoOfUnits")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("NoOfUnits")
+                        .HasColumnType("int");
 
-                    b.Property<string>("UnitId")
-                        .IsRequired()
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnitsUnitId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("InspectionId");
 
                     b.HasIndex("InspectedBy");
 
-                    b.HasIndex("UnitId");
+                    b.HasIndex("UnitsUnitId");
 
                     b.ToTable("InspectionChecks");
                 });
@@ -86,6 +89,7 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenantId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("LandLordId");
@@ -242,10 +246,6 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LandLordId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("LeaseId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -279,6 +279,20 @@ namespace Property_Management.DAL.Migrations
                     b.HasIndex("OwnedBy");
 
                     b.ToTable("Properties");
+                });
+
+            modelBuilder.Entity("Property_Management.DAL.Entities.Role", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("Role");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.SecurityDepositReturn", b =>
@@ -352,15 +366,18 @@ namespace Property_Management.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Occupation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("StaffId");
+
+                    b.HasIndex("RoleId")
+                        .IsUnique();
 
                     b.ToTable("Employees");
                 });
@@ -382,6 +399,7 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnName("FirstName");
 
                     b.Property<string>("LandLordId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LastName")
@@ -571,7 +589,7 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.InspectionCheck", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.Staff", "Employees")
+                    b.HasOne("Property_Management.DAL.Entities.Staff", "Staff")
                         .WithMany("InspectionChecks")
                         .HasForeignKey("InspectedBy")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -579,11 +597,9 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasOne("Property_Management.DAL.Entities.Unit", "Units")
                         .WithMany("inspectionChecks")
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UnitsUnitId");
 
-                    b.Navigation("Employees");
+                    b.Navigation("Staff");
 
                     b.Navigation("Units");
                 });
@@ -716,11 +732,24 @@ namespace Property_Management.DAL.Migrations
                     b.Navigation("Units");
                 });
 
+            modelBuilder.Entity("Property_Management.DAL.Entities.Staff", b =>
+                {
+                    b.HasOne("Property_Management.DAL.Entities.Role", "Role")
+                        .WithOne("employees")
+                        .HasForeignKey("Property_Management.DAL.Entities.Staff", "RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Property_Management.DAL.Entities.Tenant", b =>
                 {
                     b.HasOne("Property_Management.DAL.Entities.LandLord", "LandLords")
                         .WithMany("Tenants")
-                        .HasForeignKey("LandLordId");
+                        .HasForeignKey("LandLordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Property_Management.DAL.Entities.Property", "Properties")
                         .WithMany()
@@ -824,6 +853,12 @@ namespace Property_Management.DAL.Migrations
             modelBuilder.Entity("Property_Management.DAL.Entities.Property", b =>
                 {
                     b.Navigation("Units");
+                });
+
+            modelBuilder.Entity("Property_Management.DAL.Entities.Role", b =>
+                {
+                    b.Navigation("employees")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Staff", b =>
