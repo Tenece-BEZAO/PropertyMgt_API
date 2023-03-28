@@ -14,10 +14,10 @@
         WireTransfer,
     }
 
-    public static partial class GetStringValue
+    public static class GetPaymentType
     {
 
-        public static string GetPaymentType(this PaymentType paymentType)
+        public static string GetStringValue(this PaymentType paymentType)
         {
             return paymentType switch
             {

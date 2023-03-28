@@ -1,4 +1,6 @@
-﻿using Property_Management.DAL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Property_Management.DAL.Implementation;
+using Property_Management.DAL.Interfaces;
 
 namespace Property_Management.DAL.Implementations
 {

@@ -1,96 +1,130 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Property_Management.DAL.Entities;
 
 namespace Property_Management.DAL.Context
 {
-    public class PMSDbContext : DbContext
+    public class PMSDbContext : IdentityDbContext<ApplicationUser>
     {
         public PMSDbContext(DbContextOptions<PMSDbContext> options) : base(options) { }
 
-        public DbSet<LeaseDetail> LeaseDetails { get; set; }
-        public DbSet<Property> Propertys { get; set; }
-        public DbSet<TenantDetail> TenantDetails { get; set; }
-        public DbSet<Manager> Managers { get; set; }
-        public DbSet<LeasePayment> leasePayments { get; set; }
-        public DbSet<Role> Roles { get; set; }
+       
+        public DbSet<Property> Properties { get; set; }
+        public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<Unit> Units { get; set; }
+        public DbSet<Lease> Leases { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
+        public DbSet<WorkOrderVendor> WorkOrderVendors { get; set; }
+        public DbSet<SecurityDepositReturn> SecurityDepositReturns { get; set; }
+        public DbSet<InspectionCheck> InspectionChecks { get; set; }
+        public DbSet<Staff> Employees { get; set; }
+        public DbSet<Vendor> Vendors { get; set; }
+        public DbSet<WorkOrder> WorkOrders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TenantDetail>(entity =>
-            {
-                entity.Property(prop => prop.Address).IsRequired(false);
-                entity.HasIndex(prop => prop.Email, $"IX_{nameof(TenantDetail.Email)}").IsUnique(true);
-                entity.HasIndex(prop => prop.TenantId, $"IX_{nameof(TenantDetail.TenantId)}").IsUnique(true);
-                entity.Property(prop => prop.Concurrency).IsRequired(false);
+            modelBuilder.Entity<Tenant>()
+                .Property(u => u.FirstName)
+                .HasMaxLength(50)
+                .IsRequired();
+            modelBuilder.Entity<Tenant>()
+               .Property(u => u.LastName)
+               .HasMaxLength(50)
+               .IsRequired();
+
+            modelBuilder.Entity<Tenant>()
+                .Property(u => u.Email)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            modelBuilder.Entity<Tenant>()
+                .HasIndex(u => u.Email, "IX_UniqueEmail")
+                .IsUnique();
+            modelBuilder.Entity<Tenant>()
+               .HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber")
+               .IsUnique();
+            modelBuilder.Entity<Unit>()
+                .Property(t => t.Description)
+                .HasMaxLength(1000);
+
+            modelBuilder.Entity<InspectionCheck>()
+                .HasOne(p => p.Employees)
+                .WithMany(p => p.InspectionChecks)
+                .HasForeignKey(p => p.InspectedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Lease>()
+               .HasOne(p => p.Tenant)
+               .WithMany(p => p.Leases)
+               .HasForeignKey(p => p.Upcoming_Tenant)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<WorkOrder>()
+           .HasOne(p => p.MaintenanceRequest)
+           .WithMany(p => p.WorkOrder)
+           .HasForeignKey(p => p.MaintenanceRequestId)
+           .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Payment>()
+         .HasOne(p => p.Tenants)
+         .WithMany(p => p.Payments)
+         .HasForeignKey(p => p.PaidBy)
+         .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<MaintenanceRequest>()
+       .HasOne(p => p.Tenants)
+       .WithMany(p => p.MaintenanceRequests)
+       .HasForeignKey(p => p.LoggedBy)
+       .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<MaintenanceRequest>()
+       .HasOne(p => p.Employees)
+       .WithMany(p => p.MaintenanceRequests)
+       .HasForeignKey(p => p.ReportedTo)
+       .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Property>()
+              .HasOne(p => p.LandLords)
+              .WithMany(p => p.Properties)
+              .HasForeignKey(p => p.OwnedBy)
+              .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Tenant>()
+             .HasOne(p => p.Units)
+             .WithMany(p => p.Tenants)
+             .HasForeignKey(p => p.UnitId)
+             .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Property>()
+            .HasOne(p => p.Leases)
+            .WithMany(p => p.Properties)
+            .HasForeignKey(p => p.LeaseId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<SecurityDepositReturn>()
+            .HasOne(p => p.Units)
+            .WithMany(p => p.SecurityDepositReturns)
+            .HasForeignKey(p => p.UnitId)
+            .OnDelete(DeleteBehavior.NoAction);
 
 
-            });
 
+            modelBuilder.Entity<Lease>()
+              .HasOne(p => p.SecurityDepositReturns)
+              .WithMany()
+              .HasForeignKey(p => p.Upcoming_Tenant)
+              .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Manager>(entity =>
-            {
-                entity.Property(prop => prop.Address).IsRequired(false);
-                entity.HasIndex(prop => prop.Email, $"IX_{nameof(TenantDetail.Email)}").IsUnique(true);
-                entity.Property(prop => prop.Concurrency).IsRequired(false);
-                entity.HasMany(prop => prop.InspectionChecks)
-               .WithOne(prop => prop.Manager)
-              .HasForeignKey(prop => prop.InspectedBy);
-
-            });
-
-            modelBuilder.Entity<Property>(entity =>
-            {
-
-                entity.Property(prop => prop.Concurrency).IsRequired(false);
-                entity.HasOne(prop => prop.TenantDetail)
-                .WithOne(t => t.Property)
-                .HasForeignKey<TenantDetail>(t => t.PropertyId);
-            });
-
-            modelBuilder.Entity<LeasePayment>(entity =>
-            {
-                entity.HasIndex(prop => prop.LeaseId, $"IX_{nameof(LeasePayment.LeaseId)}").IsUnique(true);
-                entity.HasIndex(prop => prop.LeaseId, $"IX_{nameof(LeasePayment.LeasePaymentId)}").IsUnique(true);
-                entity.HasIndex(prop => prop.LeaseId, $"IX_{nameof(LeasePayment.PaidBy)}").IsUnique(true);
-                entity.Property(prop => prop.Concurrency).IsRequired(false);
-
-                entity.HasOne(prop => prop.TenantDetails)
+            modelBuilder.Entity<SecurityDepositReturn>()
+               .HasOne(p => p.Leases)
                .WithMany()
-               .HasForeignKey(prop => prop.PaidBy);
-            });
-
-            modelBuilder.Entity<LeaseDetail>(entity =>
-            {
-                entity.HasIndex(prop => prop.TenantId, $"IX_{nameof(LeaseDetail.TenantId)}").IsUnique(true);
-                entity.HasIndex(prop => prop.PropertyId, $"IX_{nameof(LeaseDetail.PropertyId)}").IsUnique(true);
-                entity.HasIndex(prop => prop.Tenant_Property_Number, $"IX_{nameof(LeaseDetail.Tenant_Property_Number)}").IsUnique(true);
-
-                entity.HasKey(prop => new { prop.LeaseId, prop.TenantId });
-                entity.Property(prop => prop.Concurrency).IsRequired(false);
+               .HasForeignKey(p => p.LeavingTenant)
+               .OnDelete(DeleteBehavior.NoAction);
 
 
-            });
-
-            modelBuilder.Entity<MaintenanceRequest>(entity =>
-            {
-                entity.HasIndex(prop => prop.LoggedBy, $"IX_{nameof(MaintenanceRequest.LoggedBy)}").IsUnique(true);
-                entity.Property(prop => prop.Concurrency).IsRequired(false);
-                entity.HasOne(prop => prop.TenantDetails)
-               .WithMany()
-               .HasForeignKey(prop => prop.LoggedBy);
-            });
-
-            modelBuilder.Entity<InspectionCheck>(entity =>
-            {
-                entity.HasIndex(prop => prop.UnitIdNumber, $"IX_{nameof(InspectionCheck.UnitIdNumber)}").IsUnique(true);
-                entity.Property(prop => prop.Concurrency).IsRequired(false);
-                entity.HasOne(prop => prop.Manager)
-               .WithMany()
-               .HasForeignKey(prop => prop.InspectedBy);
-            });
             base.OnModelCreating(modelBuilder);
         }
     }
 }
+
 

@@ -1,7 +1,9 @@
-﻿using Property_Management.DAL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
+using Property_Management.DAL.Interfaces;
 
-namespace Property_Management.DAL.Implementations
+namespace Property_Management.DAL.Implementation
 {
     public class Repository<T> : IRepository<T> where T : class
     {
@@ -527,29 +529,28 @@ namespace Property_Management.DAL.Implementations
             return query;
         }
 
-        private IQueryable<T> ConstructQueryable(Expression<Func<T, bool>> predicate = null, string orderBy = null, int? skip = null, int? take = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
-        {
-            try
-            {
-                IQueryable<T> query = _dbSet;
-                if (predicate != null)
-                    query = _dbSet.Where(predicate);
+        //private IQueryable<T> ConstructQueryable(Expression<Func<T, bool>> predicate = null, string orderBy = null, int? skip = null, int? take = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        //{
+        //    try
+        //    {
+        //        IQueryable<T> query = _dbSet;
+        //        if (predicate != null)
+        //            query = _dbSet.Where(predicate);
 
-                if (!string.IsNullOrWhiteSpace(orderBy))
-                    query = query.Sort(orderBy);
+        //        if (!string.IsNullOrWhiteSpace(orderBy))
+        //            query = query.Sort(orderBy);
 
-                if (include != null)
-                    query = include(query);
+        //        if (include != null)
+        //            query = include(query);
 
-                if (take != null && skip != null)
-                    return query.Skip(skip.Value).Take(take.Value);
-                return query;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
+        //        if (take != null && skip != null)
+        //            return query.Skip(skip.Value).Take(take.Value);
+        //        return query;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message);
+        //    }
+        //}
     }
-
 }

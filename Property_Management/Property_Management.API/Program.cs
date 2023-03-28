@@ -1,28 +1,28 @@
+using Microsoft.AspNetCore.Identity;
+using Property_Management.API.Extension;
+using Property_Management.BLL.Implementations;
+using Property_Management.BLL.Interfaces;
 using Property_Management.DAL.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Property_Management.DAL.SeedData;
 using System.Reflection;
-using Property_Management.DAL;
-using Property_Management.DAL.Context;
 
 namespace Property_Management.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // Add services to the container.
-
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(); builder.Services.AddDbContext<PMSDbContext>(dbOption =>
-               {
-                   var ConnectionString = builder.Configuration.GetSection("ConnectionStrings")["ConnString"];
-                   dbOption.UseSqlServer(ConnectionString);
-               });
+            builder.Services.AddCustomServices();
+            builder.Services.AddAutoMapper(Assembly.Load("Property_Management.BLL"));
+            builder.Services.AddSwaggerGen();
+            builder.Services.ConfigureIdentity();
+            builder.Services.ConfigureJWT(builder.Configuration);
+            builder.Services.AddConnection(builder);
 
             var app = builder.Build();
 
@@ -33,14 +33,17 @@ namespace Property_Management.API
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
 
+            app.ConfigureExceptionHandler(builder.Environment);
+
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
             app.MapControllers();
-
-            app.Run();
+            await Seed.EnsurePopulatedAsync(app);
+            await app.RunAsync();
         }
     }
 }

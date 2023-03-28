@@ -9,7 +9,4 @@
             Task<int> SaveChangesAsync();
         }
 
-        public interface IUnitOfWork<TContext> : IUnitOfWork
-        {
-        }
 }
