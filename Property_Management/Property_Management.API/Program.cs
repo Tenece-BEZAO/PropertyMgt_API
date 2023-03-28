@@ -1,10 +1,16 @@
+using Microsoft.AspNetCore.Identity;
 using Property_Management.API.Extension;
+using Property_Management.BLL.Implementations;
+using Property_Management.BLL.Interfaces;
+using Property_Management.DAL.Entities;
+using Property_Management.DAL.SeedData;
+using System.Reflection;
 
 namespace Property_Management.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
@@ -12,6 +18,7 @@ namespace Property_Management.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddCustomServices();
+            builder.Services.AddAutoMapper(Assembly.Load("Property_Management.BLL"));
             builder.Services.AddSwaggerGen();
             builder.Services.ConfigureIdentity();
             builder.Services.ConfigureJWT(builder.Configuration);
@@ -35,8 +42,8 @@ namespace Property_Management.API
 
 
             app.MapControllers();
-
-            app.Run();
+            await Seed.EnsurePopulatedAsync(app);
+            await app.RunAsync();
         }
     }
 }

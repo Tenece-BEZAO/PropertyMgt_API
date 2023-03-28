@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Property_Management.BLL.DTOs;
 using Property_Management.BLL.DTOs.Request;
+using Property_Management.BLL.DTOs.Response;
+using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Infrastructure;
 using Property_Management.BLL.Interfaces;
-using Property_Management.BLL.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
@@ -15,7 +15,6 @@ namespace Property_Management.API.Controllers
     {
 
         private readonly IUserAuth _userAuth;
-        private readonly JwtGenToken _jwtGenToken = new();
         public UserAuthController(IUserAuth userAuth)
         {
             _userAuth = userAuth;
@@ -26,12 +25,12 @@ namespace Property_Management.API.Controllers
         [HttpPost("Create-user", Name = "Create-New-User")]
         [SwaggerOperation(Summary = "Create user")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(Status))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Status))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(SuccessResponse))]
         public async Task<IActionResult> CreateUser(UserRegistrationRequest request)
         {
             request.Role = "user";
-            Status response = await _userAuth.CreateUserAsync(request);
+            SuccessResponse response = await _userAuth.CreateUserAsync(request);
             return Ok(response);
         }
 
@@ -40,29 +39,46 @@ namespace Property_Management.API.Controllers
         [HttpPost("Login-user", Name = "Login-User")]
         [SwaggerOperation(Summary = "Login user")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Login successfull", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Login failed.", Type = typeof(Status))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Status))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Login failed.", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(SuccessResponse))]
         public async Task<IActionResult> LoginUser(LoginRequest request)
         {
-            Status response = await _userAuth.LoginUserAsync(request);
+            AuthenticationResponse response = await _userAuth.LoginUserAsync(request);
             return Ok(response);
         }
 
 
         [AllowAnonymous]
-        [HttpPost("Login", Name = "Login")]
+        [HttpPost("Recet-password", Name = "Recet-password")]
         [SwaggerOperation(Summary = "Login user")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "Login successfull", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Login failed.", Type = typeof(Status))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Status))]
-        public async Task<IActionResult> Login(LoginRequest request)
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Password recet successfull", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password recet failed.", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(SuccessResponse))]
+        public async Task<IActionResult> RecetPassword(ResetPasswordRequest request)
         {
-            Status response = await _userAuth.LoginUserAsync(request);
-                return Ok(new
-                {
-                    Token = await _jwtGenToken.CreateToken(),
-                    response,
-                });
+            AuthenticationResponse response = await _userAuth.ResetPasswordAsync(request);
+            return Ok(response);
         }
+        
+        [AllowAnonymous]
+        [HttpPost("Change-password", Name = "Change-password")]
+        [SwaggerOperation(Summary = "Login user")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Password change successfull", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password change failed.", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(SuccessResponse))]
+        public async Task<IActionResult> ChangePassword(string userId)
+        {
+            string response = await _userAuth.ChangePassword(userId);
+            return Ok(response);
+        }
+
+
+        [HttpPost("Logout", Name = "Logout-user")]
+        public async Task<IActionResult> Logout()
+        {
+            SuccessResponse response = await _userAuth.LogoutAsync();
+            return Ok(response);
+        }
+
     }
 }

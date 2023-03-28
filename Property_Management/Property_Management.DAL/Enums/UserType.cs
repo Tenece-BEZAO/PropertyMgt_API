@@ -4,7 +4,8 @@
     {
         LandLord = 1,
         Manager,
-        Tenant
+        Tenant,
+        Staff
     }
 
     public static class GetUserType
@@ -16,6 +17,7 @@
                 UserType.LandLord => "Landlord",
                 UserType.Manager => "Manager",
                 UserType.Tenant => "Tenant",
+                UserType.Staff => "Staff",
                 _ => null
             };
         }

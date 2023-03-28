@@ -10,28 +10,24 @@ namespace Property_Management.BLL.Services
 {
     public class JwtGenToken
     {
-        private readonly UserManager<ApplicationUser>? _userManager;
-        private readonly IConfiguration? _configuration;
-        private readonly ApplicationUser? _appUser;
-
-
-        public async Task<string> CreateToken()
+        public async Task<string> CreateToken(ApplicationUser user, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             var signingCredentials = GetSigningCredentials();
-            var claims = await GetClaims();
-            var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
+            var claims = await GetClaims(user, userManager);
+            var tokenOptions = GenerateTokenOptions(signingCredentials, claims,configuration);
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
-        public SigningCredentials GetSigningCredentials()
+        private SigningCredentials GetSigningCredentials()
         {
-            var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"));
+            
+            var key = Encoding.ASCII.GetBytes("K3llY0dka4938-4380ls99430-943ofkakjslxzdoyb");
             var secret = new SymmetricSecurityKey(key);
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
-        public async Task<List<Claim>> GetClaims()
+        private async Task<List<Claim>> GetClaims(ApplicationUser appUser, UserManager<ApplicationUser> userManager)
         {
-            var claims = new List<Claim> {new Claim(ClaimTypes.Name, _appUser.UserName)};
-            var roles = await _userManager.GetRolesAsync(_appUser);
+            var claims = new List<Claim> {new Claim(ClaimTypes.Name, appUser.UserName)};
+            var roles = await userManager.GetRolesAsync(appUser);
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
@@ -39,9 +35,9 @@ namespace Property_Management.BLL.Services
             return claims;
         }
 
-        public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials,List<Claim> claims)
+        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims, IConfiguration configuration)
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
+            var jwtSettings = configuration.GetSection("JwtSettings");
             var tokenOptions = new JwtSecurityToken
             (
             issuer: jwtSettings["validIssuer"],

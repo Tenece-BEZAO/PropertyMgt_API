@@ -10,7 +10,7 @@ namespace Property_Management.API.Extension
         {
             services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<PMSDbContext>()
              .AddDefaultTokenProviders();
-            services.ConfigureApplicationCookie(options => options.LoginPath = "/api/UserAuth/Login-user");
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/api/Auth/Login-user");
         }
     }
 }

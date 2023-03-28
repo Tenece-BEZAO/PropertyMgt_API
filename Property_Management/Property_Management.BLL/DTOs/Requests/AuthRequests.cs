@@ -22,6 +22,8 @@ public class TwoFactorLoginRequest
 public class ChangePasswordRequest
 {
     [Required]
+    public string UserId { get; set; }
+    [Required]
     public string CurrentPassword { get; set; }
     [Required]
     public string NewPassword { get; set; }
@@ -63,11 +65,10 @@ public class UserRegistrationRequest
 
     [Required]
     public string Firstname { get; set; }
+    public string Role { get; set; }
 
     [Required]
     public string LastName { get; set; }
-    [Required]
-    public string Role { get; set; }
     [Required]
     public string Occupation { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Property_Management.DAL.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Property_Management.DAL.Entities
@@ -7,7 +8,7 @@ namespace Property_Management.DAL.Entities
     {
         [Key]
         public string LeasePaymentId { get; set; } 
-        public string PaymentType { get; set; } = string.Empty;
+        public PaymentType PaymentType { get; set; }
 
         [Precision(18, 2)]
         public decimal PaymentAmount { get; set;}
@@ -15,13 +16,13 @@ namespace Property_Management.DAL.Entities
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime PaymentDate { get; set; }
-        public  string LeaseId { get; set; }
 
         [Precision(18, 2)]
         public decimal LateFees { get; set; }
-        public string? PaidBy { get; set; }
-        public Tenant? TenantDetails { get; set; }
-        public Lease? LeaseDetails { get; set; }
+        public Lease? Lease { get; set; }
+        public  string LeaseId { get; set; }
+        public ApplicationUser? User { get; set; }
+        public string? UserId { get; set; }
         public byte[]? Concurrency { get; set; }
 
 

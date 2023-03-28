@@ -5,7 +5,6 @@ namespace Property_Management.DAL.Entities
 {
     public class ApplicationUser : IdentityUser
     {
-        public string? PropertyId { get; set; }
         public string FirstName { get; set; }
         public string? LastName { get; set; }
         public string Email { get; set; }

@@ -2,12 +2,6 @@
 
 namespace Property_Management.BLL.Infrastructure
 {
-    public class SuccessResponse
-    {
-        public bool Success { get; set; }
-        public object Data { get; set; }
-    }
-
     public class ErrorResponse
     {
         public int Status { get; set; }

@@ -12,17 +12,18 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    [Migration("20230325145957_AddedIdentityUser")]
-    partial class AddedIdentityUser
+    [Migration("20230327124824_initial")]
+    partial class initial
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.15")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -57,7 +58,7 @@ namespace Property_Management.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -82,7 +83,7 @@ namespace Property_Management.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -202,10 +203,6 @@ namespace Property_Management.DAL.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -229,10 +226,6 @@ namespace Property_Management.DAL.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("PropertyId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -260,8 +253,6 @@ namespace Property_Management.DAL.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("PropertyId");
-
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
@@ -276,13 +267,6 @@ namespace Property_Management.DAL.Migrations
                     b.Property<DateTime>("DateLogged")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("InspectedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ManagerId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("NoOfDevicesDamaged")
                         .HasColumnType("int");
 
@@ -292,11 +276,13 @@ namespace Property_Management.DAL.Migrations
                     b.Property<int>("UnitIdNumber")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("InspectionId");
 
-                    b.HasIndex("InspectedBy");
-
-                    b.HasIndex("ManagerId");
+                    b.HasIndex("UserId");
 
                     b.HasIndex(new[] { "UnitIdNumber" }, "IX_UnitIdNumber")
                         .IsUnique();
@@ -309,25 +295,26 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("LeaseId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<byte[]>("Concurrency")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<DateTime>("Lease_Date")
+                    b.Property<string>("LandLordOrManagerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("LeaseDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Lease_End_Date")
+                    b.Property<DateTime>("LeaseEndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Lease_Start_Date")
+                    b.Property<DateTime>("LeaseStartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Lease_Status")
+                    b.Property<bool>("LeaseStatus")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("Monthly_Rent")
+                    b.Property<decimal>("MonthlyRent")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -335,31 +322,28 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("Security_Deposit_Amount")
+                    b.Property<decimal>("SecurityDepositAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Tenant_Property_Number")
+                    b.Property<string>("TenantId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Tenant_Unit_Number")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Upcoming_Tenant")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("LeaseId");
 
-                    b.HasKey("LeaseId", "TenantId");
+                    b.HasIndex("LandLordOrManagerId");
 
-                    b.HasIndex(new[] { "PropertyId" }, "IX_PropertyId")
+                    b.HasIndex("PropertyId")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "TenantId" }, "IX_TenantId")
-                        .IsUnique();
+                    b.HasIndex("TenantId");
 
-                    b.HasIndex(new[] { "Tenant_Property_Number" }, "IX_Tenant_Property_Number")
+                    b.HasIndex(new[] { "UserId" }, "IX_UserId")
                         .IsUnique();
 
                     b.ToTable("Leases");
@@ -377,19 +361,8 @@ namespace Property_Management.DAL.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("LeaseDetailsLeaseId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("LeaseDetailsTenantId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("LeaseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PaidBy")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("PaymentAmount")
@@ -399,24 +372,23 @@ namespace Property_Management.DAL.Migrations
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PaymentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PaymentType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LeasePaymentId");
-
-                    b.HasIndex("PaidBy");
-
-                    b.HasIndex("LeaseDetailsLeaseId", "LeaseDetailsTenantId");
 
                     b.HasIndex(new[] { "LeaseId" }, "IX_LeaseId")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "LeaseId" }, "IX_LeasePaymentId")
+                    b.HasIndex(new[] { "LeasePaymentId" }, "IX_LeasePaymentId")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "LeaseId" }, "IX_PaidBy")
-                        .IsUnique();
+                    b.HasIndex(new[] { "UserId" }, "IX_UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("LeasePayments");
                 });
@@ -435,10 +407,6 @@ namespace Property_Management.DAL.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("LoggedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("MRNotes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -447,48 +415,19 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("RequestId");
 
-                    b.HasIndex(new[] { "LoggedBy" }, "IX_LoggedBy")
+                    b.HasIndex(new[] { "UserId" }, "IX_UserId")
                         .IsUnique();
 
                     b.ToTable("MaintenanceRequests");
-                });
-
-            modelBuilder.Entity("Property_Management.DAL.Entities.Manager", b =>
-                {
-                    b.Property<string>("ManagerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("Concurrency")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Occupation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ManagerId");
-
-                    b.HasIndex(new[] { "Email" }, "IX_Email")
-                        .IsUnique();
-
-                    b.ToTable("Managers");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Property", b =>
@@ -513,65 +452,16 @@ namespace Property_Management.DAL.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
-                    b.Property<string>("managerId")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("propertyTypeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("PropertyId");
 
-                    b.ToTable("Propertys");
-                });
-
-            modelBuilder.Entity("Property_Management.DAL.Entities.Tenant", b =>
-                {
-                    b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("Concurrency")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HomePhone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MobilePhone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PropertyId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("TenantId");
-
-                    b.HasIndex("PropertyId")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "Email" }, "IX_Email")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Email1");
-
-                    b.HasIndex(new[] { "TenantId" }, "IX_TenantId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_TenantId1");
-
-                    b.ToTable("Tenants");
+                    b.ToTable("Propertys");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -625,90 +515,92 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Property_Management.DAL.Entities.ApplicationUser", b =>
-                {
-                    b.HasOne("Property_Management.DAL.Entities.Property", "Property")
-                        .WithMany()
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Property");
-                });
-
             modelBuilder.Entity("Property_Management.DAL.Entities.InspectionCheck", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.Manager", "Manager")
+                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("InspectedBy")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Property_Management.DAL.Entities.Manager", null)
-                        .WithMany("InspectionChecks")
-                        .HasForeignKey("ManagerId");
-
-                    b.Navigation("Manager");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Lease", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.Property", "Property")
+                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "LandLordOrManager")
                         .WithMany()
-                        .HasForeignKey("PropertyId")
+                        .HasForeignKey("LandLordOrManagerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Property_Management.DAL.Entities.Property", "Property")
+                        .WithOne("Lease")
+                        .HasForeignKey("Property_Management.DAL.Entities.Lease", "PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LandLordOrManager");
+
                     b.Navigation("Property");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.LeasePayment", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.Tenant", "TenantDetails")
+                    b.HasOne("Property_Management.DAL.Entities.Lease", "Lease")
                         .WithMany()
-                        .HasForeignKey("PaidBy");
-
-                    b.HasOne("Property_Management.DAL.Entities.Lease", "LeaseDetails")
-                        .WithMany()
-                        .HasForeignKey("LeaseDetailsLeaseId", "LeaseDetailsTenantId")
+                        .HasForeignKey("LeaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("LeaseDetails");
+                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("TenantDetails");
+                    b.Navigation("Lease");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.MaintenanceRequest", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.Tenant", "TenantDetails")
+                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("LoggedBy")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("TenantDetails");
-                });
-
-            modelBuilder.Entity("Property_Management.DAL.Entities.Tenant", b =>
-                {
-                    b.HasOne("Property_Management.DAL.Entities.Property", "Property")
-                        .WithOne("TenantDetail")
-                        .HasForeignKey("Property_Management.DAL.Entities.Tenant", "PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Property");
-                });
-
-            modelBuilder.Entity("Property_Management.DAL.Entities.Manager", b =>
-                {
-                    b.Navigation("InspectionChecks");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Property", b =>
                 {
-                    b.Navigation("TenantDetail");
+                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "User")
+                        .WithOne("Property")
+                        .HasForeignKey("Property_Management.DAL.Entities.Property", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Property_Management.DAL.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Property");
+                });
+
+            modelBuilder.Entity("Property_Management.DAL.Entities.Property", b =>
+                {
+                    b.Navigation("Lease")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -186,7 +186,7 @@ namespace Property_Management.BLL.Implementations
 
             if (userType.ToLower() == "User")
             {
-                return new AuthenticationResponse { JwtToken = userToken, UserType = userType, FullName = fullName, Birthday = birthday, TwoFactor = false, UserId = user.Id };
+                //return new AuthenticationResponse { JwtToken = userToken, UserType = userType, FullName = fullName, Birthday = birthday, TwoFactor = false, UserId = user.Id };
             }
 
             /*await _emailService.SendTwoFactorAuthenticationEmail(user);

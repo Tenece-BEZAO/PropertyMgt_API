@@ -2,7 +2,7 @@
 
 public class AuthenticationResponse
 {
-    public JwtToken JwtToken { get; set; }
+    public string JwtToken { get; set; }
     public string UserType { get; set; }
     public string FullName { get; set; }
     public IEnumerable<string> MenuItems { get; set; }
@@ -11,6 +11,11 @@ public class AuthenticationResponse
     public string UserId { get; set; }
     public string ImpersonatorUsername { get; set; }
     public bool IsImpersonating { get; set; }
+
+    public static implicit operator AuthenticationResponse(string v)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class JwtToken
