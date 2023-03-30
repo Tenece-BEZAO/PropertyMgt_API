@@ -22,5 +22,7 @@ namespace Property_Management.API.Controllers
           Response result = await _landLordServices.AddProperty(request);
             return Ok(result);
         }
+        [HttpGet("Delete-Property")]
+        public async Task<IActionResult> DeleteProperty)
     }
 }

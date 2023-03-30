@@ -57,5 +57,25 @@ namespace Property_Management.BLL.Implementations
                 Action = "Adding property"
             };
         }
+        public async Task<Response> DeleteProperty(string propertyId)
+        {
+            var PropertyToBeDeleted = _propRepo.GetSingleByAsync(d => d.PropertyId == propertyId);
+            if (PropertyToBeDeleted == null)
+            {
+                throw new InvalidOperationException($"Property {propertyId} was not found");
+            }
+            await _propRepo.DeleteAsync(PropertyToBeDeleted);
+            await _landRepo.UpdateAsync(_landRepo);
+
+
+            return new Response
+            {
+                StatusCode = 201,
+                Message = "Property Deleted successfully",
+                Action = "Deleting a property"
+            };
+
+
+        }
     }
 }
