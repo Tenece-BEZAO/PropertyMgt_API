@@ -4,7 +4,6 @@
     {
         Admin = 1,
         User,
-        Customer,
     }
 
     public static class GetUserRole
@@ -15,7 +14,6 @@
             {
                 UserRole.Admin => "Admin",
                 UserRole.User => "User",
-                UserRole.Customer => "Customer",
                 _ => null
             };
         }

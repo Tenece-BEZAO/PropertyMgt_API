@@ -27,14 +27,13 @@ namespace Property_Management.DAL.SeedData
                 new ApplicationUser()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = "Kelly",
-                    NormalizedUserName = "KELLY",
+                    UserName = "kelly",
+                    ProfileImage = "https://lh3.googleusercontent.com/proxy/VWJS2-raqNHqMCSwPJOI0uFvouRZSQ2uWLdaxNsYVlxeyt8Q7rKCa9rB1o0Sk9vjjrW57QZ1Wk_5ac4rAbxWhU6lIg7LtUnT=s0-d",
                     Email = "k.amos@genesystechhub.com",
-                    NormalizedEmail = "K.AMOS@GENSYSTECHUB.COM",
                     BirthDay = DateTime.UtcNow,
                     PhoneNumber = "09403820483",
                     Password = "*Admin@KellY#",
+                    Active = true,
                     EmailConfirmed = true,
                     UserTypeId = UserType.Staff,
                     UserRole = UserRole.Admin
@@ -43,14 +42,11 @@ namespace Property_Management.DAL.SeedData
                 new ApplicationUser()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = "GideonSmith",
-                    NormalizedUserName = "GIDEONSMITH",
+                    UserName = "gideonSmith",
+                    ProfileImage = "https://th.bing.com/th/id/OIP.qt4e3xltJMIk22HHJc-yjwHaFL?pid=ImgDet&w=850&h=595&rs=1",
                     Email = "gideon@gmail.com",
-                    NormalizedEmail = "GIDEON@GMAIL.COM",
                     BirthDay = DateTime.UtcNow,
                     PhoneNumber = "09334028430842",
-                    Password = "*Gideonite@Smith#",
                     Active = true,
                     EmailConfirmed =true,
                     UserTypeId = UserType.LandLord,
@@ -60,14 +56,11 @@ namespace Property_Management.DAL.SeedData
                 new ApplicationUser()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    SecurityStamp = Guid.NewGuid().ToString(),
                     UserName = "BizzMan",
-                    NormalizedUserName = "BIZZMAN",
+                    ProfileImage = "https://i.pinimg.com/originals/f9/9d/50/f99d50383fea48614d78a0b586e2e00a.jpg",
                     Email = "bizz@gmail.com",
-                    NormalizedEmail = "BIZZ@GMAIL.COM",
                     BirthDay = DateTime.UtcNow,
                     PhoneNumber = "09334028430842",
-                    Password = "*BussinessMan@bizz#",
                     Active = true,
                     EmailConfirmed =true,
                     UserTypeId = UserType.Tenant,

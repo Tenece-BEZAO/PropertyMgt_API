@@ -8,7 +8,7 @@ namespace Property_Management.DAL.Context
     {
         public PMSDbContext(DbContextOptions<PMSDbContext> options) : base(options) { }
 
-       
+
         public DbSet<Property> Properties { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<Unit> Units { get; set; }
@@ -25,70 +25,29 @@ namespace Property_Management.DAL.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<Staff>()
-              .Property(u => u.FirstName)
-              .HasMaxLength(50)
-              .IsRequired();
-            modelBuilder.Entity<Staff>()
-              .Property(u => u.LastName)
-              .HasMaxLength(50)
-              .IsRequired();
+            modelBuilder.Entity<Tenant>(entity =>
+            {
+                entity.Property(u => u.FirstName).HasMaxLength(50).IsRequired();
+                entity.Property(u => u.LastName).HasMaxLength(50).IsRequired();
+                entity.Property(u => u.Email).HasMaxLength(100).IsRequired();
+                entity.Property(u => u.LandLordId).IsRequired(false);
+                entity.Property(u => u.PropertyId).IsRequired(false);
+                entity.Property(u => u.UnitId).IsRequired(false);
+                entity.Property(u => u.NormalizedMoveInDate).IsRequired(false);
+                entity.Property(u => u.NormalizedMoveOutDate).IsRequired(false);
+                entity.Property(u => u.Address).IsRequired(false);
+                entity.HasIndex(u => u.Email, "IX_UniqueEmail").IsUnique();
+                entity.HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber").IsUnique();
+                entity.HasOne(p => p.Units).WithMany(p => p.Tenants).HasForeignKey(p => p.UnitId).OnDelete(DeleteBehavior.NoAction);
+            });
 
-            modelBuilder.Entity<Staff>()
-                .Property(u => u.Email)
-                .HasMaxLength(100)
-                .IsRequired();
+            modelBuilder.Entity<LandLord>(entity =>
+            {
+                entity.Property(prop => prop.TenantId).IsRequired(false);
+                entity.Property(prop => prop.PropertyId).IsRequired(false);
+                entity.Property(prop => prop.Occupation).IsRequired(false);
+            });
 
-            modelBuilder.Entity<Staff>()
-                .HasIndex(u => u.Email, "IX_UniqueEmail")
-                .IsUnique();
-            modelBuilder.Entity<Staff>()
-               .HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber")
-               .IsUnique();
-
-
-            modelBuilder.Entity<LandLord>()
-                .Property(u => u.FirstName)
-                .HasMaxLength(50)
-                .IsRequired();
-            modelBuilder.Entity<LandLord>()
-              .Property(u => u.LastName)
-              .HasMaxLength(50)
-              .IsRequired();
-
-            modelBuilder.Entity<LandLord>()
-                .Property(u => u.Email)
-                .HasMaxLength(100)
-                .IsRequired();
-
-            modelBuilder.Entity<LandLord>()
-                .HasIndex(u => u.Email, "IX_UniqueEmail")
-                .IsUnique();
-            modelBuilder.Entity<LandLord>()
-               .HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber")
-               .IsUnique();
-
-
-            modelBuilder.Entity<Tenant>()
-                .Property(u => u.FirstName)
-                .HasMaxLength(50)
-                .IsRequired();
-            modelBuilder.Entity<Tenant>()
-               .Property(u => u.LastName)
-               .HasMaxLength(50)
-               .IsRequired();
-
-            modelBuilder.Entity<Tenant>()
-                .Property(u => u.Email)
-                .HasMaxLength(100)
-                .IsRequired();
-
-            modelBuilder.Entity<Tenant>()
-                .HasIndex(u => u.Email, "IX_UniqueEmail")
-                .IsUnique();
-            modelBuilder.Entity<Tenant>()
-               .HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber")
-               .IsUnique();
             modelBuilder.Entity<Unit>()
                 .Property(t => t.Description)
                 .HasMaxLength(1000);
@@ -135,11 +94,6 @@ namespace Property_Management.DAL.Context
               .HasForeignKey(p => p.OwnedBy)
               .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Tenant>()
-             .HasOne(p => p.Units)
-             .WithMany(p => p.Tenants)
-             .HasForeignKey(p => p.UnitId)
-             .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Property>()
             .HasOne(p => p.Leases)
             .WithMany(p => p.Properties)

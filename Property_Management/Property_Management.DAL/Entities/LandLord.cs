@@ -6,6 +6,7 @@ namespace Property_Management.DAL.Entities
     public  class LandLord
     {
         public string LandLordId { get; set; }
+        public string UserId { get; set; }
         [Required]
         [StringLength(50, ErrorMessage = "Last name cannot be longer than 50 characters.")]
         [Display(Name = "Last Name")]
@@ -17,6 +18,7 @@ namespace Property_Management.DAL.Entities
         public string? FirstName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+        public string Occupation { get; set; }
         public string? Address { get; set; }
        
         public string PropertyId { get; set; }
@@ -24,5 +26,6 @@ namespace Property_Management.DAL.Entities
 
         public ICollection<Tenant> Tenants { get; set; }
         public ICollection<Property> Properties { get; set; }
+        public ApplicationUser User { get; set; }
     }
 }

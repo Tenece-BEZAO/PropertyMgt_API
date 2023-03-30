@@ -1,8 +1,6 @@
 ﻿using MessageEncoder;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Property_Management.BLL.DTOs.Request;
 using Property_Management.BLL.DTOs.Response;
 using Property_Management.BLL.DTOs.Responses;
@@ -12,6 +10,7 @@ using Property_Management.DAL.Entities;
 using Property_Management.DAL.Enums;
 using Property_Management.DAL.Interfaces;
 using System.Security.Claims;
+using static Property_Management.BLL.Services.UserType;
 
 namespace Property_Management.BLL.Implementations
 {
@@ -20,74 +19,77 @@ namespace Property_Management.BLL.Implementations
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IRepository<ApplicationUser> _userRepo;
+        private readonly IRepository<LandLord> _landLordRepo;
+        private readonly IRepository<Tenant> _tenantRepo;
+        private readonly IRepository<Staff> _staffRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly IConfiguration _configuration;
-        private readonly SuccessResponse _reponse = new();
-        private readonly JwtGenToken _jwtGenToken = new();
+        private readonly Response _reponse = new();
 
         public UserAuth(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+            RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
-            _configuration = configuration;
             _contextAccessor = httpContextAccessor;
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
-            _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
+            _landLordRepo = _unitOfWork.GetRepository<LandLord>();
+            _tenantRepo = _unitOfWork.GetRepository<Tenant>();
+            _staffRepo = _unitOfWork.GetRepository<Staff>();
         }
 
-        public async Task<SuccessResponse> CreateUserAsync(UserRegistrationRequest regRequest)
+        public async Task<AuthenticationResponse> CreateUserAsync(UserRegistrationRequest regRequest)
         {
-            ApplicationUser? userExist = await _userManager.FindByEmailAsync(regRequest.Email);
+            ApplicationUser? userExist = await _userManager.FindByNameAsync(regRequest.UserName);
             if (userExist != null)
             {
-
-                _reponse.StatusCode = 400;
-                _reponse.Message = "User already exists";
-                return _reponse;
+                throw new InvalidOperationException("User already exists");
             }
 
-            ApplicationUser User = new()
+            string userId = Guid.NewGuid().ToString();
+            string tenantId = Guid.NewGuid().ToString();
+            ApplicationUser user = new()
             {
-                Id = Guid.NewGuid().ToString(),
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = regRequest.UserName,
-                NormalizedUserName = regRequest.UserName.ToUpper(),
-                Email = regRequest.Email,
-                NormalizedEmail = regRequest.Email.ToUpper(),
+                Id = userId,
+                UserName = regRequest.UserName.Trim().ToLower(),
+                NormalizedEmail = regRequest.Email.Trim().ToUpper(),
+                ProfileImage = regRequest.ProfileImage,
+                Email = regRequest.Email.Trim().ToLower(),
                 BirthDay = DateTime.UtcNow,
                 PhoneNumber = regRequest.MobileNumber,
-                Password = regRequest.Password,
-                Active = true,
+                Active = true, 
                 EmailConfirmed = true,
                 UserTypeId = regRequest.UserTypeId,
                 UserRole = UserRole.User,
             };
 
-            IdentityResult createUser = await _userManager.CreateAsync(User, regRequest.Password);
+            IdentityResult createUser = await _userManager.CreateAsync(user, regRequest.Password);
             if (!createUser.Succeeded)
             {
-                _reponse.StatusCode = 400;
-                _reponse.Action = "User registration";
-                _reponse.Message = $"User creation failed {createUser.Errors.FirstOrDefault()?.Description}";
-                return _reponse;
+               throw new InvalidOperationException($"User creation failed {createUser.Errors.FirstOrDefault()?.Description}");
+            }
+            string? userType = user.UserTypeId.GetStringValue().ToLower();
+          
+            if(userType == "landlord")
+            {
+               await _landLordRepo.AddAsync(NewLandLord(regRequest, userId));
             }
 
-            //role Manager
-            string? role = User.UserRole.GetStringValue();
+            if(userType == "tenant")
+            {
+              await _tenantRepo.AddAsync(NewTenant(regRequest, tenantId, userId));
+            }
+            string token = GenJwtToken.CreateToken(user);
+            string? role = user.UserRole.GetStringValue();
+            bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
             bool roleExist = await _roleManager.RoleExistsAsync(role);
             if (roleExist)
-                await _userManager.AddToRoleAsync(User, role);
+                await _userManager.AddToRoleAsync(user, role);
             else
                 await _roleManager.CreateAsync(new IdentityRole(role));
 
-            _reponse.StatusCode = 201;
-            _reponse.Action = "User registration";
-            _reponse.Message = "User has been Registered successfully.";
-            return _reponse;
+            return new AuthenticationResponse { UserId = user.Id, UserName = user.UserName, UserType = userType, Birthday = birthday, TwoFactor = false, JwtToken = token, };
         }
 
         public async Task<AuthenticationResponse> LoginUserAsync(LoginRequest loginRequest)
@@ -105,9 +107,9 @@ namespace Property_Management.BLL.Implementations
                 var userRoles = await _userManager.GetRolesAsync(user);
             string? userType = user.UserTypeId.GetStringValue();   
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
-           string userToken = await _jwtGenToken.CreateToken(user, _userManager, _configuration);
+           string userToken = GenJwtToken.CreateToken(user);
 
-            var authClaims = new List<Claim>();
+            List<Claim> authClaims = new();
             authClaims.Add(new Claim(ClaimTypes.Name, user.UserName));
             string userRole = userRoles?.FirstOrDefault();
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
@@ -124,7 +126,7 @@ namespace Property_Management.BLL.Implementations
 
         }
 
-        public async Task<SuccessResponse> LogoutAsync()
+        public async Task<Response> LogoutAsync()
         {
             await _signInManager.SignOutAsync();
             _reponse.StatusCode = 1;
@@ -133,41 +135,33 @@ namespace Property_Management.BLL.Implementations
             return _reponse;
         }
 
-        private async Task<string> SaveChangedEmail(string userId, string decodedNewEmail, string decodedToken)
+        public async Task<Response> ChangePassword(ChangePasswordRequest changePasswordRequest)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(userId);
-            await _userManager.ChangeEmailAsync(user, decodedNewEmail, decodedToken);
-            await _userManager.UpdateNormalizedEmailAsync(user);
-            await _userRepo.SaveAsync();
-
-            //Log.ForContext(new PropertyBagEnricher().Add("UpdatedEmail", new { userId, newEmail = decodedNewEmail }))
-            //    .Information("Email Updated Successfully");
-
-            return "Email changed successfully";
-        }
-
-        public async Task<string> ChangePassword(string userId)
-        {
-            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            ApplicationUser user = await _userManager.FindByIdAsync(changePasswordRequest.UserId);
 
             if (user == null)
             {
                 throw new InvalidOperationException("Invalid userId");
             }
 
-            //IdentityResult res = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
-            user.Password = "K2ll5%20&b@buffering#";
-         await _userRepo.UpdateAsync(user);
-            return "Password changed successfully";
+            IdentityResult res = await _userManager.ChangePasswordAsync(user, changePasswordRequest.CurrentPassword, changePasswordRequest.NewPassword);
+            if (!res.Succeeded)
+                throw new InvalidOperationException("Sorry!, error occured while trying to update user password. Try again!");
+            return new Response
+            {
+                StatusCode = 200,
+                Message = "Password changed successfully",
+                Action = "Change of password"
+            };
             //string errorMessage = string.Join("\n", res.Errors.Select(e => e.Description).ToList());
            // throw new InvalidOperationException(errorMessage);
         }
 
-        public async Task<string> ResetPasswordAsync(ResetPasswordRequest request)
+        public async Task<Response> ResetPasswordAsync(ResetPasswordRequest request)
         {
-            string decodedEmail = Encoder.DecodeMessage(request.Email);
+            //string decodedEmail = Encoder.DecodeMessage(request.Email);
             string decodedToken = Encoder.DecodeMessage(request.AuthenticationToken);
-            ApplicationUser user = await _userManager.FindByEmailAsync(decodedEmail);
+            ApplicationUser user = await _userManager.FindByNameAsync(request.UserName);
 
             if (user == null)
             {
@@ -183,11 +177,13 @@ namespace Property_Management.BLL.Implementations
 
             if (res.Succeeded)
             {
-                string msg = "Password Reset successfully";
-
                 //Log.Information(msg);
-
-                return msg;
+                return new Response
+                {
+                    StatusCode = 200,
+                    Message = "Password Reset successfully.",
+                    Action = "Password resetion."
+                };
             }
 
             string errorMessage = string.Join("\n", res.Errors.Select(e => e.Description).ToList());
@@ -236,18 +232,31 @@ namespace Property_Management.BLL.Implementations
             throw new InvalidOperationException(errorMessage);
         }
 
-        public async Task<string> ChangeEmail(ChangeEmailRequest request)
+        public async Task<Response> ChangeEmail(ChangeEmailRequest request)
         {
 
-            string decodedEmail = Encoder.DecodeMessage(request.Email);
-            string decodedNewEmail = Encoder.DecodeMessage(request.NewEmail);
-            string decodedToken = Encoder.DecodeMessage(request.Token);
-            string? _userId = _contextAccessor.HttpContext?.User.ToString();
+            //string decodedEmail = Encoder.DecodeMessage(request.Email);
+          //  string decodedNewEmail = Encoder.DecodeMessage(request.NewEmail);
+            //string decodedToken = Encoder.DecodeMessage(request.Token);
+            string? userId = _contextAccessor.HttpContext?.User.ToString();
+            ApplicationUser? user = await _userManager.FindByIdAsync(request.UserId);
 
-            if (_userId != null)
-                return await SaveChangedEmail(_userId, decodedNewEmail, decodedToken);
-
+            if (user == null)
+            {
             throw new InvalidOperationException("Recovery email not found.");
+            }
+          IdentityResult oops =  await _userManager.ChangeEmailAsync(user, request.NewEmail, request.Token);
+            string message = oops.Errors.FirstOrDefault().Description;
+            if (!oops.Succeeded)
+                throw new InvalidOperationException($"Sorry, the update failed. {message}");
+
+           await _userManager.UpdateNormalizedEmailAsync(user);
+            return new Response
+            {
+                StatusCode = 200,
+                Message = "Email changed succefully.",
+                Action = "Change of email."
+            };
         }
 
         public async Task<string> ToggleUserActivation(string userId)
