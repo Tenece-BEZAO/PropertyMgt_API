@@ -120,7 +120,7 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<string> ResetPassword(ResetPasswordRequest request)
         {
-            string decodedEmail = Encoder.DecodeMessage(request.Email);
+            string decodedEmail = Encoder.DecodeMessage(request.UserName);
             string decodedToken = Encoder.DecodeMessage(request.AuthenticationToken);
             ApplicationUser user = await _userManager.FindByEmailAsync(decodedEmail);
 

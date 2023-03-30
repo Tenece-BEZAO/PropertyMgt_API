@@ -13,6 +13,7 @@ namespace Property_Management.API.Extension
         public static void AddCustomServices(this IServiceCollection services)
         {
             services.AddScoped<IUserAuth, UserAuth>();
+            services.AddScoped<ILandLordServices, LandLordServices>();
             services.AddScoped<IApplicationBuilder, ApplicationBuilder>();
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
             services.AddTransient<IJWTAuthenticator, JwtAuthenticator>();
