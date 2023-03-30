@@ -5,13 +5,13 @@ using Property_Management.BLL.Interfaces;
 
 namespace Property_Management.API.Controllers
 {
-    [Route("api/landlord")]
+    [Route("api/manager")]
     [ApiController]
-    public class LandLordController : ControllerBase
+    public class ManagerController : ControllerBase
     {
-        private readonly ILandLordServices _landLordServices;
+        private readonly IMangerServices _landLordServices;
 
-        public LandLordController(ILandLordServices landLordServices)
+        public ManagerController(IMangerServices landLordServices)
         {
             _landLordServices = landLordServices;
         }
