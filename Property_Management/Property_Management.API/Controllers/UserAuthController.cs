@@ -24,13 +24,13 @@ namespace Property_Management.API.Controllers
         [AllowAnonymous]
         [HttpPost("Create-user", Name = "Create-New-User")]
         [SwaggerOperation(Summary = "Create user")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> CreateUser(UserRegistrationRequest request)
         {
             request.Role = "user";
-            SuccessResponse response = await _userAuth.CreateUserAsync(request);
+            AuthenticationResponse response = await _userAuth.CreateUserAsync(request);
             return Ok(response);
         }
 
@@ -38,9 +38,9 @@ namespace Property_Management.API.Controllers
         [AllowAnonymous]
         [HttpPost("Login-user", Name = "Login-User")]
         [SwaggerOperation(Summary = "Login user")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "Login successfull", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Login failed.", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Login successfull", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Login failed.", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> LoginUser(LoginRequest request)
         {
             AuthenticationResponse response = await _userAuth.LoginUserAsync(request);
@@ -48,35 +48,47 @@ namespace Property_Management.API.Controllers
         }
 
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost("Recet-password", Name = "Recet-password")]
         [SwaggerOperation(Summary = "Login user")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "Password recet successfull", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password recet failed.", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(SuccessResponse))]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Password recet successfull", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password recet failed.", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> RecetPassword(ResetPasswordRequest request)
         {
-            AuthenticationResponse response = await _userAuth.ResetPasswordAsync(request);
+            Response response = await _userAuth.ResetPasswordAsync(request);
             return Ok(response);
         }
         
         [AllowAnonymous]
-        [HttpPost("Change-password", Name = "Change-password")]
-        [SwaggerOperation(Summary = "Login user")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "Password change successfull", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password change failed.", Type = typeof(SuccessResponse))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(SuccessResponse))]
-        public async Task<IActionResult> ChangePassword(string userId)
+        [HttpPost("Change-email", Name = "Change-email")]
+        [SwaggerOperation(Summary = "change user email")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Email changed successfull", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Email change failed.", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
+        public async Task<IActionResult> ChangeEmail(ChangeEmailRequest changeEmailRequest)
         {
-            string response = await _userAuth.ChangePassword(userId);
+            Response response = await _userAuth.ChangeEmail(changeEmailRequest);
+            return Ok(response);
+        }
+        
+        [Authorize]
+        [HttpPost("Change-password", Name = "Change-password")]
+        [SwaggerOperation(Summary = "Change user password")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Password change successfull", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password change failed.", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            Response response = await _userAuth.ChangePassword(changePasswordRequest);
             return Ok(response);
         }
 
-
+        [Authorize]
         [HttpPost("Logout", Name = "Logout-user")]
         public async Task<IActionResult> Logout()
         {
-            SuccessResponse response = await _userAuth.LogoutAsync();
+            Response response = await _userAuth.LogoutAsync();
             return Ok(response);
         }
 

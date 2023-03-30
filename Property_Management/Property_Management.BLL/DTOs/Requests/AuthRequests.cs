@@ -57,6 +57,7 @@ public class UserRegistrationRequest
     [Required]
     [EmailAddress]
     public string Email { get; set; }
+    public string ProfileImage { get; set; }
 
     [Phone]
     public string MobileNumber { get; set; }
@@ -71,6 +72,7 @@ public class UserRegistrationRequest
     public string LastName { get; set; }
     [Required]
     public string Occupation { get; set; }
+    public string Address { get; set; }
 
     [Required]
     public UserType UserTypeId { get; set; }
@@ -79,7 +81,7 @@ public class UserRegistrationRequest
 public class ResetPasswordRequest
 {
     [Required]
-    public string Email { get; set; }
+    public string UserName { get; set; }
     [Required]
     public string AuthenticationToken { get; set; }
     [Required]
@@ -97,6 +99,8 @@ public class UpdateRecoveryMailRequest
 
 public class ChangeEmailRequest
 {
+    [Required]
+    public string UserId { get; set; }
     [Required]
     public string NewEmail { get; set; }
 

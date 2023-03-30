@@ -12,7 +12,7 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    [Migration("20230328152822_Initial")]
+    [Migration("20230330005722_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -198,10 +198,6 @@ namespace Property_Management.DAL.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -304,13 +300,18 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PropertyId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenantId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("LandLordId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("LandLord");
                 });
@@ -598,6 +599,9 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("TenantId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -620,8 +624,14 @@ namespace Property_Management.DAL.Migrations
                     b.Property<DateTime>("MoveInDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("MoveOutDate")
+                    b.Property<DateTime?>("MoveOutDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("NormalizedMoveInDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedMoveOutDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Occupation")
                         .HasColumnType("nvarchar(max)");
@@ -630,12 +640,8 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("PropertiesPropertyId")
-                        .IsRequired()
+                    b.Property<string>("PropertyId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PropertytId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityDepositReturnId")
                         .HasColumnType("nvarchar(max)");
@@ -652,7 +658,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("LandLordId");
 
-                    b.HasIndex("PropertiesPropertyId");
+                    b.HasIndex("PropertyId");
 
                     b.HasIndex("UnitId");
 
@@ -873,6 +879,17 @@ namespace Property_Management.DAL.Migrations
                     b.Navigation("Units");
                 });
 
+            modelBuilder.Entity("Property_Management.DAL.Entities.LandLord", b =>
+                {
+                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Property_Management.DAL.Entities.Lease", b =>
                 {
                     b.HasOne("Property_Management.DAL.Entities.Unit", "Unit")
@@ -1014,15 +1031,13 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Tenant", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.LandLord", "LandLords")
+                    b.HasOne("Property_Management.DAL.Entities.LandLord", "LandLord")
                         .WithMany("Tenants")
                         .HasForeignKey("LandLordId");
 
-                    b.HasOne("Property_Management.DAL.Entities.Property", "Properties")
+                    b.HasOne("Property_Management.DAL.Entities.Property", "Property")
                         .WithMany()
-                        .HasForeignKey("PropertiesPropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PropertyId");
 
                     b.HasOne("Property_Management.DAL.Entities.Unit", "Units")
                         .WithMany("Tenants")
@@ -1036,9 +1051,9 @@ namespace Property_Management.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("LandLords");
+                    b.Navigation("LandLord");
 
-                    b.Navigation("Properties");
+                    b.Navigation("Property");
 
                     b.Navigation("Units");
 

@@ -6,7 +6,6 @@ namespace Property_Management.DAL.Entities
     public class ApplicationUser : IdentityUser
     {
         public string Email { get; set; }
-        public string Password { get; set; }
         public string ProfileImage { get; set; }
         public bool Active { get; set; }
         public UserType UserTypeId { get; set; }
