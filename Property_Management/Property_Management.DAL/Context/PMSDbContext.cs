@@ -24,6 +24,7 @@ namespace Property_Management.DAL.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<Tenant>(entity =>
             {
                 entity.Property(u => u.FirstName).HasMaxLength(50).IsRequired();
