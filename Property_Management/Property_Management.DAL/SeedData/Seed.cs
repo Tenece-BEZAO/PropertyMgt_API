@@ -35,7 +35,6 @@ namespace Property_Management.DAL.SeedData
                     BirthDay = DateTime.UtcNow,
                     PhoneNumber = "09403820483",
                     Password = "*Admin@KellY#",
-                    Active = true,
                     EmailConfirmed = true,
                     UserTypeId = UserType.Staff,
                     UserRole = UserRole.Admin

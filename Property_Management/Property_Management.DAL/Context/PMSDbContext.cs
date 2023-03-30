@@ -24,6 +24,51 @@ namespace Property_Management.DAL.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<Staff>()
+              .Property(u => u.FirstName)
+              .HasMaxLength(50)
+              .IsRequired();
+            modelBuilder.Entity<Staff>()
+              .Property(u => u.LastName)
+              .HasMaxLength(50)
+              .IsRequired();
+
+            modelBuilder.Entity<Staff>()
+                .Property(u => u.Email)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            modelBuilder.Entity<Staff>()
+                .HasIndex(u => u.Email, "IX_UniqueEmail")
+                .IsUnique();
+            modelBuilder.Entity<Staff>()
+               .HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber")
+               .IsUnique();
+
+
+            modelBuilder.Entity<LandLord>()
+                .Property(u => u.FirstName)
+                .HasMaxLength(50)
+                .IsRequired();
+            modelBuilder.Entity<LandLord>()
+              .Property(u => u.LastName)
+              .HasMaxLength(50)
+              .IsRequired();
+
+            modelBuilder.Entity<LandLord>()
+                .Property(u => u.Email)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            modelBuilder.Entity<LandLord>()
+                .HasIndex(u => u.Email, "IX_UniqueEmail")
+                .IsUnique();
+            modelBuilder.Entity<LandLord>()
+               .HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber")
+               .IsUnique();
+
+
             modelBuilder.Entity<Tenant>()
                 .Property(u => u.FirstName)
                 .HasMaxLength(50)
