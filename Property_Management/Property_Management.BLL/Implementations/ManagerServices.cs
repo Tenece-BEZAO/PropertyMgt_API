@@ -25,30 +25,15 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<Response> AddProperty(AddPropertyRequest request)
         {
-            //Property newProperty = _mapper.Map<Property>(request);
-            string PropertyId = Guid.NewGuid().ToString();
-            Property property = new()
-            {
-                PropertyId = PropertyId,
-                LandLordId = request.OwnedBy,
-                Name = request.Name,
-                Image = request.Image,
-                Price = request.Price,
-                Address = request.Address,
-                City = request.City,
-                Status = request.Status,
-                Zipcode = request.Zipcode,
-                NumOfUnits = request.NumOfUnits,
-
-            };
+           Property newProperty = _mapper.Map<Property>(request);
 
             var landlord = await _landRepo.GetSingleByAsync(l => l.LandLordId == request.OwnedBy);
             if (landlord == null)
             {
                 throw new InvalidOperationException($"The landord with the id {request.OwnedBy} was not found.");
             }
-            landlord.PropertyId = PropertyId;
-            await _propRepo.AddAsync(property);
+            landlord.PropertyId = newProperty.PropertyId;
+            await _propRepo.AddAsync(newProperty);
             await _landRepo.UpdateAsync(landlord);
             return new Response
             {

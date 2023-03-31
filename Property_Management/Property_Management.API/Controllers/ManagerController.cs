@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
@@ -10,18 +9,18 @@ namespace Property_Management.API.Controllers
     [ApiController]
     public class ManagerController : ControllerBase
     {
-        private readonly IMangerServices _landLordServices;
+        private readonly IMangerServices _managerServices;
         
 
         public ManagerController(IMangerServices landLordServices)
         {
-            _landLordServices = landLordServices;
+            _managerServices = landLordServices;
         }
 
         [HttpPost("add-property")]
         public async Task<IActionResult> AddProperty(AddPropertyRequest request)
         {
-          Response result = await _landLordServices.AddProperty(request);
+          Response result = await _managerServices.AddProperty(request);
             return Ok(result);
         }
 
@@ -29,7 +28,7 @@ namespace Property_Management.API.Controllers
         [HttpDelete("{propertyId}")]
         public async Task<IActionResult> DeleteProperty(DeletePropertyRequest request)
         {
-                var response = await _landLordServices.DeleteProperty(request);
+                var response = await _managerServices.DeleteProperty(request);
                 return Ok(response);
         }
     }

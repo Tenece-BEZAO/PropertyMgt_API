@@ -4,7 +4,7 @@ namespace Property_Management.DAL.Entities
 {
     public class Property
     {
-        public string PropertyId { get; set; }
+        public string PropertyId { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; }
         public string? LeaseId { get; set; }
         public string Address { get; set; }
