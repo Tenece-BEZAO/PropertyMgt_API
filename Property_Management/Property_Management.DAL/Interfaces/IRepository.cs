@@ -83,8 +83,5 @@ namespace Property_Management.DAL.Interfaces
         Task<T> UpdateAsync(T obj);
         Task UpdateRangeAsync(IEnumerable<T> records);
         void UpdateRange(IEnumerable<T> records);
-        Task DeleteAsync(Task<Property> propertyToBeDeleted);
-        Task UpdateAsync(IRepository<LandLord> landRepo);
-        Task UpdateAsync(Task<LandLord> landlord);
     }
 }
