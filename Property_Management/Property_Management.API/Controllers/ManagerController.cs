@@ -22,5 +22,14 @@ namespace Property_Management.API.Controllers
           Response result = await _managerServices.AddProperty(request);
             return Ok(result);
         }
+
+
+        [HttpDelete("{propertyId}")]
+        public async Task<IActionResult> DeleteProperty(DeletePropertyRequest request)
+        {
+                var response = await _managerServices.DeleteProperty(request);
+                return Ok(response);
+        }
+
     }
 }
