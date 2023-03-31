@@ -86,7 +86,7 @@ namespace Property_Management.BLL.Implementations
             {
                 throw new InvalidOperationException($"Property {request.PropertyId} was not found");
             }
-            var landlord = await _propRepo
+            var landlord = await _propRepo.Get
         }
                 
     }

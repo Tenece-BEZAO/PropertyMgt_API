@@ -24,8 +24,6 @@ namespace Property_Management.BLL.Models
         public DateTime EndDate { get; set; }
         [Precision(18, 2)]
         public decimal Rent { get; set; }
-        public string Status { get; set; }
-
-        
+        public string Status { get; set; }  
     }
 }
