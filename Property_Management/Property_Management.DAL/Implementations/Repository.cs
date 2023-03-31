@@ -530,21 +530,6 @@ namespace Property_Management.DAL.Implementation
             return query;
         }
 
-        public Task DeleteAsync(Task<Property> propertyToBeDeleted)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(IRepository<LandLord> landRepo)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(Task<LandLord> landlord)
-        {
-            throw new NotImplementedException();
-        }
-
         //private IQueryable<T> ConstructQueryable(Expression<Func<T, bool>> predicate = null, string orderBy = null, int? skip = null, int? take = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         //{
         //    try
