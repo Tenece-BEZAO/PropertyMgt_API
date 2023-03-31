@@ -60,8 +60,8 @@ namespace Property_Management.DAL.Migrations
                 columns: table => new
                 {
                     VendorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -182,8 +182,8 @@ namespace Property_Management.DAL.Migrations
                 {
                     StaffId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Occupation = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -203,19 +203,20 @@ namespace Property_Management.DAL.Migrations
                 name: "LandLord",
                 columns: table => new
                 {
-                    LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Occupation = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PropertyId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LandLord", x => x.LandLordId);
+                    table.PrimaryKey("PK_LandLord", x => x.Id);
                     table.ForeignKey(
                         name: "FK_LandLord_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -250,20 +251,22 @@ namespace Property_Management.DAL.Migrations
                 name: "Leases",
                 columns: table => new
                 {
-                    LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenantUnitId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Security_Deposit_Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TenantPropertyId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PropertyId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
                     Rent = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Upcoming_Tenant = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SecurityDeposit = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    UpcomingTenant = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UnitId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Leases", x => x.LeaseId);
+                    table.PrimaryKey("PK_Leases", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -272,30 +275,29 @@ namespace Property_Management.DAL.Migrations
                 {
                     PropertyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LandLordId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: true),
                     Zipcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NumOfUnits = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NumOfUnits = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    OwnedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Properties", x => x.PropertyId);
                     table.ForeignKey(
-                        name: "FK_Properties_LandLord_OwnedBy",
-                        column: x => x.OwnedBy,
+                        name: "FK_Properties_LandLord_LandLordId",
+                        column: x => x.LandLordId,
                         principalTable: "LandLord",
-                        principalColumn: "LandLordId");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Properties_Leases_LeaseId",
                         column: x => x.LeaseId,
                         principalTable: "Leases",
-                        principalColumn: "LeaseId");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -306,6 +308,7 @@ namespace Property_Management.DAL.Migrations
                     PropertyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NumOfBedRooms = table.Column<int>(type: "int", nullable: false),
                     UnitType = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Rent = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -334,7 +337,7 @@ namespace Property_Management.DAL.Migrations
                 {
                     TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UnitId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UnitId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -347,7 +350,10 @@ namespace Property_Management.DAL.Migrations
                     NormalizedMoveOutDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityDepositReturnId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    MaintenanceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SecurityId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -362,7 +368,12 @@ namespace Property_Management.DAL.Migrations
                         name: "FK_Tenants_LandLord_LandLordId",
                         column: x => x.LandLordId,
                         principalTable: "LandLord",
-                        principalColumn: "LandLordId");
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Tenants_Leases_LeaseId",
+                        column: x => x.LeaseId,
+                        principalTable: "Leases",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tenants_Properties_PropertyId",
                         column: x => x.PropertyId,
@@ -421,52 +432,53 @@ namespace Property_Management.DAL.Migrations
                 name: "Payments",
                 columns: table => new
                 {
-                    PaymentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PaymentType = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PaidBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payments", x => x.PaymentId);
+                    table.PrimaryKey("PK_Payments", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Payments_Leases_LeaseId",
                         column: x => x.LeaseId,
                         principalTable: "Leases",
-                        principalColumn: "LeaseId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Payments_Tenants_PaidBy",
-                        column: x => x.PaidBy,
+                        name: "FK_Payments_Tenants_TenantId",
+                        column: x => x.TenantId,
                         principalTable: "Tenants",
-                        principalColumn: "TenantId");
+                        principalColumn: "TenantId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "SecurityDepositReturns",
                 columns: table => new
                 {
-                    SecurityDepositReturnId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PropertyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UnitId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LeaseId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SecurityDepositAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    SecurityDeposit = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     AmountReturnedAfterLease = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     LeavingTenant = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    LeavingTenantPropertyNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LeavingTenantPropertyNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TenantsTenantId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SecurityDepositReturns", x => x.SecurityDepositReturnId);
+                    table.PrimaryKey("PK_SecurityDepositReturns", x => x.Id);
                     table.ForeignKey(
                         name: "FK_SecurityDepositReturns_Leases_LeavingTenant",
                         column: x => x.LeavingTenant,
                         principalTable: "Leases",
-                        principalColumn: "LeaseId");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_SecurityDepositReturns_Properties_PropertyId",
                         column: x => x.PropertyId,
@@ -474,8 +486,8 @@ namespace Property_Management.DAL.Migrations
                         principalColumn: "PropertyId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SecurityDepositReturns_Tenants_TenantsTenantId",
-                        column: x => x.TenantsTenantId,
+                        name: "FK_SecurityDepositReturns_Tenants_TenantId",
+                        column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "TenantId");
                     table.ForeignKey(
@@ -610,9 +622,9 @@ namespace Property_Management.DAL.Migrations
                 column: "UnitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Leases_Upcoming_Tenant",
+                name: "IX_Leases_UpcomingTenant",
                 table: "Leases",
-                column: "Upcoming_Tenant");
+                column: "UpcomingTenant");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaintenanceRequests_LoggedBy",
@@ -640,19 +652,19 @@ namespace Property_Management.DAL.Migrations
                 column: "LeaseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_PaidBy",
+                name: "IX_Payments_TenantId",
                 table: "Payments",
-                column: "PaidBy");
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Properties_LandLordId",
+                table: "Properties",
+                column: "LandLordId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Properties_LeaseId",
                 table: "Properties",
                 column: "LeaseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Properties_OwnedBy",
-                table: "Properties",
-                column: "OwnedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SecurityDepositReturns_LeavingTenant",
@@ -665,9 +677,9 @@ namespace Property_Management.DAL.Migrations
                 column: "PropertyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SecurityDepositReturns_TenantsTenantId",
+                name: "IX_SecurityDepositReturns_TenantId",
                 table: "SecurityDepositReturns",
-                column: "TenantsTenantId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SecurityDepositReturns_UnitId",
@@ -678,6 +690,11 @@ namespace Property_Management.DAL.Migrations
                 name: "IX_Tenants_LandLordId",
                 table: "Tenants",
                 column: "LandLordId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tenants_LeaseId",
+                table: "Tenants",
+                column: "LeaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_PropertyId",
@@ -750,19 +767,11 @@ namespace Property_Management.DAL.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Leases_SecurityDepositReturns_Upcoming_Tenant",
+                name: "FK_Leases_SecurityDepositReturns_UpcomingTenant",
                 table: "Leases",
-                column: "Upcoming_Tenant",
+                column: "UpcomingTenant",
                 principalTable: "SecurityDepositReturns",
-                principalColumn: "SecurityDepositReturnId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Leases_Tenants_Upcoming_Tenant",
-                table: "Leases",
-                column: "Upcoming_Tenant",
-                principalTable: "Tenants",
-                principalColumn: "TenantId",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Leases_Units_UnitId",
@@ -804,11 +813,7 @@ namespace Property_Management.DAL.Migrations
                 table: "Tenants");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Leases_SecurityDepositReturns_Upcoming_Tenant",
-                table: "Leases");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Leases_Tenants_Upcoming_Tenant",
+                name: "FK_Leases_SecurityDepositReturns_UpcomingTenant",
                 table: "Leases");
 
             migrationBuilder.DropTable(

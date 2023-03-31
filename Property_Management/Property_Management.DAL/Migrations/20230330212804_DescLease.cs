@@ -5,32 +5,32 @@
 namespace Property_Management.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class updatedLeaseId : Migration
+    public partial class DescLease : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "LeaseId",
-                table: "Properties",
-                type: "nvarchar(450)",
-                nullable: true,
+                name: "Description",
+                table: "Leases",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "",
                 oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
+                oldType: "nvarchar(max)",
+                oldNullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "LeaseId",
-                table: "Properties",
-                type: "nvarchar(450)",
-                nullable: false,
-                defaultValue: "",
+                name: "Description",
+                table: "Leases",
+                type: "nvarchar(max)",
+                nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(450)",
-                oldNullable: true);
+                oldType: "nvarchar(max)");
         }
     }
 }

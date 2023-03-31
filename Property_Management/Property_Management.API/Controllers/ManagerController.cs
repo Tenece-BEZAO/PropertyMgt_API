@@ -9,10 +9,9 @@ namespace Property_Management.API.Controllers
     [ApiController]
     public class ManagerController : ControllerBase
     {
-        private readonly IMangerServices _managerServices;
-        
+        private readonly IManagerServices _managerServices;
 
-        public ManagerController(IMangerServices managerServices)
+        public ManagerController(IManagerServices managerServices)
         {
             _managerServices = managerServices;
         }
@@ -26,9 +25,9 @@ namespace Property_Management.API.Controllers
 
 
         [HttpDelete("{propertyId}")]
-        public async Task<IActionResult> DeleteProperty(DeletePropertyRequest request)
+        public async Task<IActionResult> DeleteProperty(string propertyId)
         {
-                var response = await _managerServices.DeleteProperty(request);
+                var response = await _managerServices.DeleteProperty(propertyId);
                 return Ok(response);
         }
 
