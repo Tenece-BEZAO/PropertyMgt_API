@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Property_Management.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initials : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -209,6 +209,7 @@ namespace Property_Management.DAL.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Occupation = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PropertyId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -272,23 +273,22 @@ namespace Property_Management.DAL.Migrations
                 {
                     PropertyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LandLordId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Zipcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NumOfUnits = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    OwnedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Properties", x => x.PropertyId);
                     table.ForeignKey(
-                        name: "FK_Properties_LandLord_OwnedBy",
-                        column: x => x.OwnedBy,
+                        name: "FK_Properties_LandLord_LandLordId",
+                        column: x => x.LandLordId,
                         principalTable: "LandLord",
                         principalColumn: "LandLordId");
                     table.ForeignKey(
@@ -309,7 +309,8 @@ namespace Property_Management.DAL.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Rent = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    StaffId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    StaffId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -334,7 +335,7 @@ namespace Property_Management.DAL.Migrations
                 {
                     TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UnitId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UnitId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -346,8 +347,10 @@ namespace Property_Management.DAL.Migrations
                     MoveOutDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NormalizedMoveOutDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityDepositReturnId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    MaintenanceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LeaseId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -645,14 +648,14 @@ namespace Property_Management.DAL.Migrations
                 column: "PaidBy");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Properties_LandLordId",
+                table: "Properties",
+                column: "LandLordId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Properties_LeaseId",
                 table: "Properties",
                 column: "LeaseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Properties_OwnedBy",
-                table: "Properties",
-                column: "OwnedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SecurityDepositReturns_LeavingTenant",

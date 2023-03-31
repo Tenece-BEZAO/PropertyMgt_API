@@ -13,6 +13,8 @@ namespace Property_Management.API.Extension
         public static void AddCustomServices(this IServiceCollection services)
         {
             services.AddScoped<IUserAuth, UserAuth>();
+            services.AddScoped<ITenantServices, TenantServices>();
+            services.AddScoped<IMaintenanceRequestServices, MaintenaceRequestServices>();
             services.AddScoped<IMangerServices, ManagerServices>();
             services.AddScoped<IApplicationBuilder, ApplicationBuilder>();
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();

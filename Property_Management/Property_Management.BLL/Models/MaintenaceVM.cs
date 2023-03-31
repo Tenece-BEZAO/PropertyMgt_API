@@ -9,23 +9,22 @@ using System.Threading.Tasks;
 
 namespace Property_Management.BLL.Models
 {
-    public class LeaseVM
+    public class MaintenaceVM
     {
-        public string LeaseId { get; set; }
-
-        [Precision(18, 2)]
-        public decimal Security_Deposit_Amount { get; set; }
+        public string MaintenanceRequestId { get; set; }
+        public string UnitId { get; set; }
+        public string Description { get; set; }
+        public string ReportedTo { get; set; }
+        public string Priority { get; set; }
+        public string LoggedBy { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime StartDate { get; set; }
-
+        public DateTime DateLogged { get; set; }
+        public string? Status { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime EndDate { get; set; }
-        [Precision(18, 2)]
-        public decimal Rent { get; set; }
-        public string Status { get; set; }
+        public DateTime DueDate { get; set; }
 
-        
+
     }
 }
