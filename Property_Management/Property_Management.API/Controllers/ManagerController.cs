@@ -32,25 +32,5 @@ namespace Property_Management.API.Controllers
                 var response = await _landLordServices.DeleteProperty(request);
                 return Ok(response);
         }
-
-
-        //}  [HttpDelete("propertyId")]
-        //public async Task<IActionResult> DeleteProperty(string propertyId)
-        //{
-        //    try
-        //    {
-        //        var response = await _landLordServices.DeleteProperty(propertyId);
-        //        return Ok(response);
-        //    }
-        //    catch (InvalidOperationException ex)
-        //    {
-        //        return NotFound(ex);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        StatusCode(500, "An error occurred while deleting the property.");
-        //    }
-
-        //}
     }
 }
