@@ -9,18 +9,28 @@ namespace Property_Management.API.Controllers
     [ApiController]
     public class ManagerController : ControllerBase
     {
-        private readonly IMangerServices _landLordServices;
+        private readonly IMangerServices _managerServices;
+        
 
-        public ManagerController(IMangerServices landLordServices)
+        public ManagerController(IMangerServices managerServices)
         {
-            _landLordServices = landLordServices;
+            _managerServices = managerServices;
         }
 
         [HttpPost("add-property")]
         public async Task<IActionResult> AddProperty(AddPropertyRequest request)
         {
-          Response result = await _landLordServices.AddProperty(request);
+          Response result = await _managerServices.AddProperty(request);
             return Ok(result);
         }
+
+
+        [HttpDelete("{propertyId}")]
+        public async Task<IActionResult> DeleteProperty(DeletePropertyRequest request)
+        {
+                var response = await _managerServices.DeleteProperty(request);
+                return Ok(response);
+        }
+
     }
 }
