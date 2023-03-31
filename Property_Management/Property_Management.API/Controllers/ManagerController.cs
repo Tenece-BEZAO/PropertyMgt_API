@@ -5,21 +5,21 @@ using Property_Management.BLL.Interfaces;
 
 namespace Property_Management.API.Controllers
 {
-    [Route("api/landlord")]
+    [Route("api/manager")]
     [ApiController]
-    public class LandLordController : ControllerBase
+    public class ManagerController : ControllerBase
     {
-        private readonly ILandLordServices _landLordServices;
+        private readonly IManagerServices _managerServices;
 
-        public LandLordController(ILandLordServices landLordServices)
+        public ManagerController(IManagerServices managerServices)
         {
-            _landLordServices = landLordServices;
+            _managerServices = managerServices;
         }
 
         [HttpPost("add-property")]
         public async Task<IActionResult> AddProperty(AddPropertyRequest request)
         {
-          Response result = await _landLordServices.AddProperty(request);
+          Response result = await _managerServices.AddProperty(request);
             return Ok(result);
         }
     }

@@ -24,6 +24,7 @@ namespace Property_Management.DAL.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<Tenant>(entity =>
             {
                 entity.Property(u => u.FirstName).HasMaxLength(50).IsRequired();
@@ -57,11 +58,6 @@ namespace Property_Management.DAL.Context
                 .HasForeignKey(p => p.InspectedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Lease>()
-               .HasOne(p => p.Tenant)
-               .WithMany(p => p.Leases)
-               .HasForeignKey(p => p.Upcoming_Tenant)
-               .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<WorkOrder>()
            .HasOne(p => p.MaintenanceRequest)
@@ -69,17 +65,14 @@ namespace Property_Management.DAL.Context
            .HasForeignKey(p => p.MaintenanceRequestId)
            .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Payment>()
-         .HasOne(p => p.Tenants)
-         .WithMany(p => p.Payments)
-         .HasForeignKey(p => p.PaidBy)
-         .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<MaintenanceRequest>(entity =>
+            {
+                entity.HasOne(p => p.Tenants)
+  .WithMany(p => p.MaintenanceRequests)
+  .HasForeignKey(p => p.LoggedBy)
+  .OnDelete(DeleteBehavior.NoAction);
+            });
 
-            modelBuilder.Entity<MaintenanceRequest>()
-       .HasOne(p => p.Tenants)
-       .WithMany(p => p.MaintenanceRequests)
-       .HasForeignKey(p => p.LoggedBy)
-       .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<MaintenanceRequest>()
        .HasOne(p => p.Employees)
@@ -87,17 +80,18 @@ namespace Property_Management.DAL.Context
        .HasForeignKey(p => p.ReportedTo)
        .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Property>()
-              .HasOne(p => p.LandLords)
-              .WithMany(p => p.Properties)
-              .HasForeignKey(p => p.OwnedBy)
-              .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Property>()
-            .HasOne(p => p.Leases)
-            .WithMany(p => p.Properties)
-            .HasForeignKey(p => p.LeaseId)
-            .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Property>(entity =>
+            {
+                entity.Property(prop => prop.LeaseId).IsRequired(false);
+                entity.HasOne(p => p.LandLord)
+                .WithMany(p => p.Property)
+                .HasForeignKey(p => p.LandLordId)
+                .OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(p => p.Lease)
+             .WithMany(p => p.Property)
+             .HasForeignKey(p => p.LeaseId)
+             .OnDelete(DeleteBehavior.NoAction);
+            });
 
             modelBuilder.Entity<SecurityDepositReturn>()
             .HasOne(p => p.Units)
@@ -107,14 +101,19 @@ namespace Property_Management.DAL.Context
 
 
 
-            modelBuilder.Entity<Lease>()
-              .HasOne(p => p.SecurityDepositReturns)
-              .WithMany()
-              .HasForeignKey(p => p.Upcoming_Tenant)
-              .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Lease>(entity =>
+            {
+                entity.Property(prop => prop.UpcomingTenant).IsRequired(false);
+                entity.Property(prop => prop.PaymentId).IsRequired(false);
+                entity.Property(prop => prop.Description).IsRequired(true);
+                entity.HasOne(p => p.SecurityDepositReturns)
+                .WithMany()
+                .HasForeignKey(p => p.UpcomingTenant)
+                .OnDelete(DeleteBehavior.NoAction);
+            });
 
             modelBuilder.Entity<SecurityDepositReturn>()
-               .HasOne(p => p.Leases)
+               .HasOne(p => p.Lease)
                .WithMany()
                .HasForeignKey(p => p.LeavingTenant)
                .OnDelete(DeleteBehavior.NoAction);
@@ -124,5 +123,3 @@ namespace Property_Management.DAL.Context
         }
     }
 }
-
-

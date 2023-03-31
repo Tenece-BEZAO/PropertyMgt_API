@@ -8,18 +8,18 @@ using Property_Management.DAL.Interfaces;
 
 namespace Property_Management.BLL.Implementations
 {
-    public class LandLordServices : ILandLordServices
+    public class ManagerServices : IManagerServices
     {
         private readonly IRepository<Property> _propRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IRepository<LandLord> _landRepo;
-        public LandLordServices(IUnitOfWork unitOfWork, IMapper mapper)
+        public ManagerServices(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
-          _propRepo = _unitOfWork.GetRepository<Property>();
-          _landRepo = _unitOfWork.GetRepository<LandLord>();
+            _propRepo = _unitOfWork.GetRepository<Property>();
+            _landRepo = _unitOfWork.GetRepository<LandLord>();
 
         }
 
@@ -30,22 +30,26 @@ namespace Property_Management.BLL.Implementations
             Property property = new()
             {
                 PropertyId = PropertyId,
-                OwnedBy = request.OwnedBy,
+                LandLordId = request.OwnedBy,
                 Name = request.Name,
                 Image = request.Image,
                 Price = request.Price,
                 Address = request.Address,
                 City = request.City,
-                State = request.State,
+                Status = request.Status,
                 Zipcode = request.Zipcode,
                 NumOfUnits = request.NumOfUnits,
 
             };
 
-            LandLord newLandLord = new(){ PropertyId = PropertyId };
-            var landlord = _landRepo.GetSingleByAsync();
+            var landlord = await _landRepo.GetSingleByAsync(l => l.Id == request.OwnedBy);
+            if (landlord == null)
+            {
+                throw new InvalidOperationException($"The landord with the id {request.OwnedBy} was not found.");
+            }
+            landlord.PropertyId = PropertyId;
             await _propRepo.AddAsync(property);
-            await _landRepo.UpdateAsync(newLandLord);
+            await _landRepo.UpdateAsync(landlord);
             return new Response
             {
                 StatusCode = 201,
