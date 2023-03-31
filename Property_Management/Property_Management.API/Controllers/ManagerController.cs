@@ -12,9 +12,9 @@ namespace Property_Management.API.Controllers
         private readonly IMangerServices _managerServices;
         
 
-        public ManagerController(IMangerServices landLordServices)
+        public ManagerController(IMangerServices managerServices)
         {
-            _managerServices = landLordServices;
+            _managerServices = managerServices;
         }
 
         [HttpPost("add-property")]
