@@ -36,7 +36,7 @@ namespace Property_Management.BLL.Implementations
                 Price = request.Price,
                 Address = request.Address,
                 City = request.City,
-                State = request.State,
+                Status = request.Status,
                 Zipcode = request.Zipcode,
                 NumOfUnits = request.NumOfUnits,
 
@@ -57,15 +57,19 @@ namespace Property_Management.BLL.Implementations
                 Action = "Adding property"
             };
         }
-        public async Task<Response> DeleteProperty(string propertyId)
+        public async Task<Response> DeleteProperty(DeletePropertyRequest request)
         {
-            var PropertyToBeDeleted = _propRepo.GetSingleByAsync(d => d.PropertyId == propertyId);
+            var PropertyToBeDeleted = await _propRepo.GetSingleByAsync(d => d.PropertyId == request.PropertyId, tracking: true);
             if (PropertyToBeDeleted == null)
             {
-                throw new InvalidOperationException($"Property {propertyId} was not found");
+                throw new InvalidOperationException($"Property {request.PropertyId} was not found");
             }
-            await _propRepo.DeleteAsync(PropertyToBeDeleted);
-            await _landRepo.UpdateAsync(_landRepo);
+            var landlord = await _propRepo.GetSingleByAsync(l => l.PropertyId == request.PropertyId);
+            if (landlord != null)
+            {
+                landlord.PropertyId = null;
+                await _propRepo.UpdateAsync(landlord);
+            }
 
 
             return new Response
@@ -74,8 +78,16 @@ namespace Property_Management.BLL.Implementations
                 Message = "Property Deleted successfully",
                 Action = "Deleting a property"
             };
-
-
+         }
+        public async Task<Response> UpdateProperty(UpdatePropertyRequests request)
+        {
+            var PropertyToBeupdated = await _propRepo.GetSingleByAsync(u => u.PropertyId == request.PropertyId, tracking: true);
+            if (PropertyToBeupdated == null)
+            {
+                throw new InvalidOperationException($"Property {request.PropertyId} was not found");
+            }
+            var landlord = await _propRepo
         }
+                
     }
 }
