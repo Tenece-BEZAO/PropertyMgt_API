@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Query;
+using Property_Management.DAL.Entities;
 using System.Linq.Expressions;
 
 namespace Property_Management.DAL.Interfaces

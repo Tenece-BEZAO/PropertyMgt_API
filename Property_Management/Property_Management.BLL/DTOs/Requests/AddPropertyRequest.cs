@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public string Address { get; set; }
         public string? City { get; set; }
-        public string? State { get; set; }
+        public bool? Status { get; set; }
         public string? Zipcode { get; set; }
         public string NumOfUnits { get; set; }
         public decimal Price { get; set; }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 using Property_Management.DAL.Interfaces;
+using Property_Management.DAL.Entities;
 
 namespace Property_Management.DAL.Implementation
 {

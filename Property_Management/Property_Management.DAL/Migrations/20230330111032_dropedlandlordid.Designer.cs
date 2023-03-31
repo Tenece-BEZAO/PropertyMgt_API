@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Property_Management.DAL.Context;
 
@@ -11,9 +12,11 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    partial class PMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230330111032_dropedlandlordid")]
+    partial class dropedlandlordid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -465,10 +468,6 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LandLordId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("LeaseId")
                         .HasColumnType("nvarchar(450)");
 
@@ -479,6 +478,10 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("NumOfUnits")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
@@ -492,9 +495,9 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasKey("PropertyId");
 
-                    b.HasIndex("LandLordId");
-
                     b.HasIndex("LeaseId");
+
+                    b.HasIndex("OwnedBy");
 
                     b.ToTable("Properties");
                 });
@@ -963,19 +966,19 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Property", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.LandLord", "LandLord")
-                        .WithMany("Properties")
-                        .HasForeignKey("LandLordId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Property_Management.DAL.Entities.Lease", "Leases")
                         .WithMany("Properties")
                         .HasForeignKey("LeaseId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("LandLord");
+                    b.HasOne("Property_Management.DAL.Entities.LandLord", "LandLords")
+                        .WithMany("Properties")
+                        .HasForeignKey("OwnedBy")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("LandLords");
 
                     b.Navigation("Leases");
                 });

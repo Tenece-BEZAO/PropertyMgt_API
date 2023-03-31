@@ -87,11 +87,15 @@ namespace Property_Management.DAL.Context
        .HasForeignKey(p => p.ReportedTo)
        .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Property>()
-              .HasOne(p => p.LandLords)
+            modelBuilder.Entity<Property>(entity =>
+            {
+              entity.Property(prop => prop.LeaseId).IsRequired(false);
+              entity.HasOne(p => p.LandLord)
               .WithMany(p => p.Properties)
-              .HasForeignKey(p => p.OwnedBy)
+              .HasForeignKey(p => p.LandLordId)
               .OnDelete(DeleteBehavior.NoAction);
+            });
+              
 
             modelBuilder.Entity<Property>()
             .HasOne(p => p.Leases)
