@@ -10,7 +10,7 @@ namespace Property_Management.DAL.Entities
     public string PropertyId { get; set; }
     public int NumOfBedRooms { get; set; }
     public int UnitType { get; set; }
-
+        public string TenantId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         [Precision(18, 2)]

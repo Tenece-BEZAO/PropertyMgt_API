@@ -110,6 +110,10 @@ namespace Property_Management.DAL.Context
                 .HasForeignKey(p => p.UpcomingTenant)
                 .OnDelete(DeleteBehavior.NoAction);
             });
+            modelBuilder.Entity<Payment>(entity =>
+            {
+                entity.Property(prop => prop.LeaseId).IsRequired(true);
+            });
 
             modelBuilder.Entity<SecurityDepositReturn>()
                .HasOne(p => p.Lease)

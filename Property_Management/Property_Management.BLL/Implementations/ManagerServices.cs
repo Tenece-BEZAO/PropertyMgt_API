@@ -28,10 +28,11 @@ namespace Property_Management.BLL.Implementations
            Property newProperty = _mapper.Map<Property>(request);
 
 
-            var landlord = await _landRepo.GetSingleByAsync(l => l.Id == request.OwnedBy);
+            var landlord = await _landRepo.GetSingleByAsync(l => l.Id == request.LandLordId);
+
             if (landlord == null)
             {
-                throw new InvalidOperationException($"The landord with the id {request.OwnedBy} was not found.");
+                throw new InvalidOperationException($"The landord with the id {request.LandLordId} was not found.");
             }
             landlord.PropertyId = newProperty.PropertyId;
             await _propRepo.AddAsync(newProperty);
@@ -43,17 +44,16 @@ namespace Property_Management.BLL.Implementations
                 Action = "Adding property"
             };
         }
-        public async Task<Response> DeleteProperty(DeletePropertyRequest request)
+        public async Task<Response> DeleteProperty(string propertyId)
         {
-            var PropertyToBeDeleted = await _propRepo.GetSingleByAsync(d => d.PropertyId == request.PropertyId, tracking: true);
+            var PropertyToBeDeleted = await _propRepo.GetSingleByAsync(d => d.PropertyId == propertyId);
             if (PropertyToBeDeleted == null)
             {
-                throw new InvalidOperationException($"Property {request.PropertyId} was not found");
+                throw new InvalidOperationException($"Property {propertyId} was not found");
             }
-            var landlord = await _propRepo.GetSingleByAsync(l => l.PropertyId == request.PropertyId);
+            var landlord = await _propRepo.GetSingleByAsync(l => l.PropertyId == propertyId);
             if (landlord != null)
             {
-                landlord.PropertyId = null;
                 await _propRepo.UpdateAsync(landlord);
             }
 
@@ -65,7 +65,7 @@ namespace Property_Management.BLL.Implementations
                 Action = "Deleting a property"
             };
          }
-        public async Task<Response> UpdateProperty(UpdatePropertyRequests request)
+      /*  public async Task<Response> UpdateProperty(UpdatePropertyRequests request)
         {
             var PropertyToBeupdated = await _propRepo.GetSingleByAsync(u => u.PropertyId == request.PropertyId, tracking: true);
             if (PropertyToBeupdated == null)
@@ -73,7 +73,7 @@ namespace Property_Management.BLL.Implementations
                 throw new InvalidOperationException($"Property {request.PropertyId} was not found");
             }
             var landlord = await _propRepo.Get
-        }
+        }*/
                 
     }
 }

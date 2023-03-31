@@ -10,7 +10,7 @@ namespace Property_Management.DAL.Entities
         public string Id { get; set; }
         public PaymentType PaymentType { get; set; }
         public string TenantId { get; set; }
-
+        public string LeaseId { get; set; }
         [Precision(18, 2)]
         public decimal Amount { get; set; }
         [DataType(DataType.Date)]
