@@ -31,5 +31,6 @@ namespace Property_Management.API.Controllers
                 var response = await _managerServices.DeleteProperty(request);
                 return Ok(response);
         }
+
     }
 }

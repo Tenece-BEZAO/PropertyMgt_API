@@ -27,6 +27,7 @@ namespace Property_Management.BLL.Implementations
         {
            Property newProperty = _mapper.Map<Property>(request);
 
+
             var landlord = await _landRepo.GetSingleByAsync(l => l.LandLordId == request.OwnedBy);
             if (landlord == null)
             {
