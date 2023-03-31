@@ -9,7 +9,7 @@ namespace Property_Management.BLL.Services
         {
             return new LandLord
             {
-                LandLordId = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(),
                 UserId = userId,
                 FirstName = regRequest.Firstname,
                 LastName = regRequest.LastName,

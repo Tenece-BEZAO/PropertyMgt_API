@@ -5,14 +5,14 @@
 namespace Property_Management.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Occupation : Migration
+    public partial class AddedDescriptionLease : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Occupation",
-                table: "LandLord",
+                name: "Description",
+                table: "Leases",
                 type: "nvarchar(max)",
                 nullable: true);
         }
@@ -21,8 +21,8 @@ namespace Property_Management.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Occupation",
-                table: "LandLord");
+                name: "Description",
+                table: "Leases");
         }
     }
 }

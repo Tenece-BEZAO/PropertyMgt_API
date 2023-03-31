@@ -9,9 +9,10 @@ namespace Property_Management.API.ProfileMapper
     {
         public MapProfile()
         {
-            CreateMap<ApplicationUser, UserRegistrationRequest>();
-            CreateMap<Property, AddPropertyRequest>();
-            CreateMap<LandLord, AddPropertyRequest>();
+            CreateMap<UserRegistrationRequest, ApplicationUser>();
+            CreateMap<AddPropertyRequest, Property>();
+            CreateMap<AddPropertyRequest, LandLord>();
+            CreateMap<CreateLeaseRequest, Lease>();
         }
     }
 }

@@ -8,7 +8,7 @@ using Property_Management.DAL.Interfaces;
 
 namespace Property_Management.BLL.Implementations
 {
-    public class ManagerServices : IMangerServices
+    public class ManagerServices : IManagerServices
     {
         private readonly IRepository<Property> _propRepo;
         private readonly IUnitOfWork _unitOfWork;
@@ -28,7 +28,7 @@ namespace Property_Management.BLL.Implementations
            Property newProperty = _mapper.Map<Property>(request);
 
 
-            var landlord = await _landRepo.GetSingleByAsync(l => l.LandLordId == request.OwnedBy);
+            var landlord = await _landRepo.GetSingleByAsync(l => l.Id == request.OwnedBy);
             if (landlord == null)
             {
                 throw new InvalidOperationException($"The landord with the id {request.OwnedBy} was not found.");

@@ -9,10 +9,9 @@ namespace Property_Management.API.Controllers
     [ApiController]
     public class ManagerController : ControllerBase
     {
-        private readonly IMangerServices _managerServices;
-        
+        private readonly IManagerServices _managerServices;
 
-        public ManagerController(IMangerServices managerServices)
+        public ManagerController(IManagerServices managerServices)
         {
             _managerServices = managerServices;
         }
