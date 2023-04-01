@@ -29,6 +29,7 @@ namespace Property_Management.BLL.Implementations
 
 
             var landlord = await _landRepo.GetSingleByAsync(l => l.Id == request.LandLordId);
+
             if (landlord == null)
             {
                 throw new InvalidOperationException($"The landord with the id {request.LandLordId} was not found.");
