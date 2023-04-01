@@ -8,7 +8,7 @@ namespace Property_Management.DAL.Context
     {
         public PMSDbContext(DbContextOptions<PMSDbContext> options) : base(options) { }
 
-
+        public DbSet<LandLord> LordLords { get; set; }
         public DbSet<Property> Properties { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<Unit> Units { get; set; }

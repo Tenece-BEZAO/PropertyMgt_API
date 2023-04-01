@@ -23,7 +23,7 @@ namespace Property_Management.BLL.Implementations
 
         }
 
-        public async Task<Response> AddProperty(AddPropertyRequest request)
+        public async Task<Response> AddProperty(AddOrUpdatePropertyRequest request)
         {
            Property newProperty = _mapper.Map<Property>(request);
 
@@ -51,11 +51,10 @@ namespace Property_Management.BLL.Implementations
                 throw new InvalidOperationException($"Property {propertyId} was not found");
             }
             var landlord = await _propRepo.GetSingleByAsync(l => l.PropertyId == propertyId);
-            if (landlord != null)
-            {
-                await _propRepo.UpdateAsync(landlord);
-            }
+            if (landlord == null)
+                throw new InvalidOperationException($"Landlord with Property ID [{propertyId}] was not found.");
 
+          await _propRepo.UpdateAsync(landlord);
 
             return new Response
             {
@@ -64,15 +63,31 @@ namespace Property_Management.BLL.Implementations
                 Action = "Deleting a property"
             };
          }
-      /*  public async Task<Response> UpdateProperty(UpdatePropertyRequests request)
+        public async Task<Response> UpdateProperty(string propertyId, AddOrUpdatePropertyRequest request)
         {
-            var PropertyToBeupdated = await _propRepo.GetSingleByAsync(u => u.PropertyId == request.PropertyId, tracking: true);
-            if (PropertyToBeupdated == null)
+            var propertyToBeUpdated = await _propRepo.GetSingleByAsync(u => u.PropertyId == propertyId, tracking: true);
+            if (propertyToBeUpdated == null)
             {
-                throw new InvalidOperationException($"Property {request.PropertyId} was not found");
+                throw new InvalidOperationException($"Property {propertyId} was not Found");
             }
-            var landlord = await _propRepo.Get
-        }*/
-                
+            _mapper.Map(request, propertyToBeUpdated);
+
+            await _propRepo.UpdateAsync(propertyToBeUpdated);
+
+            return new Response
+            {
+                StatusCode = 201,
+                Message = "Property updated successfully",
+                Action = "Updating a property"
+            };
+        }
+        public async Task<IEnumerable<Property>> GetAllProperties()
+        {
+            var properties = await _propRepo.GetAllAsync();
+            if (properties == null) throw new InvalidOperationException("Error occured. Do try again.");
+            return properties;
+        }
+
     }
-}
+} 
+      

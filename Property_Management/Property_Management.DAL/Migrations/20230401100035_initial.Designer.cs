@@ -12,8 +12,8 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    [Migration("20230331133157_Initial")]
-    partial class Initial
+    [Migration("20230401100035_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -315,7 +315,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("LandLord");
+                    b.ToTable("LordLords");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Lease", b =>
@@ -557,6 +557,10 @@ namespace Property_Management.DAL.Migrations
                 {
                     b.Property<string>("StaffId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()

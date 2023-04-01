@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Property_Management.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -186,7 +186,8 @@ namespace Property_Management.DAL.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Occupation = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Occupation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -200,7 +201,7 @@ namespace Property_Management.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LandLord",
+                name: "LordLords",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -216,9 +217,9 @@ namespace Property_Management.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LandLord", x => x.Id);
+                    table.PrimaryKey("PK_LordLords", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LandLord_AspNetUsers_UserId",
+                        name: "FK_LordLords_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -289,14 +290,14 @@ namespace Property_Management.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Properties", x => x.PropertyId);
                     table.ForeignKey(
-                        name: "FK_Properties_LandLord_LandLordId",
-                        column: x => x.LandLordId,
-                        principalTable: "LandLord",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Properties_Leases_LeaseId",
                         column: x => x.LeaseId,
                         principalTable: "Leases",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Properties_LordLords_LandLordId",
+                        column: x => x.LandLordId,
+                        principalTable: "LordLords",
                         principalColumn: "Id");
                 });
 
@@ -365,14 +366,14 @@ namespace Property_Management.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tenants_LandLord_LandLordId",
-                        column: x => x.LandLordId,
-                        principalTable: "LandLord",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Tenants_Leases_LeaseId",
                         column: x => x.LeaseId,
                         principalTable: "Leases",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Tenants_LordLords_LandLordId",
+                        column: x => x.LandLordId,
+                        principalTable: "LordLords",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tenants_Properties_PropertyId",
@@ -612,11 +613,6 @@ namespace Property_Management.DAL.Migrations
                 column: "UnitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LandLord_UserId",
-                table: "LandLord",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Leases_UnitId",
                 table: "Leases",
                 column: "UnitId");
@@ -625,6 +621,11 @@ namespace Property_Management.DAL.Migrations
                 name: "IX_Leases_UpcomingTenant",
                 table: "Leases",
                 column: "UpcomingTenant");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LordLords_UserId",
+                table: "LordLords",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaintenanceRequests_LoggedBy",
@@ -789,8 +790,8 @@ namespace Property_Management.DAL.Migrations
                 table: "Employees");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_LandLord_AspNetUsers_UserId",
-                table: "LandLord");
+                name: "FK_LordLords_AspNetUsers_UserId",
+                table: "LordLords");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Tenants_AspNetUsers_UserId",
@@ -871,10 +872,10 @@ namespace Property_Management.DAL.Migrations
                 name: "Properties");
 
             migrationBuilder.DropTable(
-                name: "LandLord");
+                name: "Leases");
 
             migrationBuilder.DropTable(
-                name: "Leases");
+                name: "LordLords");
         }
     }
 }

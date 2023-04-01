@@ -1,5 +1,5 @@
 using Property_Management.API.Extension;
-using Property_Management.DAL.SeedData;
+using Property_Management.DAL.DataSeeder;
 using System.Reflection;
 
 namespace Property_Management.API
@@ -38,7 +38,10 @@ namespace Property_Management.API
 
 
             app.MapControllers();
-           // await Seed.EnsurePopulatedAsync(app);
+            await SeedAdmin.EnsurePopulatedAsync(app);
+            await SeedLandLord.EnsurePopulatedAsync(app);
+            await SeedTenant.EnsurePopulatedAsync(app);
+            await SeedStaff.EnsurePopulatedAsync(app);
             await app.RunAsync();
         }
     }

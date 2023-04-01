@@ -11,8 +11,8 @@ namespace Property_Management.API.ProfileMapper
         public MapProfile()
         {
             CreateMap<UserRegistrationRequest, ApplicationUser>();
-            CreateMap<AddPropertyRequest, Property>();
-            CreateMap<AddPropertyRequest, LandLord>();
+            CreateMap<AddOrUpdatePropertyRequest, Property>();
+            CreateMap<AddOrUpdatePropertyRequest, LandLord>();
             CreateMap<CreateLeaseRequest, Lease>();
             CreateMap<AddOrUpdateMaintenanceVM, MaintenanceRequest>();
         }
