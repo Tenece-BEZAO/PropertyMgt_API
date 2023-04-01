@@ -1,6 +1,6 @@
 ﻿namespace Property_Management.BLL.DTOs.Requests
 {
-    public class AddPropertyRequest
+    public class AddOrUpdatePropertyRequest
     {
         public string Name { get; set; }
         public string Address { get; set; }
