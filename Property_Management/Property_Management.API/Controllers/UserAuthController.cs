@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.DTOs.Request;
 using Property_Management.BLL.DTOs.Response;
 using Property_Management.BLL.DTOs.Responses;
-using Property_Management.BLL.Infrastructure;
 using Property_Management.BLL.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -29,7 +28,6 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> CreateUser(UserRegistrationRequest request)
         {
-            request.Role = "user";
             AuthenticationResponse response = await _userAuth.CreateUserAsync(request);
             return Ok(response);
         }

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Property_Management.DAL.Entities
 {
@@ -17,6 +16,7 @@ namespace Property_Management.DAL.Entities
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public string Occupation { get; set; }
+        public string Address { get; set; }
         public virtual ICollection<Unit> Units { get; set; }
         public List<MaintenanceRequest> MaintenanceRequests { get; set; }
         public virtual ICollection<InspectionCheck> InspectionChecks { get; set; }

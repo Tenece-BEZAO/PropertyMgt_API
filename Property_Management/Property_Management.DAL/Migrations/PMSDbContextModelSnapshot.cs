@@ -312,7 +312,8 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("LandLord", (string)null);
+                    b.ToTable("LordLords");
+
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Lease", b =>
@@ -555,6 +556,10 @@ namespace Property_Management.DAL.Migrations
                 {
                     b.Property<string>("StaffId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()

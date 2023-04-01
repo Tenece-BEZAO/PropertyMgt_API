@@ -49,6 +49,8 @@ namespace Property_Management.BLL.Implementations
 
             string userId = Guid.NewGuid().ToString();
             string tenantId = Guid.NewGuid().ToString();
+            string staffId = Guid.NewGuid().ToString();
+
             ApplicationUser user = new()
             {
                 Id = userId,
@@ -61,7 +63,7 @@ namespace Property_Management.BLL.Implementations
                 Active = true, 
                 EmailConfirmed = true,
                 UserTypeId = regRequest.UserTypeId,
-                UserRole = UserRole.User,
+                UserRole = UserRole.Admin,
             };
 
             IdentityResult createUser = await _userManager.CreateAsync(user, regRequest.Password);
@@ -70,16 +72,23 @@ namespace Property_Management.BLL.Implementations
                throw new InvalidOperationException($"User creation failed {createUser.Errors.FirstOrDefault()?.Description}");
             }
             string? userType = user.UserTypeId.GetStringValue().ToLower();
-          
-            if(userType == "landlord")
+
+            switch (userType)
             {
+                case "landlord":
                await _landLordRepo.AddAsync(NewLandLord(regRequest, userId));
+                    break;
+                case "tenant":
+              await _tenantRepo.AddAsync(NewTenant(regRequest, tenantId, userId));
+                    break;
+                case "staff":
+                await _staffRepo.AddAsync(NewStaff(regRequest, staffId, userId));
+                    break;
+                default:
+                      Console.WriteLine($"The user type {userType} was not found.");
+                    break;
             }
 
-            if(userType == "tenant")
-            {
-              await _tenantRepo.AddAsync(NewTenant(regRequest, tenantId, userId));
-            }
             string token = GenJwtToken.CreateToken(user);
             string? role = user.UserRole.GetStringValue();
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
@@ -97,6 +106,7 @@ namespace Property_Management.BLL.Implementations
             ApplicationUser user = await _userManager.FindByNameAsync(loginRequest.UserName);
             if (user == null)
                 throw new InvalidOperationException("User was not found.");
+
             if (!user.Active)
                 throw new InvalidOperationException("Account is not active");
 

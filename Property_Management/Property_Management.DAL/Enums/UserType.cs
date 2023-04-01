@@ -2,7 +2,8 @@
 {
     public enum UserType
     {
-        LandLord = 1,
+        Admin = 1,
+        LandLord,
         Tenant,
         Staff
     }
@@ -13,6 +14,7 @@
         {
             return userType switch
             {
+                UserType.Admin => "Admin",
                 UserType.LandLord => "Landlord",
                 UserType.Tenant => "Tenant",
                 UserType.Staff => "Staff",
