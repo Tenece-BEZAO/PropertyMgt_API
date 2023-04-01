@@ -19,7 +19,7 @@ namespace Property_Management.BLL.Services
                 Address = regRequest.Address,
         };
         }
-        
+
         public static Tenant NewTenant(UserRegistrationRequest regRequest, string tenantId, string userId)
         {
             return new Tenant
@@ -32,7 +32,21 @@ namespace Property_Management.BLL.Services
                 PhoneNumber = regRequest.MobileNumber,
                 Occupation = regRequest.Occupation,
                 Address = regRequest.Address,
-        };
+            };
+        }
+
+        public static Staff NewStaff(UserRegistrationRequest regRequest, string tenantId, string userId)
+        {
+            return new Staff
+            {
+                StaffId = tenantId,
+                UserId = userId,
+                FirstName = regRequest.Firstname,
+                LastName = regRequest.LastName,
+                Email = regRequest.Email,
+                PhoneNumber = regRequest.MobileNumber,
+                Occupation = regRequest.Occupation,
+            };
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Property_Management.BLL.DTOs.Request;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Property_Management.BLL.DTOs.Request;
 
