@@ -26,7 +26,7 @@ namespace Property_Management.DAL.Entities
         public DateTime? MoveOutDate { get; set; } = DateTime.UtcNow;
         public string? NormalizedMoveOutDate { get; set; }
         [AllowNull]
-        public string? Address { get; set; }
+        public string Address { get; set; }
         public string? SecurityDepositReturnId { get; set; }
         public string? LandLordId { get; set; }
         public string? MaintenanceId { get; set; }

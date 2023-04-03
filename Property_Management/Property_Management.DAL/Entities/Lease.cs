@@ -20,9 +20,9 @@ namespace Property_Management.DAL.Entities
         public decimal SecurityDeposit { get; set; } 
         public string? UpcomingTenant { get; set; }
         public Unit Unit { get; set; }  
-        public virtual ICollection<Tenant>? Tenant { get; set; }
-        public IEnumerable<Payment>? Payment { get; set; }
-        public IEnumerable<Property>? Property { get; set; }
-        public SecurityDepositReturn? SecurityDepositReturns { get; set; }
+        public IEnumerable<Tenant> Tenant { get; set; }
+        public IEnumerable<Payment> Payment { get; set; }
+        public IEnumerable<Property> Property { get; set; }
+        public SecurityDepositReturn SecurityDepositReturns { get; set; }
     }
 }

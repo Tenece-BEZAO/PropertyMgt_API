@@ -83,6 +83,14 @@ namespace Property_Management.API.Controllers
         }
 
         [Authorize]
+        [HttpPut("Toggle-user-activation")]
+        public async Task<IActionResult> ToggleUserActiveStatus(string userId)
+        {
+            string response = await _userAuth.ToggleUserActivation(userId);
+            return Ok(response);
+        }
+
+        [Authorize]
         [HttpPost("Logout", Name = "Logout-user")]
         public async Task<IActionResult> Logout()
         {
