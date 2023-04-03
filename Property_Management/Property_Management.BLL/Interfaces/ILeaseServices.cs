@@ -10,8 +10,8 @@ namespace Property_Management.BLL.Interfaces
         Task<Response> UpdateLease(string leaseId, CreateLeaseRequest request);
         Task<Response> RemoveLease(string leaseId);
         Task<Response> AcceptOrRejectLease(AcceptLeaseRequest request);
-        Task<IEnumerable<TenantResponse>> GetAllRentPaymentDetails();
-        Task<Lease> GetRentPaymentDetails(string tenantId);
+        Task<IEnumerable<PaymentInfoResponse>> GetAllRentPaymentDetails();
+        Task<IEnumerable<Lease>> GetRentPaymentDetails(string tenantId);
         Task<Response> GetAllSecurityDeposit();
         Task<Response> GetSecurityDeposit(string tenantId);
     }

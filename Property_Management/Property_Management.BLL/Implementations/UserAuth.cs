@@ -22,6 +22,7 @@ namespace Property_Management.BLL.Implementations
         private readonly IRepository<LandLord> _landLordRepo;
         private readonly IRepository<Tenant> _tenantRepo;
         private readonly IRepository<Staff> _staffRepo;
+        private readonly IRepository<ApplicationUser> _userRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly Response _reponse = new();
@@ -37,15 +38,18 @@ namespace Property_Management.BLL.Implementations
             _landLordRepo = _unitOfWork.GetRepository<LandLord>();
             _tenantRepo = _unitOfWork.GetRepository<Tenant>();
             _staffRepo = _unitOfWork.GetRepository<Staff>();
+            _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
         }
 
         public async Task<AuthenticationResponse> CreateUserAsync(UserRegistrationRequest regRequest)
         {
-            ApplicationUser? userExist = await _userManager.FindByNameAsync(regRequest.UserName);
+            ApplicationUser? userExist = await _userManager.FindByEmailAsync(regRequest.Email);
             if (userExist != null)
-            {
                 throw new InvalidOperationException("User already exists");
-            }
+
+            bool phoneExist = await _userRepo.AnyAsync(user => user.PhoneNumber == regRequest.MobileNumber);
+            if (phoneExist)
+                throw new InvalidOperationException("Phone number already taken.");
 
             string userId = Guid.NewGuid().ToString();
             string tenantId = Guid.NewGuid().ToString();
@@ -103,26 +107,28 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<AuthenticationResponse> LoginUserAsync(LoginRequest loginRequest)
         {
-            ApplicationUser user = await _userManager.FindByNameAsync(loginRequest.UserName);
+            ApplicationUser user = await _userManager.FindByEmailAsync(loginRequest.Email);
             if (user == null)
                 throw new InvalidOperationException("User was not found.");
-
-            if (!user.Active)
-                throw new InvalidOperationException("Account is not active");
 
             bool IsPassword = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
             if (!IsPassword)
                 throw new InvalidOperationException("Invalid Credentials. Email of password does'nt exist.");
 
-                var userRoles = await _userManager.GetRolesAsync(user);
+            if (!user.Active)
+                throw new InvalidOperationException("Account is not active");
+
+            var userRoles = await _userManager.GetRolesAsync(user);
             string? userType = user.UserTypeId.GetStringValue();   
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
            string userToken = GenJwtToken.CreateToken(user);
 
             List<Claim> authClaims = new();
             authClaims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            string userRole = userRoles?.FirstOrDefault();
+            foreach(var userRole in userRoles)
+            {
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
             if (UserRole.User.GetStringValue()?.ToLower() == "user")
             {
                 return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false, UserId = user.Id };
@@ -139,7 +145,7 @@ namespace Property_Management.BLL.Implementations
         public async Task<Response> LogoutAsync()
         {
             await _signInManager.SignOutAsync();
-            _reponse.StatusCode = 1;
+            _reponse.StatusCode = 200;
             _reponse.Action = "User signout";
             _reponse.Message = "You have logged out successfully.";
             return _reponse;

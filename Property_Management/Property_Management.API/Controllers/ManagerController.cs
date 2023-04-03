@@ -7,7 +7,6 @@ using Property_Management.BLL.Interfaces;
 
 namespace Property_Management.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/manager")]
     [ApiController]
     public class ManagerController : ControllerBase
@@ -19,6 +18,7 @@ namespace Property_Management.API.Controllers
             _managerServices = managerServices;
         }
 
+        //[Authorize]
         [HttpPost("add-property")]
         public async Task<IActionResult> AddProperty(AddOrUpdatePropertyRequest request)
         {

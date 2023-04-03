@@ -158,7 +158,7 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<AuthenticationResponse> UserLogin(LoginRequest request)
         {
-            ApplicationUser user = await _userManager.FindByEmailAsync(request.UserName.ToLower().Trim());
+            ApplicationUser user = await _userManager.FindByEmailAsync(request.Email.ToLower().Trim());
 
             if (user == null)
                 throw new InvalidOperationException("Invalid username or password");
