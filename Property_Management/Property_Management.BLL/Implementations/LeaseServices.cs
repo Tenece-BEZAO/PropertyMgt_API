@@ -79,23 +79,24 @@ namespace Property_Management.BLL.Implementations
             };
         }
 
-        public async Task<IEnumerable<TenantResponse>> GetAllRentPaymentDetails()
+        public async Task<IEnumerable<PaymentInfoResponse>> GetAllRentPaymentDetails()
         {
-            return (await _leaseRepo.GetAllAsync(include: u => u.Include(t => t.Tenant))).Select(t => new TenantResponse
+            return (await _leaseRepo.GetAllAsync(include: u => u.Include(t => t.Tenant))). Select(t => new PaymentInfoResponse
             {
-               Rent = t.Rent,
-               SecurityDeposit = t.SecurityDeposit,
-               Tenants = t.Tenant.Select(u => new Tenant
-               {
-                   FirstName = t.Tenant.FirstOrDefault().FirstName,
-                   Email = t.Tenant.FirstOrDefault().Email,
-               })
+                Rent = t.Rent,
+                SecurityDeposit = t.SecurityDeposit,
+                TenantResponse = t.Tenant.Select(tenant => new TenantPaymentInfoResponse
+                {
+                    UserId = tenant.UserId,
+                    FullName = $"{tenant.FirstName} {tenant.LastName}",
+                    Address = tenant.Address,
+                })
             });
         }
 
-        public async Task<Lease> GetRentPaymentDetails(string tenantId)
+        public async Task<IEnumerable<Lease>> GetRentPaymentDetails(string tenantId)
         {
-            Lease lease = await _leaseRepo.GetSingleByAsync(l => l.TenantId == tenantId);
+            IEnumerable<Lease> lease = await _leaseRepo.GetByAsync(l => l.TenantId == tenantId);
             if (lease == null)
                 throw new InvalidOperationException($"The tenant id {tenantId} does not exist.");
             return lease;
