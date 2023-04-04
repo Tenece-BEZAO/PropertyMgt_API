@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.Interfaces;
 using Property_Management.BLL.Models;
 
-
+ 
 namespace Property_Management.API.Controllers
 {
     [Route("api/tenant")]
@@ -11,22 +12,32 @@ namespace Property_Management.API.Controllers
     {
 
         private readonly ITenantServices _tenantService;
-        private readonly IMaintenanceRequestServices _maintenaceService;
+        private readonly IMapper _mapper;
 
-        public TenantController(ITenantServices tenantService, IMaintenanceRequestServices _maintenaceService)
+
+        public TenantController(ITenantServices tenantService, IMapper mapper)
         {
             _tenantService = tenantService;
-            this._maintenaceService = _maintenaceService;
+            _mapper = mapper;
+
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTenantAndMaintainance()
+        public async Task<ActionResult<IEnumerable<TenantDto>>> GetTenants()
+        {
+            var tenants = _tenantService.GetAllTenantsAsync(includeProperties: "Leases.LeasePayments, Leases.Unit");
+
+            var tenantDtos = _mapper.Map<IEnumerable<TenantDto>>(tenants);
+
+            return Ok(tenantDtos);
+        }
+        /*public async Task<IActionResult> GetTenantAndMaintainance()
         {
             var model = await _tenantService.GetTenantsWithMaintenanceAsync();
             return Ok(model);
-        }
+        }*/
 
-        [HttpPost]
+        /*[HttpPost]
         public async Task<IActionResult> AddOrUpdateMaintainance(AddOrUpdateMaintenanceVM model)
         {
             if (ModelState.IsValid)
@@ -36,6 +47,6 @@ namespace Property_Management.API.Controllers
 
             }
             return BadRequest();
-        }
+        }*/
     }
 }

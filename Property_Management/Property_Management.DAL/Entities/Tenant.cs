@@ -33,9 +33,10 @@ namespace Property_Management.DAL.Entities
         public string? LeaseId { get; set; }
         public string? SecurityId { get; set; }
         public Unit Units { get; set; }
-        public IEnumerable<Payment> Payments { get; set; }
+        public Payment Payments { get; set; }
         public ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
         public LandLord LandLord { get; set; }
+        public Lease Leases { get; set; }
         public Property Property { get; set; }
         public ICollection<SecurityDepositReturn> SecurityDepositReturns { get; set; }
         public ApplicationUser User { get; set; }
