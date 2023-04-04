@@ -81,25 +81,88 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<IEnumerable<PaymentInfoResponse>> GetAllRentPaymentDetails()
         {
-            return (await _leaseRepo.GetAllAsync(include: u => u.Include(t => t.Tenant))). Select(t => new PaymentInfoResponse
+            return (await _leaseRepo.GetAllAsync(include: u => u.Include(t => t.Tenant))). Select(l => new PaymentInfoResponse
             {
-                Rent = t.Rent,
-                SecurityDeposit = t.SecurityDeposit,
-                TenantResponse = t.Tenant.Select(tenant => new TenantPaymentInfoResponse
+                Rent = l.Rent,
+                SecurityDeposit = l.SecurityDeposit,
+               TenantResponse = new TenantPaymentInfoResponse
                 {
-                    UserId = tenant.UserId,
-                    FullName = $"{tenant.FirstName} {tenant.LastName}",
-                    Address = tenant.Address,
-                })
+                    UserId = l.Tenant.UserId,
+                    FullName = $"{l.Tenant.FirstName} {l.Tenant.LastName}",
+                    Address = l.Tenant.Address,
+                    Phone = l.Tenant.PhoneNumber,
+                }
             });
         }
 
-        public async Task<IEnumerable<Lease>> GetRentPaymentDetails(string tenantId)
+        public async Task<IEnumerable<PaymentInfoResponse>> GetTenantWhosPaymentDetailsAreStillUpToDate()
         {
-            IEnumerable<Lease> lease = await _leaseRepo.GetByAsync(l => l.TenantId == tenantId);
-            if (lease == null)
-                throw new InvalidOperationException($"The tenant id {tenantId} does not exist.");
-            return lease;
+            var paymentInfos = (await _leaseRepo.GetByAsync(
+                predicate: c => c.Rent > decimal.Zero && c.EndDate <= DateTime.Now && c.Status,
+                orderBy: t => t.OrderBy(tenant => tenant.StartDate), 
+                include: u => u.Include(t => t.Tenant))).Select(l => new PaymentInfoResponse
+            {
+                Rent = l.Rent,
+                SecurityDeposit = l.SecurityDeposit,
+                TenantResponse = new TenantPaymentInfoResponse
+                {
+                    UserId = l.Tenant.UserId,
+                    FullName = $"{l.Tenant.FirstName} {l.Tenant.LastName}",
+                    Address = l.Tenant.Address,
+                    Phone = l.Tenant.PhoneNumber,
+                }
+            });
+
+            if (paymentInfos == null) throw new Exception("No item found.");
+
+            return paymentInfos;
+        }
+
+        public async Task<IEnumerable<PaymentInfoResponse>> GetTenantWhosRentHasExpired()
+        {
+
+            IEnumerable<PaymentInfoResponse> paymentDetails = (await _leaseRepo.GetByAsync(
+                predicate: c => c.Rent < decimal.Zero && c.EndDate <= DateTime.Now && c.Status,
+                orderBy: t => t.OrderBy(tenant => tenant.StartDate),
+                include: u => u.Include(t => t.Tenant))).Select(l => new PaymentInfoResponse
+                {
+                    Rent = l.Rent,
+                    SecurityDeposit = l.SecurityDeposit,
+                    TenantResponse = new TenantPaymentInfoResponse
+                    {
+                        UserId = l.Tenant.UserId,
+                        FullName = $"{l.Tenant.FirstName} {l.Tenant.LastName}",
+                        Address = l.Tenant.Address,
+                        Phone = l.Tenant.PhoneNumber,
+                    }
+                });
+
+            if (paymentDetails == null) throw new Exception("No item was found.");
+
+            return paymentDetails;
+        }
+
+        public async Task<Response> NofityRentExiration(string tenantId)
+        {
+            Tenant rentExpiredTenant = await _tenantRepo.GetSingleByAsync(predicate: t => t.TenantId == tenantId, include: p => p.Include(tenant => tenant.Payments));
+            if (rentExpiredTenant == null)
+                throw new InvalidOperationException($"Sorry!. tenant with the Id {tenantId} does't exist.");
+
+            Payment? tenantPaymentDetail = rentExpiredTenant.Payments.FirstOrDefault(te => te.PaymentDate <= DateTime.UtcNow);
+            if (tenantPaymentDetail == null)
+            {
+                return new Response { Action = "Rent Expire alert", StatusCode = 200, Message = "Your rent is still active." };
+            }
+                return new Response { Action = "Rent Expire alert", StatusCode = 200, Message = "Your rent has expired." };
+
+        }
+
+        public async Task<IEnumerable<Tenant>> GetRentPaymentDetails(string leaseId)
+        {
+            IEnumerable<Tenant> tenantDetails = await _tenantRepo.GetByAsync(t => t.LeaseId  == leaseId);
+            if (tenantDetails == null)
+                throw new InvalidOperationException($"The tenant with lease id {leaseId} does not exist.");
+            return tenantDetails;
         }
 
         public Task<Response> GetAllSecurityDeposit()
