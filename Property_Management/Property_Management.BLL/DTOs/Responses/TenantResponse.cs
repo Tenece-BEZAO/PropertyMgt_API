@@ -7,7 +7,7 @@ namespace Property_Management.BLL.DTOs.Responses
         
         public decimal SecurityDeposit { get; set; }
         public decimal Rent { get; set; }
-        public IEnumerable<TenantPaymentInfoResponse> TenantResponse { get; set; }
+        public TenantPaymentInfoResponse TenantResponse { get; set; }
     }
 
     public class TenantPaymentInfoResponse

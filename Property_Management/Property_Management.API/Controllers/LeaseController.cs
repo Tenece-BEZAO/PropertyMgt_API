@@ -62,5 +62,20 @@ namespace Property_Management.API.Controllers
             var lease = await _leaseServices.GetRentPaymentDetails(tenantId);
             return Ok(lease);
         }
+
+
+        [HttpGet("Rent-expiration-alert.")]
+        public async Task<IActionResult> GetTentantRentPaymentDetail(string tenantId)
+        {
+            var response = await _leaseServices.NofityRentExiration(tenantId);
+            return Ok(response);
+        }
+
+        [HttpGet("get-upto-date-tenant")]
+        public async Task<IActionResult> GetTenantWhosPaymentDetailsAreStillUpToDate()
+        {
+            var response = await _leaseServices.GetTenantWhosPaymentDetailsAreStillUpToDate();
+            return Ok(response);
+        }
     }
 }
