@@ -88,6 +88,27 @@ namespace Property_Management.BLL.Implementations
             if (properties == null) throw new InvalidOperationException("Error occured. Do try again.");
             return properties;
         }
+        public async Task<IEnumerable<Property>> GetAllAvaliableOrUnavialbleProperties(bool isAvailable)
+        {
+            var avaliableProps = await _propRepo.GetByAsync(p => p.Status == isAvailable);
+            if (avaliableProps == null) throw new InvalidOperationException("Property not Found. Please try again");
+            return avaliableProps;
+        }
+        public async Task<IEnumerable<Property>> GetAllRentedOrNonRentedPropertiesByLandord(string landlordId, bool condiction)
+        {
+            var RentedPropsownedByLandLord = await _propRepo.GetByAsync(v => v.LandLordId == landlordId);
+            if (RentedPropsownedByLandLord == null) throw new Exception("Landlord with this Id does not own any property.");
+
+            var RentedPropsByLandord = await _propRepo.GetByAsync(p => p.Status == condiction && p.LandLordId == landlordId);
+            if (RentedPropsByLandord == null) throw new InvalidOperationException("Sorry! an error occured.");
+            return RentedPropsByLandord;
+        }
+        //public async Task<IEnumerable<Property>> GetAllAvailableProperties()
+        //{
+        //    var properties = await _propRepo.GetManyByAsync(p => p.Status == true);
+        //    if (properties == null) throw new InvalidOperationException("Error occurred. Please try again.");
+        //    return properties;
+        //}
 
     }
 } 

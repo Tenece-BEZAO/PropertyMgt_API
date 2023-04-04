@@ -48,6 +48,18 @@ namespace Property_Management.API.Controllers
                 var response = await _managerServices.GetAllProperties();
                 return Ok(response);
         }
+        [HttpGet("Get-All-Avaliable-Or-Unavialble-Properties")]
+        public async Task <IActionResult> GetAllAvaliableOrUnavialbleProperties(bool isAvailable)
+        {
+            var response = await _managerServices.GetAllAvaliableOrUnavialbleProperties(isAvailable);
+            return Ok(response);
+        }
+        [HttpGet("Get-All-Rented-Or-Non-Rented-Properties-By-LandLord")]
+        public async Task<IActionResult> GetAllRentedOrNonRentedPropertiesByLandord(string landlordId, bool condiction)
+        {
+            var response = await _managerServices.GetAllRentedOrNonRentedPropertiesByLandord(landlordId, condiction);
+            return Ok(response);
+        }
 
     }
 }
