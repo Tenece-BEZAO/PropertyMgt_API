@@ -40,9 +40,9 @@ j)	Role Table: This defines different roles of people here.
 
 
 ### Users :
-1)	User 1: This user is part of management staff who can login and check maintenance requests logged, inspection checks. 
-2)	User 2 : This user is part of maintenance staff who can check maintenance requests.
-3)	User 3 : This is a tenant staying in that property. They can login and check all the details related to them and maintenance requests logged by them. 
+1)	Admin: This user is part of management staff who can login and check maintenance requests logged, inspection checks. 
+2)	Staff : This user is part of maintenance staff who can check maintenance requests.
+3)	Tenant : This is a tenant staying in that property. They can login and check all the details related to them and maintenance requests logged by them. 
 
 
 # Creators
