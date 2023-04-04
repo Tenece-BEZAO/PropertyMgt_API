@@ -1,10 +1,15 @@
 
-# Property Management API
+# ASP.NET Core  Property Management API
+
 This is a Property Management API built using ASP.NET Core Web API, EF Core, IUnitOfWork and Irepository, this was to handle seperation of concerns.
 
 ## Objective: 
 The Property Management API is a SaaS platform that helps property managers and landlords manage their rental properties. The API should provide features for managing leases, collecting rent, handling maintenance requests, and managing tenant data.
- 
+
+> c#
+
+> .Net 6.0
+> 
  ###  Asp.netcore  web API application with sqlserver as backend (Code first approach)
 ##### Some major Components Used
 > Asp.netcore web api Material
