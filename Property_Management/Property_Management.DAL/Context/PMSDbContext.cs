@@ -105,11 +105,10 @@ namespace Property_Management.DAL.Context
                 entity.Property(prop => prop.UpcomingTenant).IsRequired(false);
                 entity.Property(prop => prop.PaymentId).IsRequired(false);
                 entity.Property(prop => prop.Description).IsRequired(true);
-                entity.HasOne(p => p.SecurityDepositReturns)
-                .WithMany()
-                .HasForeignKey(p => p.UpcomingTenant)
-                .OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(p => p.Tenant).WithMany(p => p.Lease).HasForeignKey(p => p.TenantId).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(p => p.SecurityDepositReturns).WithMany().HasForeignKey(p => p.UpcomingTenant).OnDelete(DeleteBehavior.NoAction);
             });
+
             modelBuilder.Entity<Payment>(entity =>
             {
                 entity.Property(prop => prop.LeaseId).IsRequired(true);
