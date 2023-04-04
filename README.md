@@ -33,19 +33,6 @@ j)	Role Table: This defines different roles of people here.
 * Maintenance requests: The API should provide a system for handling maintenance requests, including creating new requests, tracking the status of requests, and assigning maintenance tasks to staff or contractors.
 
 
-* Reports (created by [Summary Reports plugin for AppGini](https://bigprof.com/appgini/applications/summary-reports-plugin)):
-	* **Applicants by status** review how many new applicants vs. tenants vs. previous tenants do we have.
-	* **Applications/leases over time** review the growth of leases and applications over time.
-	* **Applications/leases by property** review the growth of demand for each property over time.
-	* **Leases by property over time** review the growth of actual leases for each property over time.
-	* **Lease value by property over time** check the monthly rental revenue for each property and its growth over time.
-* Efficient management of applications status through mass update of multiple applications.
-* Quickly view leases starting and ending each month through a calendar view -- also allows adding and editing (created by [Calendar plugin for AppGini](https://bigprof.com/appgini/applications/calendar-plugin)).
-### Database Objects: 
-
-1)	Tables – This has been described above. 
-
-
 ### Users :
 1)	Admin: This user is part of management staff who can login and check maintenance requests logged, inspection checks. 
 2)	Staff : This user is part of maintenance staff who can check maintenance requests.
