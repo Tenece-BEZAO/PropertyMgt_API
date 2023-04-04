@@ -1,45 +1,12 @@
 
-# ASP.NET Core  Property Management API
+# ASP.NETCore  Property Management API
 
 This is a Property Management API built using ASP.NET Core Web API, EF Core, IUnitOfWork and Irepository, this was to handle seperation of concerns.
 
 ## Objective: 
+
 The Property Management API is a SaaS platform that helps property managers and landlords manage their rental properties. The API should provide features for managing leases, collecting rent, handling maintenance requests, and managing tenant data.
 
-> c#
-
-> .Net 6.0
-> 
- ###  Asp.netcore  web API application with sqlserver as backend (Code first approach)
-##### Some major Components Used
-> Asp.netcore web api Material
-
-> Swagger UI
-
-> Nuget Packages
-
-## Approach: 
-I have followed the code first approach and designed EER model diagram first by defining tables and their attributes, established relationships and database objects like tables schema is populated. 
-Here is the below approach to design an EER model 
--	Property table – Consists of details of different buildings in the vicinity or on a street. 
--	Tenant table – consists of details of the unit like unit number, resident id, no of bedrooms, no of washrooms, pet allowed, in unit laundry facility available.
--	Staff Table – Management Staff and Maintenance Staff are responsible for overall management of units in respective buildings. Management staff takes care of lease details, payments, inspection checks and maintenance requests logged, if any. Maintenance Staff is responsible for servicing or repairing items found during maintenance requests logged or during inspection checks.
-- Vendors – Residents can schedule an appointment with management staff for either logging maintenance requests or any other inquiries/concerns they have during the stay.
--	Inspection checks – This table is designed to serve the purpose that all inspection checks are tracked and if any observation is found then they can be used for corrections or warnings to be given to residents.
--	Maintenance Requests – This table helps to keep track of maintenance requests logged and ensure that they are being serviced by the maintenance staff on time.
--	Lease: It keeps a track of lease details agreed between management company and resident Id. It has attributes like lease id, lease term, lease start and end date etc. 
-- Payment:  This helps in keeping track of payment details such as monthly rent, deposit, pet deposit, total payment amount etc. 
--	Security deposit returns: This helps in keeping track of expired leases and management company is now responsible for repayment of security deposits which they took from the residents during the start of the lease. 
-
-
-
-##### _points to note_
-
-- Migration Commands (in Nuget console)
-  - `add migration <name>`
-  - `update-database`
-- Use inbuilt Swagger or else postman and use the APIs to add some dummy data to table
-- Run the WebAPI first(recommeneded to run from visual studio)
 ## Features
 
 * Property management: The API should allow property managers to manage multiple properties, including adding and removing properties, updating property details, and managing tenant data.
@@ -54,6 +21,92 @@ Here is the below approach to design an EER model 
 * Maintenance requests: The API should provide a system for handling maintenance requests, including creating new requests, tracking the status of requests, and assigning maintenance tasks to staff or contractors.
 
 
+## Screenshots
+
+|                           |                                 |                        |
+|:-------------------------:|:-------------------------------:|:----------------------:|
+| **Rents page**                | **Send notices, receipt by email**  | **Pay a rent**             |
+| [<img src="./documentation/pictures/rents.png" alt="drawing" width="350"/>](./documentation/pictures/rents.png) | [<img src="./documentation/pictures/sendmassemails.png" alt="drawing" width="350"/>](./documentation/pictures/sendmassemails.png) | [<img src="./documentation/pictures/payment.png" alt="drawing" width="350"/>](./documentation/pictures/payment.png) |
+| **Tenants page**              | **Tenant details**                 | |
+| [<img src="./documentation/pictures/tenants.png" alt="drawing" width="350"/>](./documentation/pictures/tenants.png) | [<img src="./documentation/pictures/tenantcontract.png" alt="drawing" width="350"/>](./documentation/pictures/tenantcontract.png) | |
+| **Properties page**           | **Property details**               | |
+| [<img src="./documentation/pictures/properties.png" alt="drawing" width="350"/>](./documentation/pictures/properties.png) | [<img src="./documentation/pictures/property.png" alt="drawing" width="350"/>](./documentation/pictures/property.png)| |
+| **Landlord page**             | **Template leases**                | **Author a contract**          |
+| [<img src="./documentation/pictures/landlord.png" alt="drawing" width="350"/>](./documentation/pictures/landlord.png) | [<img src="./documentation/pictures/leases.png" alt="drawing" width="350"/>](./documentation/pictures/leases.png) | [<img src="./documentation/pictures/contracttemplate.png" alt="drawing" width="350"/>](./documentation/pictures/contracttemplate.png) |
+| **Members**                        | |
+| [<img src="./documentation/pictures/members.png" alt="drawing" width="350"/>](./documentation/pictures/members.png) | |
+
+## Getting started
+## Requirements
+
+.NET Core SDK 3.1 or higher
+SQL Server
+
+
+
+### Clone the GitHub repository
+```shell
+$ git clone https://github.com/yourusername/property-management-api.git
+```
+- Open the solution in Visual Studio.
+- Run the following commands in the Package Manager Console:
+
+```shell 
+ Add-Migration InitialCreate
+ Update-Database
+```
+
+
+
+
+##### Some major Components Used
+
+> Swagger UI
+> 
+Features IMPLEMENTED
+====================
+Admin-End
+--------
+- Authentication/Registration
+- Adding of Properties
+- Editing/Updating of Properties with photos, location and property features
+- Database Migrations and Seeder
+- Manage Users from the Backend - by Admin alone
+- Super-Admin Access Control
+
+
+## Approach: 
+I followed the code first approach, created Entities, their attributes, established relationships and these entities are migrated to database as tables. 
+
+Below are the entities used:
+*	Property table – Consists of details of different buildings in the vicinity or on a street. 
+
+*	Tenant table – consists of details of the unit like unit number, resident id, no of bedrooms, no of washrooms, pet allowed, in unit laundry facility available.
+
+*	Staff Table – Management Staff and Maintenance Staff are responsible for overall management of units in respective buildings. Management staff takes care of lease details, payments, inspection checks and maintenance requests logged, if any. Maintenance Staff is responsible for servicing or repairing items found during maintenance requests logged or during inspection checks.
+
+
+*	Inspection checks – This table is designed to serve the purpose that all inspection checks are tracked and if any observation is found then they can be used for corrections or warnings to be given to residents.
+
+*	Maintenance Requests – This table helps to keep track of maintenance requests logged and ensure that they are being serviced by the maintenance staff on time.
+
+*	Lease: It keeps a track of lease details agreed between management company and resident Id. It has attributes like lease id, lease term, lease start and end date etc. 
+
+* Payment:  This helps in keeping track of payment details such as monthly rent, deposit, pet deposit, total payment amount etc. 
+
+*	Security deposit returns: This helps in keeping track of expired leases and management company is now responsible for repayment of security deposits which they took from the residents during the start of the lease. 
+
+
+
+##### _points to note_
+
+- Migration Commands (in Nuget console)
+  - `add migration <name>`
+  - `update-database`
+- Use inbuilt Swagger or else postman and use the APIs to add some dummy data to table
+- Run the WebAPI first(recommeneded to run from visual studio)
+
+
 ### Users :
 
 1)	Admin: This user is part of management staff who can login and check maintenance requests logged, inspection checks. 
@@ -63,6 +116,9 @@ Here is the below approach to design an EER model 
 ### Known Errors:
 
 - If any error pops up regarding namespaces, add the reference to the DataAccess project or dll from the webapi project
+### Contributing
+
+- Contributions are welcome! If you find any issues or have suggestions for improvements, please submit an issue or a pull request.
 
 # Creators
 * [Egbujie Chizoba Esther](https://github.com/Chizober)
