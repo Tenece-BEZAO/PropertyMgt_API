@@ -6,6 +6,7 @@ namespace Property_Management.BLL.Interfaces
 {
     public interface ITenantServices
     {
+<<<<<<< Updated upstream
         /*Task<Response> CreateTenant(CreateTenantRequest request);
         Task<Response> UpdateTenant(string tenantId, CreateTenantRequest request);
         Task<Response> RemoveTenant(string tenantId);
@@ -17,6 +18,8 @@ namespace Property_Management.BLL.Interfaces
         Task<IEnumerable<Tenant>> GetRentPaymentDetails(string tenantId);
         Task<Response> GetAllSecurityDeposit();
         Task<Response> GetSecurityDeposit(string tenantId);*/
+=======
+>>>>>>> Stashed changes
 
         Task<string> CreateTenant(TenantDTO tenant);
         Task<TenantDTO> EditTenant(string id, TenantDTO tenant);
