@@ -37,12 +37,6 @@ The Property Management API is a SaaS platform that helps property managers and 
 | [<img src="./documentation/pictures/members.png" alt="drawing" width="350"/>](./documentation/pictures/members.png) | |
 
 ## Getting started
-## Requirements
-
-.NET Core SDK 3.1 or higher
-SQL Server
-
-
 
 ### Clone the GitHub repository
 ```shell
@@ -57,12 +51,30 @@ $ git clone https://github.com/yourusername/property-management-api.git
 ```
 
 
+## Technologies and Libraries
+- .NET 6
+- ASP.NET Core 6.0
+- Swagger UI
+- Entity Framework Core
+- SQLServer
+- AutoMapper
 
 
-##### Some major Components Used
+## Principles and Patterns
+- Clean Architecture
+- Clean Code
+- SOLID Principles
+- Acyclic Dependencies Principle
+- Separation of Concerns
 
-> Swagger UI
-> 
+## Benefits
+- Simple and evolutionary architecture.
+- Standardized and centralized flow for validation, log, security, return, etc.
+- Avoid cyclical references.
+- Avoid unnecessary dependency injection.
+- Segregation by feature instead of technical type.
+- Single responsibility for each request and response.
+
 Features IMPLEMENTED
 ====================
 Admin-End
@@ -79,6 +91,7 @@ Admin-End
 I followed the code first approach, created Entities, their attributes, established relationships and these entities are migrated to database as tables. 
 
 Below are the entities used:
+
 *	Property table – Consists of details of different buildings in the vicinity or on a street. 
 
 *	Tenant table – consists of details of the unit like unit number, resident id, no of bedrooms, no of washrooms, pet allowed, in unit laundry facility available.
@@ -88,7 +101,7 @@ Below are the entities used:
 
 *	Inspection checks – This table is designed to serve the purpose that all inspection checks are tracked and if any observation is found then they can be used for corrections or warnings to be given to residents.
 
-*	Maintenance Requests – This table helps to keep track of maintenance requests logged and ensure that they are being serviced by the maintenance staff on time.
+*	MaintenanceRequests – This table helps to keep track of maintenance requests logged and ensure that they are being serviced by the maintenance staff on time.
 
 *	Lease: It keeps a track of lease details agreed between management company and resident Id. It has attributes like lease id, lease term, lease start and end date etc. 
 
@@ -118,7 +131,7 @@ Below are the entities used:
 - If any error pops up regarding namespaces, add the reference to the DataAccess project or dll from the webapi project
 ### Contributing
 
-- Contributions are welcome! If you find any issues or have suggestions for improvements, please submit an issue or a pull request.
+- Contributions are welcome! If you find any issues or have suggestions for improvements, please submit an issue using  [New Issue](https://github.com/Tenece-BEZAO/PropertyMgt_API/issues/new) button, or a pull request.
 
 # Creators
 * [Egbujie Chizoba Esther](https://github.com/Chizober)
