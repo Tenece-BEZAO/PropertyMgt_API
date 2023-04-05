@@ -136,7 +136,7 @@ namespace LMS.BLL.Implementation
             _completedRepo = _unitOfWork.GetRepository<CompletedStudentsCourses>();*/
 
         }
-        public async Task<TenantDTO> CreateCourse(CreateCourseDto course)
+       /* public async Task<TenantDTO> CreateCourse(CreateCourseDto course)
         {
             var Instructor = await _instructorRepo.GetByIdAsync(course.InstructorId);
             if (Instructor == null)
@@ -322,7 +322,7 @@ namespace LMS.BLL.Implementation
 
             var mappedValue = _mapper.Map<IEnumerable<CourseDto>>(response);
             return mappedValue;
-            /* IEnumerable<Course> courses;
+            *//* IEnumerable<Course> courses;
              foreach (var enrolledCourse in enrolledCourses)
              {
                  courses = await _courseRepo.GetByAsync(c => c.Id == enrolledCourse.CourseId);
@@ -331,7 +331,7 @@ namespace LMS.BLL.Implementation
                      return courses;
                  }
              }
-             throw new NotFoundException("No course was found");*/
+             throw new NotFoundException("No course was found");*//*
             //hrow new System.NotImplementedException();
         }
 
@@ -360,7 +360,7 @@ namespace LMS.BLL.Implementation
 
 
             return true;
-        }
+        }*/
     }
 }
 
