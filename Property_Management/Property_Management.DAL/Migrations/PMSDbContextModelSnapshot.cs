@@ -624,6 +624,10 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("LeaseId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("LeasesId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("MaintenanceId")
                         .HasColumnType("nvarchar(max)");
 
@@ -665,6 +669,8 @@ namespace Property_Management.DAL.Migrations
                     b.HasKey("TenantId");
 
                     b.HasIndex("LandLordId");
+
+                    b.HasIndex("LeasesId");
 
                     b.HasIndex("PropertyId");
 
@@ -1045,6 +1051,12 @@ namespace Property_Management.DAL.Migrations
                         .WithMany("Tenant")
                         .HasForeignKey("LandLordId");
 
+                    b.HasOne("Property_Management.DAL.Entities.Lease", "Leases")
+                        .WithMany()
+                        .HasForeignKey("LeasesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Property_Management.DAL.Entities.Property", "Property")
                         .WithMany()
                         .HasForeignKey("PropertyId");
@@ -1062,6 +1074,8 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("LandLord");
+
+                    b.Navigation("Leases");
 
                     b.Navigation("Property");
 

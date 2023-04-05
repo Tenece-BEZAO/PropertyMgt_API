@@ -1,5 +1,4 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
@@ -25,7 +24,7 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<Response> AddProperty(AddOrUpdatePropertyRequest request)
         {
-           Property newProperty = _mapper.Map<Property>(request);
+            Property newProperty = _mapper.Map<Property>(request);
 
 
             var landlord = await _landRepo.GetSingleByAsync(l => l.Id == request.LandLordId);
@@ -55,7 +54,7 @@ namespace Property_Management.BLL.Implementations
             if (landlord == null)
                 throw new InvalidOperationException($"Landlord with Property ID [{propertyId}] was not found.");
 
-          await _propRepo.UpdateAsync(landlord);
+            await _propRepo.UpdateAsync(landlord);
 
             return new Response
             {
@@ -63,7 +62,7 @@ namespace Property_Management.BLL.Implementations
                 Message = "Property Deleted successfully",
                 Action = "Deleting a property"
             };
-         }
+        }
         public async Task<Response> UpdateProperty(string propertyId, AddOrUpdatePropertyRequest request)
         {
             var propertyToBeUpdated = await _propRepo.GetSingleByAsync(u => u.PropertyId == propertyId, tracking: true);
@@ -90,5 +89,4 @@ namespace Property_Management.BLL.Implementations
         }
 
     }
-} 
-      
+}
