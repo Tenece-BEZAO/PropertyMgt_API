@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
@@ -6,6 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
 {
+    [Authorize(Roles = "landlord")]
     [Route("api/[controller]")]
     [ApiController]
     public class LeaseController : ControllerBase

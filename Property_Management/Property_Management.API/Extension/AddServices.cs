@@ -14,10 +14,10 @@ namespace Property_Management.API.Extension
         {
             services.AddScoped<IUserAuth, UserAuth>();
             services.AddScoped<ITenantServices, TenantServices>();
+            services.AddScoped<IPaymentServices, PaymentServices>();
             services.AddScoped<IManagerServices, ManagerServices>();
             services.AddScoped<ILeaseServices, LeaseServices>();
             services.AddScoped<IApplicationBuilder, ApplicationBuilder>();
-            services.AddScoped<IAuthenticationServices, AuthenticationServices>();
             services.AddTransient<IJWTAuthenticator, JwtAuthenticator>();
             services.AddTransient<JwtConfig, JwtConfig>();
             services.AddTransient<IUnitOfWork, UnitOfWork<PMSDbContext>>();
