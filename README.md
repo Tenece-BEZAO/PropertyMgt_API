@@ -58,6 +58,8 @@ $ git clone https://github.com/yourusername/property-management-api.git
 - Entity Framework Core
 - SQLServer
 - AutoMapper
+- MicrosoftEntityFramework Tools
+- MicrosoftEntityFramework Design
 
 
 ## Principles and Patterns
