@@ -26,7 +26,7 @@ The Property Management API is a SaaS platform that helps property managers and 
 |                                                                 |                                                                                         |
 |:---------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|
 | **Lease Routes**                                                  |                               **Manager Routes**                                               |
-| [<img src="./images/Lease.png" alt="Lease" width="100%"/>](./images/Lease.png") | [<img src="PropertyMgt_API/Property_Management/Property_Management.Shared/images/Manager.png" alt="Manager" width="100%"/>](./images/Manager.png) |
+| [<img src="./images/Lease.png" alt="Lease" width="100%"/>](./images/Lease.png") | [<img src="./images/Manager.png" alt="Manager" width="100%"/>](./images/Manager.png) |
 |  **User Authentication**                                        |                                                 **Tenant details**                      |
 | [<img src="./images/userAuth.png" alt="User Auth" width="700"/>](./images/userAuth.png)| [<img src="./documentation/pictures/tenantcontract.png" alt="drawing" width="350"/>](./documentation/pictures/tenantcontract.png) | |
 | **Properties page**           | **Property details**               | |
