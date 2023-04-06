@@ -110,6 +110,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 /*using NotImplementedException = LMS.BLL.Exceptions.NotImplementedException;*/
 using AutoMapper;
+using Property_Management.BLL.DTOs.Requests;
 
 namespace LMS.BLL.Implementation
 {
@@ -118,9 +119,7 @@ namespace LMS.BLL.Implementation
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<MaintainanceServices> _maintenaceRepo;
         private readonly IRepository<Tenant> _tenantRepo;
-        /*private readonly IRepository<Student> _studentRepo;
-        private readonly IRepository<EnrolledStudentsCourses> _enrolledRepo;
-        private readonly IRepository<CompletedStudentsCourses> _completedRepo;*/
+       
         private readonly PMSDbContext _dbContext;
         private readonly IMapper _mapper;
 
@@ -131,16 +130,15 @@ namespace LMS.BLL.Implementation
             _mapper = mapper;
             _maintenaceRepo = _unitOfWork.GetRepository<MaintainanceServices>();
             _tenantRepo = _unitOfWork.GetRepository<Tenant>();
-           /* _studentRepo = _unitOfWork.GetRepository<Student>();
-            _enrolledRepo = _unitOfWork.GetRepository<EnrolledStudentsCourses>();
-            _completedRepo = _unitOfWork.GetRepository<CompletedStudentsCourses>();*/
-
+         
         }
-       /* public async Task<TenantDTO> CreateCourse(CreateCourseDto course)
+    
+        public async Task<MaintenanceRequest> CreateMaintenaceRequest(CreateMaintenanceRequestDTO maintenace)
         {
-            var Instructor = await _instructorRepo.GetByIdAsync(course.InstructorId);
-            if (Instructor == null)
-                throw new NotFoundException("Invalid instructor Id");
+            var Tenant = await _maintenaceRepo.GetByIdAsync(maintenace.LoggedBy);
+            if (Tenant == null)
+
+                throw new NotFoundException("Invalid  tenent Id");
 
             Course newCourse = new Course()
             {
