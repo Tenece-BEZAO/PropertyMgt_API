@@ -43,10 +43,10 @@ The Property Management API is a SaaS platform that helps property managers and 
 $ git clone https://github.com/yourusername/property-management-api.git
 ```
 - Open the solution in Visual Studio.
-- Run the following commands in the Package Manager Console:
+- locate the `appsettings.json` and supply your connectionString.
+- Run the following commands in the Package Manager Console(Tools-> NuGet Package Manager -> Package Manager Console)
 
 ```shell 
- Add-Migration InitialCreate
  Update-Database
 ```
 
@@ -67,19 +67,12 @@ $ git clone https://github.com/yourusername/property-management-api.git
 - Error Handling Middleware
 
 ## Principles and Patterns
-- Clean Architecture
+- Onion Architecture
 - Clean Code
 - SOLID Principles
-- Acyclic Dependencies Principle
 - Separation of Concerns
 
-## Benefits
-- Simple and evolutionary architecture.
-- Standardized and centralized flow for validation, log, security, return, etc.
-- Avoid cyclical references.
-- Avoid unnecessary dependency injection.
-- Segregation by feature instead of technical type.
-- Single responsibility for each request and response.
+
 
 Features IMPLEMENTED
 ====================
@@ -87,14 +80,17 @@ Admin-End
 --------
 - Authentication/Registration
 - Adding of Properties
-- Editing/Updating of Properties with photos, location and property features
+- Reading,Editing/Updating and Deleting of Properties
 - Database Migrations and Seeder
-- Manage Users from the Backend - by Admin alone
-- Super-Admin Access Control
+- User Creation
+- Creating of Leases
+- Reading, Editing/Updating  and Deleting of Leases
+-  Creating of Tenants
+- Reading, Editing/Updating  and Deleting of Tenants
 
 
 ## Approach: 
-I followed the code first approach, created Entities, their attributes, established relationships and these entities are migrated to database as tables. 
+We followed the code first approach, created Entities, their attributes, established relationships and these entities were migrated to database as tables. 
 
 Below are the entities used:
 
@@ -109,28 +105,24 @@ Below are the entities used:
 
 *	MaintenanceRequests – This table helps to keep track of maintenance requests logged and ensure that they are being serviced by the maintenance staff on time.
 
-*	Lease: It keeps a track of lease details agreed between management company and resident Id. It has attributes like lease id, lease term, lease start and end date etc. 
+*	Lease: It keeps a track of lease details agreed between management company and tenant Id. It has attributes like lease id, lease term, lease start and end date etc. 
 
 * Payment:  This helps in keeping track of payment details such as monthly rent, deposit, pet deposit, total payment amount etc. 
 
 *	Security deposit returns: This helps in keeping track of expired leases and management company is now responsible for repayment of security deposits which they took from the residents during the start of the lease. 
 
 
+### Users :
+
+1)	Admin: This user is part of the staff who can login and check maintenance requests logged, inspection checks. 
+2)	LandLord : This user can perform  CRUD on Properties.
+3)	Tenant : This is a user staying in a  property. They can login and check all the details related to them and maintenance requests logged by them. 
 
 ##### _points to note_
 
-- Migration Commands (in Nuget console)
-  - `add migration <name>`
-  - `update-database`
-- Use inbuilt Swagger or else postman and use the APIs to add some dummy data to table
-- Run the WebAPI first(recommeneded to run from visual studio)
-
-
-### Users :
-
-1)	Admin: This user is part of management staff who can login and check maintenance requests logged, inspection checks. 
-2)	Staff : This user is part of maintenance staff who can check maintenance requests.
-3)	Tenant : This is a tenant staying in that property. They can login and check all the details related to them and maintenance requests logged by them. 
+- You must supply your connection string,before you can have have access to the migrations.
+- You must Update Database to use the migrated entities in the database.
+-  Then Run the WebAPI (recommeneded to run from visual studio)
 
 ### Known Errors:
 
