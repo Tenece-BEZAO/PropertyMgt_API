@@ -46,6 +46,7 @@ namespace Property_Management.BLL.Services
                 Email = regRequest.Email,
                 PhoneNumber = regRequest.MobileNumber,
                 Occupation = regRequest.Occupation,
+                Address = regRequest.Address,
             };
         }
     }

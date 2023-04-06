@@ -62,7 +62,7 @@ namespace Property_Management.DAL.DataSeeder
                 PhoneNumber = "09403820483",
                 Active = true,
                 EmailConfirmed = true,
-                UserTypeId = UserType.LandLord,
+                UserTypeId = UserType.Tenant,
                 UserRole = UserRole.Tenant
             };
         }

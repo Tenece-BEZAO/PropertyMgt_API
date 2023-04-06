@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Property_Management.BLL.DTOs.Responses;
 using System.Text;
 
 
@@ -10,8 +9,6 @@ namespace Property_Management.API.Extension
     {
         public static void ConfigureJWT(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            var jwtSettings = services.Configure<JwtResponse>(builder.Configuration.GetSection("JwtConfig"));
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -22,7 +19,8 @@ namespace Property_Management.API.Extension
             {
                 string? key = builder.Configuration.GetSection("JwtConfig:Secret").Value;
                 byte[] secretKey = Encoding.UTF8.GetBytes(key);
-
+                string? issure = builder.Configuration.GetSection("JwtConfig:ValidIssure").Value;
+                string? audience = builder.Configuration.GetSection("JwtConfig:ValidAudience").Value;
                 jwt.SaveToken = true;
                 jwt.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -30,8 +28,10 @@ namespace Property_Management.API.Extension
                     IssuerSigningKey = new SymmetricSecurityKey(secretKey),
                     ValidateIssuer = false, // set this true on production
                     ValidateAudience = false,
-                    RequireExpirationTime = false, //need to updated when refreshed
+                    RequireExpirationTime = true, //need to updated when refreshed
                     ValidateLifetime = true,
+                    ValidIssuer = issure,
+                    ValidAudience = audience,
                 };
             });
         }

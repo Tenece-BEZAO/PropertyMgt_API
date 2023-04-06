@@ -8,14 +8,17 @@ namespace Property_Management.API
     {
         public static async Task Main(string[] args)
         {
+            DotNetEnv.Env.Load();
+            string? key = Environment.GetEnvironmentVariable("PAYSTACKAPIKEY");
+            Console.WriteLine(key);
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddCustomServices();
             builder.Services.AddAutoMapper(Assembly.Load("Property_Management.BLL"));
             builder.Services.ConfigureSwaggerGen();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.ConfigureIdentity();
             builder.Services.ConfigureJWT(builder);
             builder.Services.AddConnection(builder);
