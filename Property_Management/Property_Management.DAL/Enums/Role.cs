@@ -3,6 +3,9 @@
     public enum UserRole
     {
         Admin = 1,
+        LandLord,
+        Manager,
+        Tenant,
         User,
     }
 
@@ -12,8 +15,11 @@
         {
             return userRole switch
             {
-                UserRole.Admin => "Admin",
-                UserRole.User => "User",
+                UserRole.Admin => "admin",
+                UserRole.LandLord => "landlord",
+                UserRole.Manager => "manager",
+                UserRole.Tenant => "tenant",
+                UserRole.User => "user",
                 _ => null
             };
         }

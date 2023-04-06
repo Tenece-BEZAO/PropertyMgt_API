@@ -102,7 +102,7 @@ namespace Property_Management.BLL.Implementations
             else
                 await _roleManager.CreateAsync(new IdentityRole(role));
 
-            return new AuthenticationResponse { UserId = user.Id, UserName = user.UserName, UserType = userType, Birthday = birthday, TwoFactor = false, JwtToken = token, };
+            return new AuthenticationResponse {UserName = user.UserName, UserType = userType, Birthday = birthday, TwoFactor = false, JwtToken = token, };
         }
 
         public async Task<AuthenticationResponse> LoginUserAsync(LoginRequest loginRequest)
@@ -131,9 +131,9 @@ namespace Property_Management.BLL.Implementations
             }
             if (UserRole.User.GetStringValue()?.ToLower() == "user")
             {
-                return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false, UserId = user.Id };
+                return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false};
             }
-            return new AuthenticationResponse { UserType = userType, UserName = user.UserName, UserId = user.Id, TwoFactor = true };
+            return new AuthenticationResponse { UserType = userType, UserName = user.UserName, TwoFactor = true };
 
             //await _emailService.SendTwoFactorAuthenticationEmail(user);
 

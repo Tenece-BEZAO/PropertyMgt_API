@@ -15,7 +15,7 @@ namespace Property_Management.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddCustomServices();
             builder.Services.AddAutoMapper(Assembly.Load("Property_Management.BLL"));
-            builder.Services.AddSwaggerGen();
+            builder.Services.ConfigureSwaggerGen();
             builder.Services.ConfigureIdentity();
             builder.Services.ConfigureJWT(builder);
             builder.Services.AddConnection(builder);

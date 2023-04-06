@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
@@ -6,6 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
 {
+    [Authorize(Roles = "landlord")]
     [Route("api/[controller]")]
     [ApiController]
     public class LeaseController : ControllerBase
@@ -61,6 +63,21 @@ namespace Property_Management.API.Controllers
         {
             var lease = await _leaseServices.GetRentPaymentDetails(tenantId);
             return Ok(lease);
+        }
+
+
+        [HttpGet("Rent-expiration-alert.")]
+        public async Task<IActionResult> GetTentantRentPaymentDetail(string tenantId)
+        {
+            var response = await _leaseServices.NofityRentExiration(tenantId);
+            return Ok(response);
+        }
+
+        [HttpGet("get-upto-date-tenant")]
+        public async Task<IActionResult> GetTenantWhosPaymentDetailsAreStillUpToDate()
+        {
+            var response = await _leaseServices.GetTenantWhosPaymentDetailsAreStillUpToDate();
+            return Ok(response);
         }
     }
 }

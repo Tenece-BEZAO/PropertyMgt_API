@@ -15,6 +15,7 @@ namespace Property_Management.API.ProfileMapper
             CreateMap<AddOrUpdatePropertyRequest, LandLord>();
             CreateMap<CreateLeaseRequest, Lease>();
             CreateMap<AddOrUpdateMaintenanceVM, MaintenanceRequest>();
+            CreateMap<PaymentRequest, Transaction>();
         }
     }
 }

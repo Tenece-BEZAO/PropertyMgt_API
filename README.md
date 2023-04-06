@@ -131,6 +131,7 @@ Below are the entities used:
 
 - Contributions are welcome! If you find any issues or have suggestions for improvements, please submit an issue using  [New Issue](https://github.com/Tenece-BEZAO/PropertyMgt_API/issues/new) button, or a pull request.
 
+
 # Creators
 * [Egbujie Chizoba Esther](https://github.com/Chizober)
 * [Kelechi Amos](https://github.com/Kellyncodes)
