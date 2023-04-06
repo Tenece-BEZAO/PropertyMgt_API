@@ -4,11 +4,9 @@ using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Property_Management.API.Controllers
 {
-<<<<<<< Updated upstream
     /*[Route("api/[controller]")]
     [ApiController]
     public class TenantController : ControllerBase
@@ -79,9 +77,6 @@ namespace Property_Management.API.Controllers
         {
             var response = await _tenantServices.GetTenantWhosPaymentDetailsAreStillUpToDate();
             return Ok(response);*/
-=======
-   
->>>>>>> Stashed changes
 
     [Route("api/[controller]")]
     [ApiController]
