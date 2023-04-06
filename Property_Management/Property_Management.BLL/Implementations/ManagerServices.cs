@@ -19,8 +19,8 @@ namespace Property_Management.BLL.Implementations
             _unitOfWork = unitOfWork;
             _propRepo = _unitOfWork.GetRepository<Property>();
             _landRepo = _unitOfWork.GetRepository<LandLord>();
-
         }
+        
 
         public async Task<Response> AddProperty(AddOrUpdatePropertyRequest request)
         {
@@ -42,6 +42,8 @@ namespace Property_Management.BLL.Implementations
                 Action = "Adding property"
             };
         }
+
+
         public async Task<Response> DeleteProperty(string propertyId)
         {
             var PropertyToBeDeleted = await _propRepo.GetSingleByAsync(d => d.PropertyId == propertyId);
@@ -53,7 +55,7 @@ namespace Property_Management.BLL.Implementations
             if (landlord == null)
                 throw new InvalidOperationException($"Landlord with Property ID [{propertyId}] was not found.");
 
-            await _propRepo.UpdateAsync(landlord);
+          await _propRepo.DeleteAsync(landlord);
 
             return new Response
             {
@@ -61,7 +63,9 @@ namespace Property_Management.BLL.Implementations
                 Message = "Property Deleted successfully",
                 Action = "Deleting a property"
             };
-        }
+         }
+
+
         public async Task<Response> UpdateProperty(string propertyId, AddOrUpdatePropertyRequest request)
         {
             var propertyToBeUpdated = await _propRepo.GetSingleByAsync(u => u.PropertyId == propertyId, tracking: true);
@@ -80,6 +84,8 @@ namespace Property_Management.BLL.Implementations
                 Action = "Updating a property"
             };
         }
+
+
         public async Task<IEnumerable<Property>> GetAllProperties()
         {
             var properties = await _propRepo.GetAllAsync();
@@ -87,5 +93,23 @@ namespace Property_Management.BLL.Implementations
             return properties;
         }
 
+
+        public async Task<IEnumerable<Property>> GetAllAvaliableOrUnavialbleProperties(bool isAvailable)
+        {
+            var avaliableProps = await _propRepo.GetByAsync(p => p.Status == isAvailable);
+            if (avaliableProps == null) throw new InvalidOperationException("Property not Found. Please try again");
+            return avaliableProps;
+        }
+
+
+        public async Task<IEnumerable<Property>> GetAllRentedOrNonRentedPropertiesByLandord(string landlordId, bool condiction)
+        {
+            var RentedPropsownedByLandLord = await _propRepo.GetByAsync(v => v.LandLordId == landlordId);
+            if (RentedPropsownedByLandLord == null) throw new Exception("Landlord with this Id does not own any property.");
+
+            var RentedPropsByLandord = await _propRepo.GetByAsync(p => p.Status == condiction && p.LandLordId == landlordId);
+            if (RentedPropsByLandord == null) throw new InvalidOperationException("Sorry! an error occured.");
+            return RentedPropsByLandord;
+        }
     }
 }
