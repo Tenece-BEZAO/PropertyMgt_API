@@ -1,5 +1,4 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
@@ -25,8 +24,7 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<Response> AddProperty(AddOrUpdatePropertyRequest request)
         {
-           Property newProperty = _mapper.Map<Property>(request);
-
+            Property newProperty = _mapper.Map<Property>(request);
 
             var landlord = await _landRepo.GetSingleByAsync(l => l.Id == request.LandLordId);
 
@@ -114,5 +112,4 @@ namespace Property_Management.BLL.Implementations
             return RentedPropsByLandord;
         }
     }
-} 
-      
+}

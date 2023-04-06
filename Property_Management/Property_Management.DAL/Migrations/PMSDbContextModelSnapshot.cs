@@ -266,7 +266,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("InspectionChecks", (string)null);
+                    b.ToTable("InspectionChecks");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.LandLord", b =>
@@ -312,7 +312,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("LordLords", (string)null);
+                    b.ToTable("LordLords");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Lease", b =>
@@ -349,7 +349,8 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UnitId")
                         .HasColumnType("nvarchar(450)");
@@ -359,11 +360,13 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TenantId");
+
                     b.HasIndex("UnitId");
 
                     b.HasIndex("UpcomingTenant");
 
-                    b.ToTable("Leases", (string)null);
+                    b.ToTable("Leases");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.MaintenanceRequest", b =>
@@ -416,7 +419,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("VendorId");
 
-                    b.ToTable("MaintenanceRequests", (string)null);
+                    b.ToTable("MaintenanceRequests");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Payment", b =>
@@ -448,7 +451,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Property", b =>
@@ -497,7 +500,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("LeaseId");
 
-                    b.ToTable("Properties", (string)null);
+                    b.ToTable("Properties");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.SecurityDepositReturn", b =>
@@ -547,7 +550,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("SecurityDepositReturns", (string)null);
+                    b.ToTable("SecurityDepositReturns");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Staff", b =>
@@ -589,7 +592,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Tenant", b =>
@@ -619,6 +622,10 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("LeaseId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LeasesId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("MaintenanceId")
@@ -663,7 +670,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("LandLordId");
 
-                    b.HasIndex("LeaseId");
+                    b.HasIndex("LeasesId");
 
                     b.HasIndex("PropertyId");
 
@@ -677,7 +684,37 @@ namespace Property_Management.DAL.Migrations
                     b.HasIndex(new[] { "PhoneNumber" }, "IX_UniquePhoneNumber")
                         .IsUnique();
 
-                    b.ToTable("Tenants", (string)null);
+                    b.ToTable("Tenants");
+                });
+
+            modelBuilder.Entity("Property_Management.DAL.Entities.Transaction", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("MadeAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TransactionRefereal")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Unit", b =>
@@ -722,7 +759,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("StaffId");
 
-                    b.ToTable("Units", (string)null);
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Vendor", b =>
@@ -750,7 +787,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasKey("VendorId");
 
-                    b.ToTable("Vendors", (string)null);
+                    b.ToTable("Vendors");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.WorkOrder", b =>
@@ -787,7 +824,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("WorkOrders", (string)null);
+                    b.ToTable("WorkOrders");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.WorkOrderVendor", b =>
@@ -816,7 +853,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("WorkOrderId");
 
-                    b.ToTable("WorkOrderVendors", (string)null);
+                    b.ToTable("WorkOrderVendors");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -902,6 +939,12 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Lease", b =>
                 {
+                    b.HasOne("Property_Management.DAL.Entities.Tenant", "Tenant")
+                        .WithMany("Lease")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Property_Management.DAL.Entities.Unit", "Unit")
                         .WithMany("Leases")
                         .HasForeignKey("UnitId");
@@ -912,6 +955,8 @@ namespace Property_Management.DAL.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("SecurityDepositReturns");
+
+                    b.Navigation("Tenant");
 
                     b.Navigation("Unit");
                 });
@@ -1036,9 +1081,11 @@ namespace Property_Management.DAL.Migrations
                         .WithMany("Tenant")
                         .HasForeignKey("LandLordId");
 
-                    b.HasOne("Property_Management.DAL.Entities.Lease", null)
-                        .WithMany("Tenant")
-                        .HasForeignKey("LeaseId");
+                    b.HasOne("Property_Management.DAL.Entities.Lease", "Leases")
+                        .WithMany()
+                        .HasForeignKey("LeasesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Property_Management.DAL.Entities.Property", "Property")
                         .WithMany()
@@ -1057,6 +1104,8 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("LandLord");
+
+                    b.Navigation("Leases");
 
                     b.Navigation("Property");
 
@@ -1138,8 +1187,6 @@ namespace Property_Management.DAL.Migrations
                     b.Navigation("Payment");
 
                     b.Navigation("Property");
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.MaintenanceRequest", b =>
@@ -1165,6 +1212,8 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Tenant", b =>
                 {
+                    b.Navigation("Lease");
+
                     b.Navigation("MaintenanceRequests");
 
                     b.Navigation("Payments");

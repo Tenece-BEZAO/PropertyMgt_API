@@ -15,7 +15,7 @@ namespace Property_Management.DAL.Entities
         public decimal Amount { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime PaymentDate { get; set; }
+        public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
         public Lease Lease { get; set; }
         public Tenant? Tenant { get; set; }
 

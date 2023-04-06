@@ -8,6 +8,7 @@ namespace Property_Management.DAL.Context
     {
         public PMSDbContext(DbContextOptions<PMSDbContext> options) : base(options) { }
 
+        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<LandLord> LordLords { get; set; }
         public DbSet<Property> Properties { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
@@ -45,6 +46,11 @@ namespace Property_Management.DAL.Context
                 entity.Property(prop => prop.TenantId).IsRequired(false);
                 entity.Property(prop => prop.PropertyId).IsRequired(false);
                 entity.Property(prop => prop.Occupation).IsRequired(false);
+            });
+
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.Property(prop => prop.TransactionRefereal).IsRequired(false);
             });
 
             modelBuilder.Entity<Unit>()
@@ -98,18 +104,15 @@ namespace Property_Management.DAL.Context
             .HasForeignKey(p => p.UnitId)
             .OnDelete(DeleteBehavior.NoAction);
 
-
-
             modelBuilder.Entity<Lease>(entity =>
             {
                 entity.Property(prop => prop.UpcomingTenant).IsRequired(false);
                 entity.Property(prop => prop.PaymentId).IsRequired(false);
                 entity.Property(prop => prop.Description).IsRequired(true);
-                entity.HasOne(p => p.SecurityDepositReturns)
-                .WithMany()
-                .HasForeignKey(p => p.UpcomingTenant)
-                .OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(p => p.Tenant).WithMany(p => p.Lease).HasForeignKey(p => p.TenantId).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(p => p.SecurityDepositReturns).WithMany().HasForeignKey(p => p.UpcomingTenant).OnDelete(DeleteBehavior.NoAction);
             });
+
             modelBuilder.Entity<Payment>(entity =>
             {
                 entity.Property(prop => prop.LeaseId).IsRequired(true);

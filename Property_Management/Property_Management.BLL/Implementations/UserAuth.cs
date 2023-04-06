@@ -9,7 +9,6 @@ using Property_Management.BLL.Services;
 using Property_Management.DAL.Entities;
 using Property_Management.DAL.Enums;
 using Property_Management.DAL.Interfaces;
-using System.Security.Claims;
 using static Property_Management.BLL.Services.UserType;
 
 namespace Property_Management.BLL.Implementations
@@ -25,7 +24,6 @@ namespace Property_Management.BLL.Implementations
         private readonly IRepository<ApplicationUser> _userRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly Response _reponse = new();
 
         public UserAuth(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, 
             RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
@@ -67,7 +65,7 @@ namespace Property_Management.BLL.Implementations
                 Active = true, 
                 EmailConfirmed = true,
                 UserTypeId = regRequest.UserTypeId,
-                UserRole = UserRole.Admin,
+                UserRole = regRequest.Role,
             };
 
             IdentityResult createUser = await _userManager.CreateAsync(user, regRequest.Password);
@@ -86,6 +84,7 @@ namespace Property_Management.BLL.Implementations
               await _tenantRepo.AddAsync(NewTenant(regRequest, tenantId, userId));
                     break;
                 case "staff":
+                case "manager":
                 await _staffRepo.AddAsync(NewStaff(regRequest, staffId, userId));
                     break;
                 default:
@@ -102,7 +101,7 @@ namespace Property_Management.BLL.Implementations
             else
                 await _roleManager.CreateAsync(new IdentityRole(role));
 
-            return new AuthenticationResponse { UserId = user.Id, UserName = user.UserName, UserType = userType, Birthday = birthday, TwoFactor = false, JwtToken = token, };
+            return new AuthenticationResponse {UserName = user.UserName, UserType = userType, Birthday = birthday, TwoFactor = false, JwtToken = token, };
         }
 
         public async Task<AuthenticationResponse> LoginUserAsync(LoginRequest loginRequest)
@@ -118,22 +117,10 @@ namespace Property_Management.BLL.Implementations
             if (!user.Active)
                 throw new InvalidOperationException("Account is not active");
 
-            var userRoles = await _userManager.GetRolesAsync(user);
             string? userType = user.UserTypeId.GetStringValue();   
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
            string userToken = GenJwtToken.CreateToken(user);
-
-            List<Claim> authClaims = new();
-            authClaims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            foreach(var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-            if (UserRole.User.GetStringValue()?.ToLower() == "user")
-            {
-                return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false, UserId = user.Id };
-            }
-            return new AuthenticationResponse { UserType = userType, UserName = user.UserName, UserId = user.Id, TwoFactor = true };
+          return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false};
 
             //await _emailService.SendTwoFactorAuthenticationEmail(user);
 
@@ -145,10 +132,13 @@ namespace Property_Management.BLL.Implementations
         public async Task<Response> LogoutAsync()
         {
             await _signInManager.SignOutAsync();
-            _reponse.StatusCode = 200;
-            _reponse.Action = "User signout";
-            _reponse.Message = "You have logged out successfully.";
-            return _reponse;
+            return new Response
+            {
+                StatusCode = 200,
+                Action = "User signout",
+                Message = "You have logged out successfully."
+            };
+
         }
 
         public async Task<Response> ChangePassword(ChangePasswordRequest changePasswordRequest)
@@ -275,7 +265,7 @@ namespace Property_Management.BLL.Implementations
             };
         }
 
-        public async Task<string> ToggleUserActivation(string userId)
+        public async Task<Response> ToggleUserActivation(string userId)
         {
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
 
@@ -286,7 +276,12 @@ namespace Property_Management.BLL.Implementations
             user.Active = !user.Active;
 
             await _userManager.UpdateAsync(user);
-            return _reponse.Message = "User activation toggle successful";
+            return new Response
+            {
+                StatusCode = 200,
+                Message = "User activation toggle successful",
+                Action = "User activation."
+            };
             //Log.ForContext(new PropertyBagEnricher().Add("ToggleState", user.Active)
             //).Information("User activation toggle successful");
         }

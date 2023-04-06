@@ -21,8 +21,8 @@ namespace Property_Management.DAL.Entities
         public string PropertyId { get; set; }
         public string? TenantId { get; set; }
 
-        public ICollection<Tenant> Tenant { get; set; }
-        public ICollection<Property> Property { get; set; }
+        public virtual ICollection<Tenant> Tenant { get; set; }
+        public  virtual ICollection<Property> Property { get; set; }
         public ApplicationUser User { get; set; }
     }
 }
