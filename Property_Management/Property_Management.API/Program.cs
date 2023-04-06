@@ -8,9 +8,6 @@ namespace Property_Management.API
     {
         public static async Task Main(string[] args)
         {
-            DotNetEnv.Env.Load();
-            string? key = Environment.GetEnvironmentVariable("PAYSTACKAPIKEY");
-            Console.WriteLine(key);
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
             builder.Services.AddControllers();
