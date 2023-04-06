@@ -38,11 +38,12 @@ namespace Property_Management.DAL.DataSeeder
 
             await context.LordLords.AddAsync(Landlord());
             int rowChanges = await context.SaveChangesAsync();
-            if (rowChanges > 0)
+            if (rowChanges <= 0)
             {
-            Console.WriteLine("User created successfully.");
+                    Console.WriteLine("Landlord failed to create.");
             }
 
+            Console.WriteLine("Landlord created successfully.");
             }
         }
 
@@ -59,7 +60,7 @@ namespace Property_Management.DAL.DataSeeder
                 Active = true,
                 EmailConfirmed = true,
                 UserTypeId = UserType.LandLord,
-                UserRole = UserRole.User
+                UserRole = UserRole.LandLord,
             };
         }
         private static LandLord Landlord()

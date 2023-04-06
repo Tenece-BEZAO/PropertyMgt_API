@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Property_Management.DAL.Context;
 using Property_Management.DAL.Entities;
 using Property_Management.DAL.Enums;
+using System.Data;
 
 namespace Property_Management.DAL.DataSeeder
 {
@@ -18,6 +19,8 @@ namespace Property_Management.DAL.DataSeeder
             IServiceProvider serviceProvider = app.ApplicationServices.CreateScope().ServiceProvider;
             PMSDbContext context = serviceProvider.GetRequiredService<PMSDbContext>();
             UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
 
             if ((await context.Database.GetPendingMigrationsAsync()).Any()) await context.Database.MigrateAsync();
 
@@ -30,6 +33,13 @@ namespace Property_Management.DAL.DataSeeder
                     Console.WriteLine($"Error occured while trying to create the user. {errorMessage}");
                 }
 
+                string? role = User().UserRole.GetStringValue();
+                bool roleExist = await roleManager.RoleExistsAsync(role);
+                if (roleExist)
+                    await userManager.AddToRoleAsync(User(), role);
+                else
+                    await roleManager.CreateAsync(new IdentityRole(role));
+
                 await context.Employees.AddAsync(Staff());
                 int rowChanges = await context.SaveChangesAsync();
                 if (rowChanges <= 0)
@@ -37,7 +47,7 @@ namespace Property_Management.DAL.DataSeeder
                     Console.WriteLine("Creating tenant failed.");
                 }
 
-                Console.WriteLine("User created successfully.");
+                Console.WriteLine("Staff created successfully.");
             }
         }
 

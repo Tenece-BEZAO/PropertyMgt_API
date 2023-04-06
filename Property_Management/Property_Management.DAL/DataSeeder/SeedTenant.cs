@@ -17,27 +17,35 @@ namespace Property_Management.DAL.DataSeeder
             IServiceProvider serviceProvider = app.ApplicationServices.CreateScope().ServiceProvider;
             PMSDbContext context = serviceProvider.GetRequiredService<PMSDbContext>();
             UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
 
             if ((await context.Database.GetPendingMigrationsAsync()).Any()) await context.Database.MigrateAsync();
 
             if (!await context.Tenants.AnyAsync())
             {
                 var createUser = await userManager.CreateAsync(User(), _tenantPassword);
-            string? role = User().UserRole.GetStringValue();
             if (!createUser.Succeeded)
             {
                 string errorMessage = createUser.Errors.FirstOrDefault().Description;
                 Console.WriteLine($"Error occured while trying to create the user. {errorMessage}");
             }
 
-            await context.Tenants.AddAsync(Tenant());
+                string? role = User().UserRole.GetStringValue();
+                bool roleExist = await roleManager.RoleExistsAsync(role);
+                if (roleExist)
+                    await userManager.AddToRoleAsync(User(), role);
+                else
+                    await roleManager.CreateAsync(new IdentityRole(role));
+
+                await context.Tenants.AddAsync(Tenant());
             int rowChanges = await context.SaveChangesAsync();
             if (rowChanges <= 0)
             {
                Console.WriteLine("Creating tenant failed.");
             }
 
-               Console.WriteLine("User created successfully.");
+               Console.WriteLine("Tenant created successfully.");
             }
         }
 
@@ -55,7 +63,7 @@ namespace Property_Management.DAL.DataSeeder
                 Active = true,
                 EmailConfirmed = true,
                 UserTypeId = UserType.LandLord,
-                UserRole = UserRole.User
+                UserRole = UserRole.Tenant
             };
         }
         private static Tenant Tenant()

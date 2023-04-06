@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Property_Management.DAL.Context;
 
@@ -11,9 +12,11 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    partial class PMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230404144413_Payment")]
+    partial class Payment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -681,13 +684,10 @@ namespace Property_Management.DAL.Migrations
                     b.ToTable("Tenants");
                 });
 
-            modelBuilder.Entity("Property_Management.DAL.Entities.Transaction", b =>
+            modelBuilder.Entity("Property_Management.DAL.Entities.Transacation", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -700,15 +700,13 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.Property<string>("TransactionRefereal")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transacations");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Unit", b =>
