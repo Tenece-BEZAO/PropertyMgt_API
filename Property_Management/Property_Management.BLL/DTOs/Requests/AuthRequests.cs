@@ -66,7 +66,7 @@ public class UserRegistrationRequest
 
     [Required]
     public string Firstname { get; set; }
-    public string Role { get; set; }
+    public UserRole Role { get; set; }
 
     [Required]
     public string LastName { get; set; }

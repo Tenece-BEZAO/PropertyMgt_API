@@ -52,7 +52,7 @@ namespace Property_Management.BLL.Implementations
         {
             Transaction transaction = await _transRepo.GetSingleByAsync(trans => trans.Amount > decimal.Zero);
             if (transaction == null)
-                throw new InvalidOperationException($"Empty transaction list.");
+                throw new InvalidOperationException($"Empty transaction list. this transaction id does not exist.");
 
             return new TransactionResponse
             {
@@ -67,11 +67,12 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<PaymentResponse> MakePayment(PaymentRequest request, string paymentFor)
         {
+            string refernceKey = RandomNums.GenerateRandomNumbers().ToString();
             TransactionInitializeRequest transRequest = new()
             {
                 AmountInKobo = request.Amount * 100, // 1 kobo * 100 = 1 Naira
                 Email = request.Email,
-                Reference = RandomNums.GenerateRandomNumbers().ToString(),
+                Reference = refernceKey,
                 Currency = "NGN",
                 CallbackUrl = "https://localhost:7258/api/payment/verify-payment",
             };
@@ -85,10 +86,11 @@ namespace Property_Management.BLL.Implementations
             await _transRepo.AddAsync(newPayment);
             return new PaymentResponse
             {
-                Message = $"{request.Name} your Payment link has been generated: {response.Data.AuthorizationUrl} use this link to complete your payment.", 
-                PaymentFor = $"{paymentFor} payment", 
+                Message = $"{request.Name} your Payment link has been generated: {response.Data.AuthorizationUrl} use this link to complete your payment.",
+                PaymentFor = $"{paymentFor} payment",
                 TransactionAmount = request.Amount,
                 PaymentLink = response.Data.AuthorizationUrl,
+                ReferenceKey = refernceKey,
             };
         }
 
@@ -96,7 +98,7 @@ namespace Property_Management.BLL.Implementations
         {
             TransactionVerifyResponse response = PaystackApi.Transactions.Verify(reference);
             if (response.Data.Status != "success")
-                throw new InvalidOperationException("Sorry! transaction was not succesful. Error occured while trying to verify the transaction. please do try again");
+                throw new InvalidOperationException("Sorry! verification failed. Error occured while trying to verify the transaction. It seems your payment was not successful.");
 
             var transaction = await _transRepo.GetSingleByAsync(trans => trans.TransactionRefereal == reference);
             if (transaction == null)
