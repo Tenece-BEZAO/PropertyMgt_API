@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Property_Management.DAL.Context;
 
@@ -11,9 +12,11 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    partial class PMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230405010513_FixNamingError")]
+    partial class FixNamingError
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -624,10 +627,6 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("LeaseId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LeasesId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("MaintenanceId")
                         .HasColumnType("nvarchar(max)");
 
@@ -670,8 +669,6 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasIndex("LandLordId");
 
-                    b.HasIndex("LeasesId");
-
                     b.HasIndex("PropertyId");
 
                     b.HasIndex("UnitId");
@@ -691,9 +688,6 @@ namespace Property_Management.DAL.Migrations
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -1081,12 +1075,6 @@ namespace Property_Management.DAL.Migrations
                         .WithMany("Tenant")
                         .HasForeignKey("LandLordId");
 
-                    b.HasOne("Property_Management.DAL.Entities.Lease", "Leases")
-                        .WithMany()
-                        .HasForeignKey("LeasesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Property_Management.DAL.Entities.Property", "Property")
                         .WithMany()
                         .HasForeignKey("PropertyId");
@@ -1104,8 +1092,6 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("LandLord");
-
-                    b.Navigation("Leases");
 
                     b.Navigation("Property");
 

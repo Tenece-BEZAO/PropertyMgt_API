@@ -4,6 +4,7 @@
     {
         Admin = 1,
         LandLord,
+        Manager,
         Tenant,
         Staff
     }
@@ -16,6 +17,7 @@
             {
                 UserType.Admin => "Admin",
                 UserType.LandLord => "Landlord",
+                UserType.Manager => "manager",
                 UserType.Tenant => "Tenant",
                 UserType.Staff => "Staff",
                 _ => null

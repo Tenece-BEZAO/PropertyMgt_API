@@ -18,11 +18,11 @@ namespace Property_Management.DAL.Entities
         public string StaffId { get; set; }
         public virtual Staff Staff { get; set; }
         public Property Property { get; set; }
-        public ICollection<Tenant> Tenants { get; set; }
-        public ICollection<Lease> Leases { get; set; }
-        public ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
-        public  ICollection<SecurityDepositReturn>  SecurityDepositReturns { get; set; }
-        public ICollection<InspectionCheck> inspectionChecks { get; set; }
-        public ICollection<WorkOrder> WorkOrders { get; set; }
+        public  virtual ICollection<Tenant> Tenants { get; set; }
+        public virtual ICollection<Lease> Leases { get; set; }
+        public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
+        public  virtual ICollection<SecurityDepositReturn>  SecurityDepositReturns { get; set; }
+        public virtual ICollection<InspectionCheck> inspectionChecks { get; set; }
+        public virtual ICollection<WorkOrder> WorkOrders { get; set; }
     }
 }
