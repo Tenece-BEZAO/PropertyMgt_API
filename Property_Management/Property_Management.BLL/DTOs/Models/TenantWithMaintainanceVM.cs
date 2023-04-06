@@ -19,7 +19,7 @@ namespace Property_Management.BLL.Models
         public string PhoneNumber { get; set; }
 
 
-        public IEnumerable<MaintenaceVM> Maintenances { get; set; }
+       // public IEnumerable<MaintenaceVM> Maintenances { get; set; }
 
 
     }
