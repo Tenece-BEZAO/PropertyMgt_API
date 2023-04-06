@@ -8,8 +8,8 @@ using Property_Management.BLL.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
-    [Authorize(Roles ="manager")]
-    [Authorize(Roles ="manager")]
+{ 
+    [Authorize(Roles = "manager")]
     [Route("api/manager")]
     [ApiController]
     public class ManagerController : ControllerBase
@@ -20,7 +20,7 @@ namespace Property_Management.API.Controllers
             _managerServices = managerServices;
         }
 
-        //[Authorize]
+
         [HttpPost("add-property")]
         [SwaggerOperation(Summary = "Adds a  property")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Property added successfully", Type = typeof(Response))]
