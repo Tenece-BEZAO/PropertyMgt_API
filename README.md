@@ -60,7 +60,11 @@ $ git clone https://github.com/yourusername/property-management-api.git
 - AutoMapper
 - MicrosoftEntityFramework Tools
 - MicrosoftEntityFramework Design
-
+- ASP.NET Core Web API
+- ASP.NET Core Identity (SQL Server)
+- JWT
+- Swagger (Documentation)
+- Error Handling Middleware
 
 ## Principles and Patterns
 - Clean Architecture
