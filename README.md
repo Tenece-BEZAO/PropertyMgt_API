@@ -72,7 +72,7 @@ $ git clone https://github.com/yourusername/property-management-api.git
 
 
 
-Features IMPLEMENTED
+Features Implemented
 ====================
 Admin-End
 --------
