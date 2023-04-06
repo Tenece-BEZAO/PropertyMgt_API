@@ -13,7 +13,7 @@ using System.Data;
 namespace Property_Management.API.Controllers
 {
    
-    [Authorize(Roles = "landlord")]
+    [Authorize(Roles = "Manager")]
     [Route("api/[controller]")]
     [ApiController]
     public class TenantController : ControllerBase
