@@ -104,8 +104,6 @@ namespace Property_Management.DAL.Context
             .HasForeignKey(p => p.UnitId)
             .OnDelete(DeleteBehavior.NoAction);
 
-
-
             modelBuilder.Entity<Lease>(entity =>
             {
                 entity.Property(prop => prop.UpcomingTenant).IsRequired(false);

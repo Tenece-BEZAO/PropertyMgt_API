@@ -33,11 +33,11 @@ namespace Property_Management.DAL.Entities
         public string? SecurityId { get; set; }
         public IEnumerable<Lease> Lease {get; set;}
         public Unit Units { get; set; }
-        public IEnumerable<Payment> Payments { get; set; }
-        public ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
+        public  virtual ICollection<Payment> Payments { get; set; }
+        public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
         public LandLord LandLord { get; set; }
         public Property Property { get; set; }
-        public ICollection<SecurityDepositReturn> SecurityDepositReturns { get; set; }
+        public  virtual ICollection<SecurityDepositReturn> SecurityDepositReturns { get; set; }
         public ApplicationUser User { get; set; }
 
     }
