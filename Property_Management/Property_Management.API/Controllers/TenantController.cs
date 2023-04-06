@@ -12,77 +12,8 @@ using System.Data;
 
 namespace Property_Management.API.Controllers
 {
-    /*[Route("api/[controller]")]
-    [ApiController]
-    public class TenantController : ControllerBase
-    {
-        private readonly ITenantServices _tenantServices;
-
-        public TenantController(ITenantServices tenantServices)
-        {
-            _tenantServices = tenantServices;
-        }
-
-        [HttpPost("new-tenant")]
-        public async Task<IActionResult> CreateNewTenant(CreateTenantRequest request)
-        {
-            Response result = await _tenantServices.CreateTenant(request);
-            return Ok(result);
-        }
-
-        [HttpDelete("remove-tenant", Name = "Remove Tenant")]
-        [SwaggerOperation(Summary = "Remove lease", Description = "Remove Tenant")]
-        public async Task<IActionResult> RemoveTenant(string tenantId)
-        {
-            Response result = await _tenantServices.RemoveTenant(tenantId);
-            return Ok(result);
-        }
-
-
-        [HttpPut("update-tenant", Name = "Update Tenant")]
-        [SwaggerOperation(Summary = "Update Tenant", Description = "Update Tenant")]
-        public async Task<IActionResult> UpdateTenant(string tenantId, CreateTenantRequest request)
-        {
-            Response result = await _tenantServices.UpdateTenant(tenantId, request);
-            return Ok(result);
-        }
-
-        *//*[HttpPut("toggle-status", Name = "Accept or Reject Lease")]
-        [SwaggerOperation(Summary = "Accept of reject tenant", Description = "Accept of reject lease")]
-        public async Task<IActionResult> AcceptOrRejectLease(AcceptTenantRequest request)
-        {
-            Response result = await _tenantServices.AcceptOrRejectTenant(request);
-            return Ok(result);
-        }*//*
-
-        [HttpGet("get-payment-details")]
-        public async Task<IActionResult> GetPaymentDetails()
-        {
-            var lease = await _tenantServices.GetAllRentPaymentDetails();
-            return Ok(lease);
-        }
-
-        [HttpGet("get-tenant-payment-detail")]
-        public async Task<IActionResult> GetPamentDetail(string tenantId)
-        {
-            var lease = await _tenantServices.GetRentPaymentDetails(tenantId);
-            return Ok(lease);
-        }
-
-
-        [HttpGet("Rent-expiration-alert.")]
-        public async Task<IActionResult> GetTentantRentPaymentDetail(string tenantId)
-        {
-            var response = await _tenantServices.NofityRentExiration(tenantId);
-            return Ok(response);
-        }
-
-        [HttpGet("get-upto-date-tenant")]
-        public async Task<IActionResult> GetTenantWhosPaymentDetailsAreStillUpToDate()
-        {
-            var response = await _tenantServices.GetTenantWhosPaymentDetailsAreStillUpToDate();
-            return Ok(response);*/
-    [Authorize(Roles = "landlord")]
+   
+    [Authorize(Roles = "Manager")]
     [Route("api/[controller]")]
     [ApiController]
     public class TenantController : ControllerBase
@@ -101,6 +32,10 @@ namespace Property_Management.API.Controllers
 
         [HttpGet]
         [Route("get-all-tenants")]
+        [SwaggerOperation(Summary = "Fetch all Tenanats")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "This route fetches all the tenants in the database", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to fetch tenants", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> GetAllTenants()
         {
             var result = await _tenantService.GetAllTenants();
@@ -125,6 +60,10 @@ namespace Property_Management.API.Controllers
         }*/
         [HttpGet]
         [Route("get-tenant-by-id")]
+        [SwaggerOperation(Summary = "Fetch a Tenanat by id")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "This route fetches a tenant in the database using the id", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to fetch tenant by id", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<ActionResult<TenantDTO>> GetTenantById(string id)
         {
             var tenant = await _tenantService.GetTenantById(id);
@@ -150,6 +89,10 @@ namespace Property_Management.API.Controllers
          }*/
         [HttpPost]
         [Route("create-tenant")]
+        [SwaggerOperation(Summary = "creates a Tenanat using userId")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "This route creates a tenant in the database using userId", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create tenant", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<ActionResult<int>> CreateTenant(TenantDTO tenantDto)
         {
             var tenantId = await _tenantService.CreateTenant(tenantDto);
@@ -161,6 +104,10 @@ namespace Property_Management.API.Controllers
         }
         [HttpDelete]
         [Route("delete-tenant")]
+        [SwaggerOperation(Summary = "Deletes a Tenanat by id")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "This route deletes a tenant in the database using the id", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to delete a tenant by id", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> DeleteStudent(string id)
         {
             var result = await _tenantService.DeleteTenant(id);
@@ -176,6 +123,10 @@ namespace Property_Management.API.Controllers
 
         [HttpPut]
         [Route("update-Tenant")]
+        [SwaggerOperation(Summary = "Updates a Tenanat by id")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "This route updates a tenant in the database using the id", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to update a tenant by id", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> UpdateTenant( string id, TenantDTO tenantDto)
         {
             
