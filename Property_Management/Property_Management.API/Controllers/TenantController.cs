@@ -4,6 +4,11 @@ using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Http;
+using Property_Management.DAL.Context;
+using Microsoft.EntityFrameworkCore;
+using Property_Management.BLL.DTOs.Request;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Property_Management.API.Controllers
 {
@@ -77,17 +82,21 @@ namespace Property_Management.API.Controllers
         {
             var response = await _tenantServices.GetTenantWhosPaymentDetailsAreStillUpToDate();
             return Ok(response);*/
-
+    [Authorize(Roles = "landlord")]
     [Route("api/[controller]")]
     [ApiController]
     public class TenantController : ControllerBase
     {
 
         private readonly ITenantServices _tenantService;
+       
 
         public TenantController(ITenantServices tenantService)
         {
             _tenantService = tenantService;
+
+           
+
         }
 
         [HttpGet]
@@ -101,6 +110,9 @@ namespace Property_Management.API.Controllers
             return Ok(result);
         }
 
+
+
+/*
         [HttpGet]
         [Route("get-tenant-by-id")]
         public async Task<IActionResult> GetTenantById(string id)
@@ -110,20 +122,43 @@ namespace Property_Management.API.Controllers
                 return BadRequest();
 
             return Ok(result);
+        }*/
+        [HttpGet]
+        [Route("get-tenant-by-id")]
+        public async Task<ActionResult<TenantDTO>> GetTenantById(string id)
+        {
+            var tenant = await _tenantService.GetTenantById(id);
+
+            if (tenant == null)
+            {
+                return NotFound();
+            }
+
+            return tenant;
         }
 
+        /* [HttpPost]
+         [Route("create-tenant")]
+         public async Task<IActionResult> CreateTenant([FromBody] TenantDTO tenant)
+         {
+             var result = await _tenantService.CreateTenant(tenant);
+             if (result == null)
+                 return BadRequest();
+
+
+             return Ok(result);
+         }*/
         [HttpPost]
         [Route("create-tenant")]
-        public async Task<IActionResult> CreateTenant([FromBody] TenantDTO tenant)
+        public async Task<ActionResult<int>> CreateTenant(TenantDTO tenantDto)
         {
-            var result = await _tenantService.CreateTenant(tenant);
-            if (result == null)
-                return BadRequest();
+            var tenantId = await _tenantService.CreateTenant(tenantDto);
 
-
-            return Ok(result);
+            return CreatedAtAction(nameof(GetAllTenants), new
+            {
+                id = tenantId
+            }, tenantId);
         }
-
         [HttpDelete]
         [Route("delete-tenant")]
         public async Task<IActionResult> DeleteStudent(string id)

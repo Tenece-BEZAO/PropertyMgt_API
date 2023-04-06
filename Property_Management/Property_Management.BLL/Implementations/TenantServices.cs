@@ -12,6 +12,8 @@ using Property_Management.DAL.Interfaces;
 using Property_Management.BLL.DTOs.Request;
 using SendGrid.Helpers.Errors.Model;
 using SendGrid.Helpers.Mail;
+using Microsoft.AspNetCore.Mvc;
+using Property_Management.DAL.Context;
 
 namespace Property_Management.BLL.Implementations
 {
@@ -21,9 +23,11 @@ namespace Property_Management.BLL.Implementations
         private readonly IRepository<Tenant> _tenantRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IAuthenticationServices _authService;
-        public TenantServices(IUnitOfWork unitOfWork, IMapper mapper, IAuthenticationServices authService)
+        private readonly IUserAuth _authService;
+        private readonly PMSDbContext _context;
+        public TenantServices(IUnitOfWork unitOfWork, IMapper mapper, IUserAuth authService, PMSDbContext context)
         {
+            _context = context;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _tenantRepo = _unitOfWork.GetRepository<Tenant>();
@@ -31,14 +35,13 @@ namespace Property_Management.BLL.Implementations
             _authService = authService;
         }
 
-
         public async Task<string> CreateTenant(TenantDTO tenant)
         {
             if (tenant.UserId == null || tenant.UserId == "")
             {
-                var CreatedUserIdInfo = await _authService.CreateUser(new UserRegistrationRequest { Email = tenant.Email, MobileNumber = tenant.PhoneNumber });
+                var CreatedUserIdInfo = await _authService.CreateUserAsync(new UserRegistrationRequest { Email = tenant.Email });
 
-                tenant.UserId = CreatedUserIdInfo;
+
             }
 
             Tenant newTenant = new Tenant
@@ -60,9 +63,10 @@ namespace Property_Management.BLL.Implementations
             if (info != null)
                 return "Tenant with id:" + info.TenantId + " has been created";
 
-            throw new NotImplementedException("Student could not be created");
+            throw new NotImplementedException("Tenant could not be created");
 
         }
+
 
         public async Task<bool> DeleteTenant(string id)
         {
@@ -115,7 +119,7 @@ namespace Property_Management.BLL.Implementations
 
 
 
-        public async Task<IEnumerable<TenantDTO>> GetAllTenants()
+       /* public async Task<IEnumerable<TenantDTO>> GetAllTenants()
         {
             var tenants = await _tenantRepo.GetAllAsync();
 
@@ -128,17 +132,103 @@ namespace Property_Management.BLL.Implementations
                 PhoneNumber = tenant.PhoneNumber,
                 MoveInDate = tenant.MoveInDate,
                 MoveOutDate = tenant.MoveOutDate,
-           
+
             });
+        }*/
+        /* public async Task<TenantDTO> GetTenantById(string id)
+         {
+             var tenant = await  _tenantRepo.GetByIdAsync(id);
+             if (tenant == null)
+                 throw new NotFoundException("No tenant was found");
+
+             return TenantDTO.FromTenant(tenant);
+
+         }*/
+        public async Task<IEnumerable<TenantDTO>> GetAllTenants()
+        {
+            var tenants = await _context.Tenants.ToListAsync();
+            var tenantDtos = new List<TenantDTO>();
+
+            foreach (var tenant in tenants)
+            {
+                var leases = await _context.Leases
+                    .Include(l => l.Unit)
+                    .Where(l => l.TenantId == tenant.TenantId)
+                    .Select(l => new LeaseDto
+                    {
+                        LeaseId = l.Id,
+                        StartDate = l.StartDate,
+                        EndDate = l.EndDate,
+                        Unit = new UnitDto
+                        {
+                            UnitId = l.Unit.UnitId,
+                            Name = l.Unit.Name
+                        }
+                    })
+                    .ToListAsync();
+
+                var tenantDto = new TenantDTO
+                {
+                    TenantId = tenant.TenantId,
+                    FirstName = tenant.FirstName,
+                    LastName = tenant.LastName,
+                    Address = tenant.Address,
+                    Email = tenant.Email,
+                    Occupation = tenant.Occupation,
+                    PhoneNumber = tenant.PhoneNumber,
+                    MoveInDate = tenant.MoveInDate,
+                    MoveOutDate = tenant.MoveOutDate,
+                    Leases = leases
+                };
+                tenantDtos.Add(tenantDto);
+            }
+
+            return tenantDtos;
         }
+
         public async Task<TenantDTO> GetTenantById(string id)
         {
-            var tenant = await  _tenantRepo.GetByIdAsync(id);
-            if (tenant == null)
-                throw new NotFoundException("No tenant was found");
+            var tenant = await _context.Tenants.FindAsync(id);
 
-            return TenantDTO.FromTenant(tenant);
-           
+            if (tenant == null)
+            {
+                return null;
+            }
+
+            var leases = await _context.Leases
+                .Include(l => l.Unit)
+                .Where(l => l.TenantId == id)
+                .Select(l => new LeaseDto
+                {
+                    LeaseId = l.Id,
+                    StartDate = l.StartDate,
+                    EndDate = l.EndDate,
+                    Unit = new UnitDto
+                    {
+                        UnitId = l.Unit.UnitId,
+                        Name = l.Unit.Name
+                    }
+                })
+                .ToListAsync();
+
+            var tenantDto = new TenantDTO
+            {
+                TenantId = tenant.TenantId,
+                FirstName = tenant.FirstName,
+                LastName = tenant.LastName,
+                Address = tenant.Address,
+                Email = tenant.Email,
+                Occupation = tenant.Occupation,
+                PhoneNumber = tenant.PhoneNumber,
+                MoveInDate = tenant.MoveInDate,
+                MoveOutDate = tenant.MoveOutDate,
+                Leases = leases
+            };
+            return tenantDto;
         }
+
+
+
+
     }
 }

@@ -8,6 +8,7 @@ namespace Property_Management.DAL.Context
     {
         public PMSDbContext(DbContextOptions<PMSDbContext> options) : base(options) { }
 
+        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<LandLord> LordLords { get; set; }
         public DbSet<Property> Properties { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
@@ -45,6 +46,11 @@ namespace Property_Management.DAL.Context
                 entity.Property(prop => prop.TenantId).IsRequired(false);
                 entity.Property(prop => prop.PropertyId).IsRequired(false);
                 entity.Property(prop => prop.Occupation).IsRequired(false);
+            });
+
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.Property(prop => prop.TransactionRefereal).IsRequired(false);
             });
 
             modelBuilder.Entity<Unit>()

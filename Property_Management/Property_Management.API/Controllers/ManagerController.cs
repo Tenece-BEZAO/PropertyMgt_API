@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
@@ -7,6 +6,7 @@ using Property_Management.BLL.Interfaces;
 
 namespace Property_Management.API.Controllers
 {
+    [Authorize(Roles ="admin")]
     [Route("api/manager")]
     [ApiController]
     public class ManagerController : ControllerBase
@@ -18,7 +18,6 @@ namespace Property_Management.API.Controllers
             _managerServices = managerServices;
         }
 
-        //[Authorize]
         [HttpPost("add-property")]
         public async Task<IActionResult> AddProperty(AddOrUpdatePropertyRequest request)
         {
