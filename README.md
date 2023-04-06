@@ -25,16 +25,14 @@ The Property Management API is a SaaS platform that helps property managers and 
 
 |                                                                 |                                                                                         |
 |:---------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|
-| **Lease Routes**                                                  |                               **Manager Routes**                                               |
-| [<img src="./images/Lease.png" alt="Lease" width="100%"/>](./images/Lease.png") | [<img src="./images/Manager.png" alt="Manager" width="100%"/>](./images/Manager.png) |
+| **Lease**                                                  |                               **Property**                                               |
+| [<img src="./images/Lease.png" alt="Lease" width="100%"/>](./images/Lease.png") | [<img src="./images/userAuth.png" alt="user Auth" width="100%"/>](./images/userAuth.png) |
 |  **User Authentication**                                        |                                                 **Tenant**                      |
-| [<img src="./images/userAuth.png" alt="User Auth" width="700"/>](./images/userAuth.png)| [<img src="./images/Tenant.png" alt="tenant" width="700"/>](./images/Tenant.png) | |
+| [<img src="./images/Manager.png" alt="Manager" width="700"/>](./images/Manager.png)| [<img src="./images/Tenant.png" alt="tenant" width="700"/>](./images/Tenant.png) | |
 | **Payment**           | **Property details**               | |
-| [<img src="./images/Payment.png" alt="payment" width="700"/>](./images/Payment.png) | [<img src="./documentation/pictures/property.png" alt="drawing" width="350"/>](./documentation/pictures/property.png)| |
-| **Landlord page**             | **Template leases**                | **Author a contract**          |
-| [<img src="./documentation/pictures/landlord.png" alt="drawing" width="350"/>](./documentation/pictures/landlord.png) | [<img src="./documentation/pictures/leases.png" alt="drawing" width="350"/>](./documentation/pictures/leases.png) | [<img src="./documentation/pictures/contracttemplate.png" alt="drawing" width="350"/>](./documentation/pictures/contracttemplate.png) |
-| **Members**                        | |
-| [<img src="./documentation/pictures/members.png" alt="drawing" width="350"/>](./documentation/pictures/members.png) | |
+| [<img src="./images/Payment.png" alt="payment" width="700"/>](./images/Payment.png) | [<img src="./documentation/pictures/property.png" alt="property" width="700"/>](./documentation/pictures/property.png)| |
+
+ 
 
 ## Getting started
 
