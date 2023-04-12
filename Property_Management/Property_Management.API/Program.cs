@@ -1,17 +1,24 @@
+using Property_Management.API.Extension;
+using Property_Management.DAL.DataSeeder;
+using System.Reflection;
+
 namespace Property_Management.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddCustomServices();
+            builder.Services.AddAutoMapper(Assembly.Load("Property_Management.BLL"));
+            builder.Services.ConfigureSwaggerGen();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.ConfigureIdentity();
+            builder.Services.ConfigureJWT(builder);
+            builder.Services.AddConnection(builder);
 
             var app = builder.Build();
 
@@ -22,14 +29,20 @@ namespace Property_Management.API
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
 
+            app.ConfigureExceptionHandler(builder.Environment);
+
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
             app.MapControllers();
-
-            app.Run();
+            await SeedAdmin.EnsurePopulatedAsync(app);
+            await SeedLandLord.EnsurePopulatedAsync(app);
+            await SeedTenant.EnsurePopulatedAsync(app);
+            await SeedStaff.EnsurePopulatedAsync(app);
+            await app.RunAsync();
         }
     }
 }
