@@ -1,0 +1,9 @@
+﻿{
+  "emailPassword": "cyhevarxnxzfeagm",
+  "emailBody": "<h1>Tester mail</h1>",
+  "emailPort": 465,
+  "subject": "Tester",
+  "to": "eng.kelechiamos@gmail.com",
+  "hostEmail": "smtp.mail.yahoo.com",
+  "from": "kellyncode@yahoo.com"
+}

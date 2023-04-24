@@ -237,6 +237,41 @@ namespace Property_Management.DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Property_Management.DAL.Entities.Email", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("EmailBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEmailSent")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReceiverEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SendDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SenderEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Emails");
+                });
+
             modelBuilder.Entity("Property_Management.DAL.Entities.InspectionCheck", b =>
                 {
                     b.Property<string>("InspectionId")
@@ -248,6 +283,9 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("InspectedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("NoOfDevicesDamaged")
                         .HasColumnType("int");
@@ -285,6 +323,9 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -326,6 +367,9 @@ namespace Property_Management.DAL.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PaymentId")
                         .HasColumnType("nvarchar(max)");
@@ -387,6 +431,9 @@ namespace Property_Management.DAL.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LoggedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -431,6 +478,9 @@ namespace Property_Management.DAL.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LeaseId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -469,6 +519,9 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LandLordId")
                         .IsRequired()
@@ -511,6 +564,9 @@ namespace Property_Management.DAL.Migrations
                     b.Property<decimal>("AmountReturnedAfterLease")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LeaseId")
                         .IsRequired()
@@ -571,6 +627,9 @@ namespace Property_Management.DAL.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(25)
@@ -613,6 +672,9 @@ namespace Property_Management.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LandLordId")
                         .HasColumnType("nvarchar(450)");
 
@@ -623,10 +685,6 @@ namespace Property_Management.DAL.Migrations
 
                     b.Property<string>("LeaseId")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LeasesId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("MaintenanceId")
                         .HasColumnType("nvarchar(max)");
@@ -663,14 +721,11 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("TenantId");
 
                     b.HasIndex("LandLordId");
-
-                    b.HasIndex("LeasesId");
 
                     b.HasIndex("PropertyId");
 
@@ -693,11 +748,15 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("MadeAt")
                         .HasColumnType("datetime2");
@@ -726,6 +785,9 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -776,6 +838,9 @@ namespace Property_Management.DAL.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(25)
@@ -804,6 +869,9 @@ namespace Property_Management.DAL.Migrations
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("MaintenanceRequestId")
                         .IsRequired()
@@ -838,6 +906,9 @@ namespace Property_Management.DAL.Migrations
 
                     b.Property<DateTime>("DateCompleted")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("VendorId")
                         .IsRequired()
@@ -1081,12 +1152,6 @@ namespace Property_Management.DAL.Migrations
                         .WithMany("Tenant")
                         .HasForeignKey("LandLordId");
 
-                    b.HasOne("Property_Management.DAL.Entities.Lease", "Leases")
-                        .WithMany()
-                        .HasForeignKey("LeasesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Property_Management.DAL.Entities.Property", "Property")
                         .WithMany()
                         .HasForeignKey("PropertyId");
@@ -1099,13 +1164,9 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("LandLord");
-
-                    b.Navigation("Leases");
 
                     b.Navigation("Property");
 

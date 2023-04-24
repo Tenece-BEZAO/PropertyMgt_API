@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Property_Management.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class NewMigrationFile : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,6 +56,42 @@ namespace Property_Management.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Emails",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SenderEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReceiverEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailBody = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Subject = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SendDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsEmailSent = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Emails", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    TransactionRefereal = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MadeAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Vendors",
                 columns: table => new
                 {
@@ -63,7 +99,8 @@ namespace Property_Management.DAL.Migrations
                     LastName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -187,7 +224,8 @@ namespace Property_Management.DAL.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Occupation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -212,6 +250,7 @@ namespace Property_Management.DAL.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Occupation = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     PropertyId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -235,7 +274,8 @@ namespace Property_Management.DAL.Migrations
                     InspectedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NoOfUnits = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UnitId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    NoOfDevicesDamaged = table.Column<int>(type: "int", nullable: false)
+                    NoOfDevicesDamaged = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -253,13 +293,14 @@ namespace Property_Management.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PaymentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PropertyId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Rent = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     SecurityDeposit = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     UpcomingTenant = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -280,6 +321,7 @@ namespace Property_Management.DAL.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Zipcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NumOfUnits = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -312,6 +354,7 @@ namespace Property_Management.DAL.Migrations
                     TenantId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Rent = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     StaffId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -337,12 +380,13 @@ namespace Property_Management.DAL.Migrations
                 columns: table => new
                 {
                     TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UnitId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     MoveInDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NormalizedMoveInDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PropertyId = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -353,7 +397,7 @@ namespace Property_Management.DAL.Migrations
                     SecurityDepositReturnId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MaintenanceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    LeaseId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -363,12 +407,6 @@ namespace Property_Management.DAL.Migrations
                         name: "FK_Tenants_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Tenants_Leases_LeaseId",
-                        column: x => x.LeaseId,
-                        principalTable: "Leases",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tenants_LordLords_LandLordId",
@@ -397,6 +435,7 @@ namespace Property_Management.DAL.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReportedTo = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Priority = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     LoggedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateLogged = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -437,6 +476,7 @@ namespace Property_Management.DAL.Migrations
                     PaymentType = table.Column<int>(type: "int", nullable: false),
                     TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -465,6 +505,7 @@ namespace Property_Management.DAL.Migrations
                     PropertyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UnitId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LeaseId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     SecurityDeposit = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     AmountReturnedAfterLease = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     LeavingTenant = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -505,6 +546,7 @@ namespace Property_Management.DAL.Migrations
                     WorkOrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MaintenanceRequestId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StaffId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateCompleted = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Cost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -539,7 +581,8 @@ namespace Property_Management.DAL.Migrations
                     VendorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Cost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     DateCompleted = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    WorkOrderId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    WorkOrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -611,6 +654,11 @@ namespace Property_Management.DAL.Migrations
                 name: "IX_InspectionChecks_UnitId",
                 table: "InspectionChecks",
                 column: "UnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Leases_TenantId",
+                table: "Leases",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Leases_UnitId",
@@ -693,11 +741,6 @@ namespace Property_Management.DAL.Migrations
                 column: "LandLordId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tenants_LeaseId",
-                table: "Tenants",
-                column: "LeaseId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Tenants_PropertyId",
                 table: "Tenants",
                 column: "PropertyId");
@@ -775,6 +818,13 @@ namespace Property_Management.DAL.Migrations
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Leases_Tenants_TenantId",
+                table: "Leases",
+                column: "TenantId",
+                principalTable: "Tenants",
+                principalColumn: "TenantId");
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_Leases_Units_UnitId",
                 table: "Leases",
                 column: "UnitId",
@@ -817,6 +867,10 @@ namespace Property_Management.DAL.Migrations
                 name: "FK_Leases_SecurityDepositReturns_UpcomingTenant",
                 table: "Leases");
 
+            migrationBuilder.DropForeignKey(
+                name: "FK_Leases_Tenants_TenantId",
+                table: "Leases");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -833,10 +887,16 @@ namespace Property_Management.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Emails");
+
+            migrationBuilder.DropTable(
                 name: "InspectionChecks");
 
             migrationBuilder.DropTable(
                 name: "Payments");
+
+            migrationBuilder.DropTable(
+                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "WorkOrderVendors");

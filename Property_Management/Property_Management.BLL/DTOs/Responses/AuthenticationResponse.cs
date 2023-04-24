@@ -7,6 +7,7 @@ public class AuthenticationResponse
     public string UserName { get; set; }
     public bool? Birthday { get; set; }
     public bool TwoFactor { get; set; }
+    public bool EmailSent { get; set; }
 }
 
 public class JwtToken

@@ -10,6 +10,7 @@ namespace Property_Management.BLL.Interfaces
         Task<AuthenticationResponse> LoginUserAsync(LoginRequest loginRequest);
         Task<Response> LogoutAsync();
         Task<Response> ToggleUserActivation(string userId);
+        Task<Response> VerifyUser(VerifyAccountRequest request);
         Task<Response> ResetPasswordAsync(ResetPasswordRequest request);
         Task<Response> ChangePassword(ChangePasswordRequest changePasswordRequest);
         Task<Response> ChangeEmail(ChangeEmailRequest request);

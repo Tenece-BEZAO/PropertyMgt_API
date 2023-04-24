@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using PayStack.Net;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
-using Property_Management.BLL.Services;
+using Property_Management.BLL.Utilities;
 using Property_Management.DAL.Entities;
 using Property_Management.DAL.Interfaces;
 
@@ -15,17 +16,21 @@ namespace Property_Management.BLL.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Transaction> _transRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ISendMailService _sendMailService;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private readonly string? _token;
         private PayStackApi PaystackApi { get; set; }
 
-        public PaymentServices(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper)
+        public PaymentServices(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper, ISendMailService sendMailService, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
-            _transRepo = _unitOfWork.GetRepository<Transaction>();
             _configuration = configuration;
+            _sendMailService = sendMailService;
+            _transRepo = _unitOfWork.GetRepository<Transaction>();
             _token = _configuration["PayMent:PayStackApiKey"];
             PaystackApi = new PayStackApi(_token);
         }
@@ -94,19 +99,25 @@ namespace Property_Management.BLL.Implementations
             };
         }
 
-        public async Task<Response> VerifyPayment(string reference)
+        public async Task<Response> VerifyPayment(string userId, string reference)
         {
             TransactionVerifyResponse response = PaystackApi.Transactions.Verify(reference);
             if (response.Data.Status != "success")
                 throw new InvalidOperationException("Sorry! verification failed. Error occured while trying to verify the transaction. It seems your payment was not successful.");
 
-            var transaction = await _transRepo.GetSingleByAsync(trans => trans.TransactionRefereal == reference);
+            Transaction transaction = await _transRepo.GetSingleByAsync(trans => trans.TransactionRefereal == reference);
             if (transaction == null)
-                throw new InvalidOperationException($"Transaction was not found. {response.Data.GatewayResponse}");
+                throw new InvalidOperationException($"Transaction was not found. {response.Data.GatewayResponse}"); 
+
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+            if (transaction == null)
+                throw new InvalidOperationException($"User with the id {userId} was not found.");
 
             transaction.Status = true;
             await _transRepo.UpdateAsync(transaction);
-            return new Response { Message = $"Payment verification succesful. {response.Data.GatewayResponse}", Action = "Payment verification", StatusCode = 200 };
+            string message = $"Payment verification succesful. {response.Data.GatewayResponse}";
+           EmailResponse emailResponse = await _sendMailService.PaymentVerifiedMailAsync(user, message);
+            return new Response { Message = message, Action = "Payment verification", StatusCode = 200, IsEmailSent = emailResponse.Sent};
         }
     }
 }

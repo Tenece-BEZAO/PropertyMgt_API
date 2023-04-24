@@ -55,7 +55,8 @@ namespace Property_Management.BLL.Implementations
             if (landlord == null)
                 throw new InvalidOperationException($"Landlord with Property ID [{propertyId}] was not found.");
 
-          await _propRepo.DeleteAsync(landlord);
+            landlord.IsDeleted = true;
+          await _propRepo.UpdateAsync(landlord);
 
             return new Response
             {

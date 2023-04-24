@@ -8,6 +8,6 @@ namespace Property_Management.BLL.Interfaces
         Task<PaymentResponse> MakePayment(PaymentRequest request, string paymentFor);
         Task<IEnumerable<TransactionResponse>> GetAllPayment();
         Task<TransactionResponse> GetPayment(string Id);
-        Task<Response> VerifyPayment(string reference);
+        Task<Response> VerifyPayment(string userId, string reference);
     }
 }

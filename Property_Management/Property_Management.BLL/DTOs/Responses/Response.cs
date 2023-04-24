@@ -5,5 +5,6 @@
         public int StatusCode { get; set; }
         public string? Message { get; set; }
         public string Action { get; set; }
+        public bool IsEmailSent { get; set; }
     }
 }

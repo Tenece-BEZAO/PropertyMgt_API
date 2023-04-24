@@ -5,11 +5,11 @@ using Property_Management.BLL.DTOs.Request;
 using Property_Management.BLL.DTOs.Response;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
-using Property_Management.BLL.Services;
+using Property_Management.BLL.Utilities;
 using Property_Management.DAL.Entities;
 using Property_Management.DAL.Enums;
 using Property_Management.DAL.Interfaces;
-using static Property_Management.BLL.Services.UserType;
+using static Property_Management.BLL.Utilities.UserType;
 
 namespace Property_Management.BLL.Implementations
 {
@@ -24,10 +24,13 @@ namespace Property_Management.BLL.Implementations
         private readonly IRepository<ApplicationUser> _userRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly ISendMailService _sendMailService;
 
         public UserAuth(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+            RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
+            ISendMailService sendMailService)
         {
+            _sendMailService = sendMailService;
             _contextAccessor = httpContextAccessor;
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
@@ -88,7 +91,7 @@ namespace Property_Management.BLL.Implementations
                 await _staffRepo.AddAsync(NewStaff(regRequest, staffId, userId));
                     break;
                 default:
-                      Console.WriteLine($"The user type {userType} was not found.");
+                      Console.WriteLine($"This user will be created as just a {userType} for now.");
                     break;
             }
 
@@ -101,7 +104,8 @@ namespace Property_Management.BLL.Implementations
             else
                 await _roleManager.CreateAsync(new IdentityRole(role));
 
-            return new AuthenticationResponse {UserName = user.UserName, UserType = userType, Birthday = birthday, TwoFactor = false, JwtToken = token, };
+           var response = await _sendMailService.UserCreatedMailAsync(user);
+            return new AuthenticationResponse {UserName = user.UserName, UserType = userType, Birthday = birthday, TwoFactor = false, JwtToken = token, EmailSent = response.Sent};
         }
 
         public async Task<AuthenticationResponse> LoginUserAsync(LoginRequest loginRequest)
@@ -120,7 +124,7 @@ namespace Property_Management.BLL.Implementations
             string? userType = user.UserTypeId.GetStringValue();   
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
            string userToken = GenJwtToken.CreateToken(user);
-          return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false};
+          return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false, EmailSent = false};
 
             //await _emailService.SendTwoFactorAuthenticationEmail(user);
 
@@ -152,22 +156,23 @@ namespace Property_Management.BLL.Implementations
 
             IdentityResult res = await _userManager.ChangePasswordAsync(user, changePasswordRequest.CurrentPassword, changePasswordRequest.NewPassword);
             if (!res.Succeeded)
-                throw new InvalidOperationException("Sorry!, error occured while trying to update user password. Try again!");
+            {
+                string errorMessage = string.Join("\n", res.Errors.Select(e => e.Description).ToList());
+                throw new InvalidOperationException($"Sorry!, error occured while trying to update user password {errorMessage}. Try again!");
+            }
             return new Response
             {
                 StatusCode = 200,
                 Message = "Password changed successfully",
                 Action = "Change of password"
             };
-            //string errorMessage = string.Join("\n", res.Errors.Select(e => e.Description).ToList());
-           // throw new InvalidOperationException(errorMessage);
         }
 
         public async Task<Response> ResetPasswordAsync(ResetPasswordRequest request)
         {
             //string decodedEmail = Encoder.DecodeMessage(request.Email);
             string decodedToken = Encoder.DecodeMessage(request.AuthenticationToken);
-            ApplicationUser user = await _userManager.FindByNameAsync(request.UserName);
+            ApplicationUser? user = await _userManager.FindByNameAsync(request.UserName);
 
             if (user == null)
             {
@@ -183,12 +188,14 @@ namespace Property_Management.BLL.Implementations
 
             if (res.Succeeded)
             {
-                //Log.Information(msg);
+                string message = "Password reset successfully";
+                EmailResponse emailReponse = await _sendMailService.RecetPasswordSuccessMailAsync(user, message);
                 return new Response
                 {
+                    Message = message,
+                    Action = "Password Recet",
+                    IsEmailSent = emailReponse.Sent,
                     StatusCode = 200,
-                    Message = "Password Reset successfully.",
-                    Action = "Password resetion."
                 };
             }
 
@@ -197,13 +204,13 @@ namespace Property_Management.BLL.Implementations
             throw new InvalidOperationException(errorMessage);
         }
 
-        public async Task<string> VerifyUser(VerifyAccountRequest request)
+        public async Task<Response> VerifyUser(VerifyAccountRequest request)
         {
             string username = Encoder.DecodeMessage(request.Username);
             string emailConfirmationToken = Encoder.DecodeMessage(request.EmailConfirmationAuthenticationToken);
             string resetPasswordToken = Encoder.DecodeMessage(request.ResetPasswordAuthenticationToken);
 
-            ApplicationUser user = await _userManager.FindByNameAsync(username);
+            ApplicationUser? user = await _userManager.FindByNameAsync(request.Username);
 
             if (user == null)
             {
@@ -228,12 +235,17 @@ namespace Property_Management.BLL.Implementations
             {
                 user.Active = true;
                 await _userManager.UpdateAsync(user);
-
-                return "Password reset successfully";
+                string message = "Your account has been verified. You can click on this image to continue with the next process.";
+                EmailResponse emailReponse = await _sendMailService.RecetPasswordSuccessMailAsync(user, message);
+                return new Response{
+                    Message = message,
+                    Action = "Password Recet",
+                    IsEmailSent = emailReponse.Sent,
+                    StatusCode = 200,
+                };
             }
 
-            string errorMessage = string.Join("\n", emailRes.Errors.Select(e => e.Description).ToList()) +
-                                  string.Join("\n", passwordRes.Errors.Select(e => e.Description).ToList());
+            string errorMessage = $"{string.Join("\n", emailRes.Errors.Select(e => e.Description).ToList())} {string.Join("\n", passwordRes.Errors.Select(e => e.Description).ToList())}";
 
             throw new InvalidOperationException(errorMessage);
         }

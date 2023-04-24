@@ -1,7 +1,7 @@
 ﻿using Property_Management.BLL.DTOs.Request;
 using Property_Management.DAL.Entities;
 
-namespace Property_Management.BLL.Services
+namespace Property_Management.BLL.Utilities
 {
     public class UserType
     {

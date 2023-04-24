@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
@@ -8,8 +7,8 @@ using Property_Management.BLL.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
-{ 
-    [Authorize(Roles = "manager")]
+{
+    [Authorize(Roles = "manager, landlord")]
     [Route("api/manager")]
     [ApiController]
     public class ManagerController : ControllerBase

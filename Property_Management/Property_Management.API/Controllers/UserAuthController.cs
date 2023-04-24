@@ -45,11 +45,24 @@ namespace Property_Management.API.Controllers
             AuthenticationResponse response = await _userAuth.LoginUserAsync(request);
             return Ok(response);
         }
+        
+        [AllowAnonymous]
+        [HttpPut("verify-user", Name = "verify-User")]
+        [SwaggerOperation(Summary = "verify user")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Verification successfull", Type = typeof(AuthenticationResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "verification failed.", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> VerifyUser(VerifyAccountRequest request)
+        {
+            Response response = await _userAuth.VerifyUser(request);
+            return Ok(response);
+        }
 
 
-        [Authorize]
+
+        [AllowAnonymous]
         [HttpPut("Recet-password", Name = "Recet-password")]
-        [SwaggerOperation(Summary = "Login user")]
+        [SwaggerOperation(Summary = "Recet user password")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Password recet successfull", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password recet failed.", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]

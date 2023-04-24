@@ -16,6 +16,7 @@ namespace Property_Management.DAL.Entities
         public string? FirstName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public List<WorkOrderVendor> WorkOrderVendors { get; set; } 
     }
 }

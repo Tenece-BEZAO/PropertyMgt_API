@@ -10,7 +10,7 @@ namespace Property_Management.DAL.Entities
         public string PropertyId { get; set; } = string.Empty;
         public string UnitId { get; set; } 
         public string LeaseId { get; set; } = string.Empty;
-
+        public bool IsDeleted { get; set; } = false;
         [Precision(18, 2)]
         public decimal SecurityDeposit { get; set; }
         [Precision(18, 2)]

@@ -12,6 +12,7 @@ namespace Property_Management.DAL.Entities
         public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(1);
         public DateTime StartDate { get; set; } = DateTime.UtcNow;
         public bool Status { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [Precision(18, 2)]
         public decimal Rent { get; set; }
