@@ -147,7 +147,7 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<Response> ChangePassword(ChangePasswordRequest changePasswordRequest)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(changePasswordRequest.UserId);
+            ApplicationUser? user = await _userManager.FindByIdAsync(changePasswordRequest.UserId);
 
             if (user == null)
             {

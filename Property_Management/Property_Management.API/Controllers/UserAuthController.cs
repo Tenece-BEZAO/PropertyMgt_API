@@ -22,7 +22,7 @@ namespace Property_Management.API.Controllers
 
 
         [AllowAnonymous]
-        [HttpPost("Create-user", Name = "Create-New-User")]
+        [HttpPost("create-user", Name = "create-New-User")]
         [SwaggerOperation(Summary = "Create user")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(Response))]
@@ -35,7 +35,7 @@ namespace Property_Management.API.Controllers
 
 
         [AllowAnonymous]
-        [HttpPost("Login-user", Name = "Login-User")]
+        [HttpPost("login-user", Name = "login-User")]
         [SwaggerOperation(Summary = "Login user")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Login successfull", Type = typeof(AuthenticationResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Login failed.", Type = typeof(Response))]
@@ -61,7 +61,7 @@ namespace Property_Management.API.Controllers
 
 
         [AllowAnonymous]
-        [HttpPut("Recet-password", Name = "Recet-password")]
+        [HttpPut("recet-password", Name = "recet-password")]
         [SwaggerOperation(Summary = "Recet user password")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Password recet successfull", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password recet failed.", Type = typeof(Response))]
@@ -73,7 +73,7 @@ namespace Property_Management.API.Controllers
         }
         
         [Authorize]
-        [HttpPut("Change-email", Name = "Change-email")]
+        [HttpPut("change-email", Name = "change-email")]
         [SwaggerOperation(Summary = "change user email")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Email changed successfull", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Email change failed.", Type = typeof(Response))]
@@ -85,7 +85,7 @@ namespace Property_Management.API.Controllers
         }
         
         [Authorize]
-        [HttpPut("Change-password", Name = "Change-password")]
+        [HttpPut("change-password", Name = "change-password")]
         [SwaggerOperation(Summary = "Change user password")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Password change successfull", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Password change failed.", Type = typeof(Response))]
@@ -97,7 +97,7 @@ namespace Property_Management.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("Toggle-user-activation")]
+        [HttpPut("toggle-user-activation")]
         [SwaggerOperation(Summary = "Change user password")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "User activation toggle successful", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "user activation failed.", Type = typeof(Response))]
@@ -109,7 +109,7 @@ namespace Property_Management.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("Logout", Name = "Logout-user")]
+        [HttpGet("logout-user", Name = "logout-user")]
         [SwaggerOperation(Summary = "Logout user")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "You have logged out successfully.", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Sorry! error occured while processing your request.", Type = typeof(Response))]

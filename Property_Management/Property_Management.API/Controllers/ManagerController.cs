@@ -8,7 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
 {
-    [Authorize(Roles = "manager, landlord")]
+    [Authorize(Roles = "admin, manager, landlord, tenant")]
     [Route("api/manager")]
     [ApiController]
     public class ManagerController : ControllerBase
@@ -31,7 +31,7 @@ namespace Property_Management.API.Controllers
             return Ok(result);
         }
 
-
+        [Authorize(Roles = "admin, manager, landlord")]
         [HttpDelete("{propertyId}")]
         [SwaggerOperation(Summary = "Delete a single Property")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Property added successfully", Type = typeof(Response))]
@@ -43,7 +43,7 @@ namespace Property_Management.API.Controllers
                 return Ok(response);
         }
 
-
+        [Authorize(Roles = "manager, landlord")]
         [HttpPut("update-property")]
         [SwaggerOperation(Summary = "Update a property")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "property added successfully", Type = typeof(Response))]
