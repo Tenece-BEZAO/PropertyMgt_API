@@ -19,6 +19,15 @@ namespace Property_Management.API
             builder.Services.ConfigureIdentity();
             builder.Services.ConfigureJWT(builder);
             builder.Services.AddConnection(builder);
+            builder.Services.AddCors(option =>
+            {
+                option.AddPolicy("MyPolicy", builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyMethod();
+                    builder.AllowAnyHeader();
+                });
+            });
 
             var app = builder.Build();
 
@@ -33,6 +42,7 @@ namespace Property_Management.API
             app.ConfigureExceptionHandler(builder.Environment);
 
             app.UseHttpsRedirection();
+            app.UseCors("MyPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
 
