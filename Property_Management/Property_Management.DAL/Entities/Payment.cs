@@ -6,8 +6,8 @@ namespace Property_Management.DAL.Entities
 {
     public class Payment
     {
-       
-        public string Id { get; set; }
+
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public PaymentType PaymentType { get; set; }
         public string TenantId { get; set; }
         public string LeaseId { get; set; }

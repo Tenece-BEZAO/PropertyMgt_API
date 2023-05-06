@@ -6,5 +6,6 @@
         public string? Message { get; set; }
         public string Action { get; set; }
         public bool IsEmailSent { get; set; }
+        public string Token { get; set; }
     }
 }

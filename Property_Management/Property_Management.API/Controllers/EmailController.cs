@@ -36,7 +36,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<IActionResult> SendBulkMail(SendBulkEmailRequest bulkMessageRequest)
         {
-            EmailResponse reponse = await _emailServices.SendBulkMessageAsync(bulkMessageRequest);
+            EmailResponse reponse = await _emailServices.SendBulkMailAsync(bulkMessageRequest);
             return Ok(reponse);
         }
     }

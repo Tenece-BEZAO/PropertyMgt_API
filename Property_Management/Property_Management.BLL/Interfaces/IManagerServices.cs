@@ -8,6 +8,7 @@ namespace Property_Management.BLL.Interfaces
     {
         Task<Response> AddProperty(AddOrUpdatePropertyRequest request);
         Task<Response> DeleteProperty(string propertyId);
+        Task<PropertyResponse> GetProperty(string propertyId);
         Task<Response> UpdateProperty(string propertyId, AddOrUpdatePropertyRequest request);
         Task<IEnumerable<Property>> GetAllProperties();
         Task<IEnumerable<Property>> GetAllAvaliableOrUnavialbleProperties(bool isAvailable);

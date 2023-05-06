@@ -16,6 +16,8 @@ namespace Property_Management.BLL.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Transaction> _transRepo;
+        private readonly IRepository<Tenant> _tenantRepo;
+        private readonly IRepository<Payment> _paymentRepo;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendMailService _sendMailService;
         private readonly IConfiguration _configuration;
@@ -33,6 +35,8 @@ namespace Property_Management.BLL.Implementations
             _transRepo = _unitOfWork.GetRepository<Transaction>();
             _token = _configuration["PayMent:PayStackApiKey"];
             PaystackApi = new PayStackApi(_token);
+            _paymentRepo = _unitOfWork.GetRepository<Payment>();
+            _tenantRepo = _unitOfWork.GetRepository<Tenant>();
         }
 
         public async Task<IEnumerable<TransactionResponse>> GetAllPayment()
@@ -70,8 +74,12 @@ namespace Property_Management.BLL.Implementations
             };
         }
 
-        public async Task<PaymentResponse> MakePayment(PaymentRequest request, string paymentFor)
+        public async Task<PaymentResponse> MakePayment(PaymentRequest request)
         {
+            Tenant? tenant = await _tenantRepo.GetSingleByAsync(t => t.Email == request.Email);
+            if (tenant == null)
+                throw new InvalidOperationException($"user with the email {request.Email} was not found.");
+
             string refernceKey = RandomNums.GenerateRandomNumbers().ToString();
             TransactionInitializeRequest transRequest = new()
             {
@@ -84,15 +92,26 @@ namespace Property_Management.BLL.Implementations
 
             TransactionInitializeResponse response = PaystackApi.Transactions.Initialize(transRequest);
             if (!response.Status)
-                throw new InvalidOperationException($"Sorry! error occured while performing the transaction {response.Message} . Do try again with valid deatils. ");
+                throw new InvalidOperationException($"Sorry! error occured while performing the transaction. this is what happended: {response.Message} . Do try again with valid deatils.");
 
-            Transaction newPayment = _mapper.Map<Transaction>(request);
-            newPayment.TransactionRefereal = transRequest.Reference;
-            await _transRepo.AddAsync(newPayment);
+            Transaction newTransaction = _mapper.Map<Transaction>(request);
+            newTransaction.TransactionRefereal = transRequest.Reference;
+            await _transRepo.AddAsync(newTransaction);
+
+            Payment newPayment = new Payment()
+            {
+                LeaseId = tenant.LeaseId,
+                TenantId = tenant.TenantId,
+                Amount = request.Amount,
+                IsDeleted = false,
+                PaymentDate = DateTime.UtcNow,
+                PaymentType = request.PaymentType,
+            };
+            await _paymentRepo.AddAsync(newPayment);
             return new PaymentResponse
             {
                 Message = $"{request.Name} your Payment link has been generated: {response.Data.AuthorizationUrl} use this link to complete your payment.",
-                PaymentFor = $"{paymentFor} payment",
+                PaymentFor = $"{request.PaymentFor} payment",
                 TransactionAmount = request.Amount,
                 PaymentLink = response.Data.AuthorizationUrl,
                 ReferenceKey = refernceKey,
@@ -110,7 +129,7 @@ namespace Property_Management.BLL.Implementations
                 throw new InvalidOperationException($"Transaction was not found. {response.Data.GatewayResponse}"); 
 
             ApplicationUser? user = await _userManager.FindByIdAsync(userId);
-            if (transaction == null)
+            if (user == null)
                 throw new InvalidOperationException($"User with the id {userId} was not found.");
 
             transaction.Status = true;

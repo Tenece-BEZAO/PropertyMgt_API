@@ -42,7 +42,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "This route fetches a tenant in the database using the id", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to fetch tenant by id", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
-        public async Task<ActionResult<TenantDTO>> GetTenantById(string id)
+        public async Task<ActionResult<TenantResponse>> GetTenantById(string id)
         {
             var tenant = await _tenantService.GetTenantById(id);
                 return Ok(tenant);
@@ -79,7 +79,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "This route updates a tenant in the database using the id", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to update a tenant by id", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
-        public async Task<IActionResult> UpdateTenant(TenantDTO tenantDto)
+        public async Task<IActionResult> UpdateTenant(TenantResponse tenantDto)
         {
             
             var result = await _tenantService.UpdateTenant(tenantDto);

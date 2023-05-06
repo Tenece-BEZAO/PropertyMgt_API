@@ -4,7 +4,6 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Property_Management.BLL.DTOs.Request;
 using Property_Management.BLL.DTOs.Requests;
-using Property_Management.BLL.DTOs.Response;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
 using Property_Management.DAL.Entities;
@@ -39,7 +38,7 @@ namespace Property_Management.BLL.Implementations
             throw new NotImplementedException();
         }
 
-        public async Task<AuthenticationResponse> CreateTenant(UserRegistrationRequest request)
+        public async Task<EmailResponse> CreateTenant(UserRegistrationRequest request)
         {
            return await _userAuth.CreateUserAsync(request);
         }
@@ -55,19 +54,19 @@ namespace Property_Management.BLL.Implementations
             return new Response { Action = "Delete tenant", StatusCode = 200, Message = $"Tenant with email. {tenant.Email} has been deleted." };
         }
 
-        public async Task<TenantDTO> UpdateTenant(TenantDTO tenantDto)
+        public async Task<TenantResponse> UpdateTenant(TenantResponse tenantDto)
         {
             var tenant = await _tenantRepo.GetByIdAsync(tenantDto.TenantId);
 
             if (tenant == null)
                 throw new InvalidOperationException($"Tenant with the id {tenantDto.TenantId} was not found.");
 
-            return TenantDTO.FromTenant(tenantDto);
+            return TenantResponse.FromTenant(tenantDto);
         }
 
-        public async Task<IEnumerable<TenantDTO>> GetAllTenants()
+        public async Task<IEnumerable<TenantResponse>> GetAllTenants()
         {
-            return (await _tenantRepo.GetAllAsync(include: u => u.Include(t => t.Lease))).Select(tenant => new TenantDTO
+            return (await _tenantRepo.GetAllAsync(include: u => u.Include(t => t.Lease))).Select(tenant => new TenantResponse
             {
                 TenantId = tenant.TenantId,
                 UserId = tenant.UserId,
@@ -89,12 +88,12 @@ namespace Property_Management.BLL.Implementations
             });
         }
 
-        public async Task<TenantDTO> GetTenantById(string id)
+        public async Task<TenantResponse> GetTenantById(string id)
         {
             var tenant = await _tenantRepo.GetSingleByAsync(t => t.TenantId == id);
             if (tenant == null) throw new InvalidOperationException($"Tenant with the id: {id} was not found.");
 
-           return _mapper.Map<TenantDTO>(tenant);
+           return _mapper.Map<TenantResponse>(tenant);
         }
 
 

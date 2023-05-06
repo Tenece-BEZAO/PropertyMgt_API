@@ -26,6 +26,7 @@ namespace Property_Management.API.Extension
             services.AddTransient<IUnitOfWork, UnitOfWork<PMSDbContext>>();
             services.AddTransient<IServiceFactory, ServiceFactory>();
             services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<ISMSService, SMSservices>();
         }
     }
 }

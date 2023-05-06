@@ -46,7 +46,7 @@ namespace Property_Management.BLL.Implementations
             return new EmailResponse { Sent = true, SenderEmail = mailRequest.From, ReceiverEmail = mailRequest.To, Subject = mailRequest.Subject, Date = DateTime.UtcNow.ToLongDateString() };
         }
 
-        public async Task<EmailResponse> SendBulkMessageAsync(SendBulkEmailRequest bulkMessageRequest)
+        public async Task<EmailResponse> SendBulkMailAsync(SendBulkEmailRequest bulkMessageRequest)
         {
 
             if (bulkMessageRequest == null) throw new InvalidOperationException("Object values cannot be empty.");

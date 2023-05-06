@@ -1,6 +1,8 @@
 ﻿using MessageEncoder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Property_Management.BLL.DTOs.Request;
 using Property_Management.BLL.DTOs.Response;
 using Property_Management.BLL.DTOs.Responses;
@@ -23,15 +25,17 @@ namespace Property_Management.BLL.Implementations
         private readonly IRepository<Staff> _staffRepo;
         private readonly IRepository<ApplicationUser> _userRepo;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IHttpContextAccessor _contextAccessor;
         private readonly ISendMailService _sendMailService;
+        private readonly ISMSService _sendSMS;
+        private readonly IConfiguration _configuration;
 
-        public UserAuth(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
-            ISendMailService sendMailService)
+        public UserAuth(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork,
+            ISendMailService sendMailService, ISMSService sendSMS, IConfiguration configuration)
         {
             _sendMailService = sendMailService;
-            _contextAccessor = httpContextAccessor;
+            _sendSMS = sendSMS;
+            _configuration = configuration;
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -42,7 +46,7 @@ namespace Property_Management.BLL.Implementations
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
         }
 
-        public async Task<AuthenticationResponse> CreateUserAsync(UserRegistrationRequest regRequest)
+        public async Task<EmailResponse> CreateUserAsync(UserRegistrationRequest regRequest)
         {
             ApplicationUser? userExist = await _userManager.FindByEmailAsync(regRequest.Email);
             if (userExist != null)
@@ -55,6 +59,12 @@ namespace Property_Management.BLL.Implementations
             string userId = Guid.NewGuid().ToString();
             string tenantId = Guid.NewGuid().ToString();
             string staffId = Guid.NewGuid().ToString();
+            string? userType = regRequest.UserTypeId.GetStringValue().ToLower();
+            string? userRole = regRequest.Role.GetStringValue().ToLower();
+
+            if (userRole == null) throw new InvalidOperationException("User role provided does not exist.");
+            if (userType == null) throw new InvalidOperationException("User type provided does not exist.");
+
 
             ApplicationUser user = new()
             {
@@ -65,8 +75,7 @@ namespace Property_Management.BLL.Implementations
                 Email = regRequest.Email.Trim().ToLower(),
                 BirthDay = DateTime.UtcNow,
                 PhoneNumber = regRequest.MobileNumber,
-                Active = true, 
-                EmailConfirmed = true,
+                Active = true,
                 UserTypeId = regRequest.UserTypeId,
                 UserRole = regRequest.Role,
             };
@@ -74,28 +83,26 @@ namespace Property_Management.BLL.Implementations
             IdentityResult createUser = await _userManager.CreateAsync(user, regRequest.Password);
             if (!createUser.Succeeded)
             {
-               throw new InvalidOperationException($"User creation failed {createUser.Errors.FirstOrDefault()?.Description}");
+                throw new InvalidOperationException($"User creation failed {createUser.Errors.FirstOrDefault()?.Description}");
             }
-            string? userType = user.UserTypeId.GetStringValue().ToLower();
 
             switch (userType)
             {
                 case "landlord":
-               await _landLordRepo.AddAsync(NewLandLord(regRequest, userId));
+                    await _landLordRepo.AddAsync(NewLandLord(regRequest, userId));
                     break;
                 case "tenant":
-              await _tenantRepo.AddAsync(NewTenant(regRequest, tenantId, userId));
+                    await _tenantRepo.AddAsync(NewTenant(regRequest, tenantId, userId));
                     break;
                 case "staff":
                 case "manager":
-                await _staffRepo.AddAsync(NewStaff(regRequest, staffId, userId));
+                    await _staffRepo.AddAsync(NewStaff(regRequest, staffId, userId));
                     break;
                 default:
-                      Console.WriteLine($"This user will be created as just a {userType} for now.");
+                    Console.WriteLine($"This user will be created as just a {userType} for now.");
                     break;
             }
 
-            string token = GenJwtToken.CreateToken(user);
             string? role = user.UserRole.GetStringValue();
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
             bool roleExist = await _roleManager.RoleExistsAsync(role);
@@ -104,13 +111,16 @@ namespace Property_Management.BLL.Implementations
             else
                 await _roleManager.CreateAsync(new IdentityRole(role));
 
-           var response = await _sendMailService.UserCreatedMailAsync(user);
-            return new AuthenticationResponse {UserName = user.UserName, UserType = userType, Birthday = birthday, TwoFactor = false, JwtToken = token, EmailSent = response.Sent};
+            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string decodedToken = Encoder.EncodeMessage(token);
+
+            var confirmEmailReponse = new ConfirmEmailResponse { UserId = user.Id, Email = user.Email, Token = decodedToken, UserName = user.UserName };
+            return (await _sendMailService.UserCreatedMailAsync(confirmEmailReponse));
         }
 
         public async Task<AuthenticationResponse> LoginUserAsync(LoginRequest loginRequest)
         {
-            ApplicationUser user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            ApplicationUser? user = await _userManager.FindByEmailAsync(loginRequest.Email);
             if (user == null)
                 throw new InvalidOperationException("User was not found.");
 
@@ -120,17 +130,114 @@ namespace Property_Management.BLL.Implementations
 
             if (!user.Active)
                 throw new InvalidOperationException("Account is not active");
+            if (!user.EmailConfirmed)
+                throw new InvalidOperationException($"HI {user.UserName}! please verify your email address first. Check your email we have sent you a verification code to confirm your email.");
 
-            string? userType = user.UserTypeId.GetStringValue();   
+            if (user.TwoFactorEnabled)
+            {
+                string TwoFactorToken = _userManager.Options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultEmailProvider;
+                string? authToken = await _userManager.GenerateTwoFactorTokenAsync(user, TwoFactorToken);
+                string? message = $"Hey {user.NormalizedUserName}! we have sent you a verification link to {user.Email} and also to your phone number {user.PhoneNumber}.";
+                ConfirmEmailResponse confirmEmailResponse = new ConfirmEmailResponse { Token = authToken, UserName = user.UserName, TwoFactorAuth = true, Email = user.Email };
+                (bool, string) smsMessage = await _sendSMS.SendSmsAsync(user.PhoneNumber, message);
+                Console.WriteLine(smsMessage);
+                await _sendMailService.SendTwoFactorAuthenticationEmailAsync(confirmEmailResponse);
+                return new AuthenticationResponse { UserId = user.Id, UserName = message, TwoFactorAuth = true, };
+            }
+
+
+
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
-           string userToken = GenJwtToken.CreateToken(user);
-          return new AuthenticationResponse { JwtToken = userToken, UserType = userType, UserName = user.UserName, Birthday = birthday, TwoFactor = false, EmailSent = false};
+            string userToken = GenJwtToken.CreateToken(user);
+            DateTime TwoWeeks = DateTime.Now.AddDays(14);
+            return new AuthenticationResponse
+            {
+                UserId = user.Id,
+                JwtToken = new JwtToken { Token = userToken, Expires = TwoWeeks, Issued = DateTime.UtcNow },
+                UserName = user.UserName,
+                Birthday = birthday,
+                TwoFactorAuth = false,
+            };
+        }
 
-            //await _emailService.SendTwoFactorAuthenticationEmail(user);
+        public async Task<Response> Toggle2FAAuthAsync(string userId)
+        {
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new InvalidOperationException($"User with the id {userId} was not found.");
 
-          /* Log.ForContext(new PropertyBagEnricher().Add("LoginResponse", 
-               new LoggedInUserResponse { FullName = fullName, UserType = userType, UserId = user.Id, TwoFactor = true },  destructureObject: true)).Information("2FA Sent");*/
+            user.TwoFactorEnabled = !user.TwoFactorEnabled;
+            await _userRepo.UpdateAsync(user);
+            return new Response
+            {
+                Action = "Two Factor Auth",
+                Message = $"Two factor authentication was updated for {user.UserName}",
+                StatusCode = 200,
+                IsEmailSent = false
+            };
+        }
 
+        public async Task<AuthenticationResponse> TwoFactorLoginAsync(TwoFactorLoginRequest request)
+        {
+            ApplicationUser? user = await _userManager.FindByIdAsync(request.UserId);
+
+            if (user == null)
+                throw new InvalidOperationException("Invalid user");
+
+            string tokenType = _userManager.Options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultEmailProvider;
+            bool result = await _userManager.VerifyTwoFactorTokenAsync(user, tokenType, request.Token);
+
+            if (!result)
+                throw new InvalidOperationException("Invalid token");
+
+            string userToken = GenJwtToken.CreateToken(user);
+            bool? birthday = (user.BirthDay.Date == DateTime.Now) ? true : false;
+            return new AuthenticationResponse
+            {
+                JwtToken = new JwtToken { Token = userToken, Expires = DateTime.UtcNow.AddDays(14), Issued = DateTime.UtcNow },
+                UserName = user.UserName,
+                Birthday = birthday,
+                TwoFactorAuth = true
+            };
+        }
+
+        public async Task<Response> ConfirmEmailAsync(string id, string token)
+        {
+            ApplicationUser? user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                throw new InvalidOperationException("User with this id was not found.");
+
+            string decodedToken = Encoder.DecodeMessage(token);
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+            if (!result.Succeeded)
+                throw new InvalidOperationException("Email confirmation was not successfull.");
+
+            return new Response { Action = "Email Confirmation", Message = "Email confirmation successfull.", IsEmailSent = false, StatusCode = 200 };
+        }
+
+        public async Task<ProfileResponse> GetTenantProfileDetails(string email)
+        {
+            ApplicationUser? user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                throw new InvalidOperationException("This user was not found.");
+            Tenant tenant = await _tenantRepo.GetSingleByAsync(
+                predicate: t => t.UserId == user.Id,
+                include: t => t.Include(u => u.Lease).ThenInclude(u => u.Property));
+
+            if (tenant == null)
+                throw new InvalidOperationException("This use is not a tenant.");
+
+
+            return new ProfileResponse
+            {
+                UserEmail = tenant.Email,
+                UserName = user.UserName,
+                ProfileImage = user.ProfileImage,
+                PropertyName = tenant.Property.Name,
+                //LeaseDescription = tenant.Lease.FirstOrDefault()?.Description
+            };
         }
 
         public async Task<Response> LogoutAsync()
@@ -168,18 +275,38 @@ namespace Property_Management.BLL.Implementations
             };
         }
 
+        public async Task<Response> ForgortPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                throw new InvalidOperationException("User with this email provided was not found.");
+
+            string token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            string encodedToken = Encoder.EncodeMessage(token);
+            string link = $"{_configuration["BaseURL"]}/api/auth/recet-password?email={email}&token={encodedToken}";
+            EmailResponse emailResponse = await _sendMailService.SendEmailPasswordResetMailAsync(user, link);
+
+            return new Response
+            {
+                StatusCode = 200,
+                Message = "Check your email we have sent you a link to recet your password.",
+                Action = "Forgort password",
+                IsEmailSent = emailResponse.Sent
+
+            };
+        }
+
         public async Task<Response> ResetPasswordAsync(ResetPasswordRequest request)
         {
-            //string decodedEmail = Encoder.DecodeMessage(request.Email);
             string decodedToken = Encoder.DecodeMessage(request.AuthenticationToken);
-            ApplicationUser? user = await _userManager.FindByNameAsync(request.UserName);
-
+            ApplicationUser? user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
                 throw new InvalidOperationException("Invalid email");
             }
 
-            if (!await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", decodedToken))
+            bool isTokenValid = !await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", decodedToken);
+            if (isTokenValid)
             {
                 throw new InvalidOperationException("Invalid Authentication Token");
             }
@@ -193,82 +320,47 @@ namespace Property_Management.BLL.Implementations
                 return new Response
                 {
                     Message = message,
-                    Action = "Password Recet",
+                    Action = "Password Reset",
                     IsEmailSent = emailReponse.Sent,
                     StatusCode = 200,
                 };
             }
 
             string errorMessage = string.Join("\n", res.Errors.Select(e => e.Description).ToList());
-
             throw new InvalidOperationException(errorMessage);
         }
 
-        public async Task<Response> VerifyUser(VerifyAccountRequest request)
+        public async Task<Response> ChangeEmailRequestAsync(string userId, string newEmail)
         {
-            string username = Encoder.DecodeMessage(request.Username);
-            string emailConfirmationToken = Encoder.DecodeMessage(request.EmailConfirmationAuthenticationToken);
-            string resetPasswordToken = Encoder.DecodeMessage(request.ResetPasswordAuthenticationToken);
-
-            ApplicationUser? user = await _userManager.FindByNameAsync(request.Username);
-
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
             if (user == null)
+                throw new InvalidOperationException("User was not found.");
+            string? token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            string EncodedToken = Encoder.EncodeMessage(token);
+            return new Response
             {
-                throw new InvalidOperationException("Invalid username");
-            }
-
-            if (!await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.EmailConfirmationTokenProvider, "EmailConfirmation", emailConfirmationToken))
-            {
-                throw new InvalidOperationException("Invalid Authentication Token");
-            }
-
-            if (!await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", resetPasswordToken))
-            {
-                throw new InvalidOperationException("Invalid Authentication Token");
-            }
-
-            IdentityResult emailRes = await _userManager.ConfirmEmailAsync(user, emailConfirmationToken);
-            IdentityResult passwordRes = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.NewPassword);
-
-
-            if (emailRes.Succeeded && passwordRes.Succeeded)
-            {
-                user.Active = true;
-                await _userManager.UpdateAsync(user);
-                string message = "Your account has been verified. You can click on this image to continue with the next process.";
-                EmailResponse emailReponse = await _sendMailService.RecetPasswordSuccessMailAsync(user, message);
-                return new Response{
-                    Message = message,
-                    Action = "Password Recet",
-                    IsEmailSent = emailReponse.Sent,
-                    StatusCode = 200,
-                };
-            }
-
-            string errorMessage = $"{string.Join("\n", emailRes.Errors.Select(e => e.Description).ToList())} {string.Join("\n", passwordRes.Errors.Select(e => e.Description).ToList())}";
-
-            throw new InvalidOperationException(errorMessage);
+                Token = EncodedToken,
+                Message = "Token to change email was generated successfully.",
+                Action = "Change email request",
+                StatusCode = 200, 
+            };
         }
 
         public async Task<Response> ChangeEmail(ChangeEmailRequest request)
         {
-
-            //string decodedEmail = Encoder.DecodeMessage(request.Email);
-          //  string decodedNewEmail = Encoder.DecodeMessage(request.NewEmail);
-            //string decodedToken = Encoder.DecodeMessage(request.Token);
-            string? userId = _contextAccessor.HttpContext?.User.ToString();
+            string decodedToken = Encoder.DecodeMessage(request.Token);
             ApplicationUser? user = await _userManager.FindByIdAsync(request.UserId);
 
             if (user == null)
             {
-            throw new InvalidOperationException("Recovery email not found.");
+                throw new InvalidOperationException("Recovery email not found.");
             }
-          IdentityResult oops =  await _userManager.ChangeEmailAsync(user, request.NewEmail, request.Token);
-            string message = oops.Errors.FirstOrDefault().Description;
-            if (!oops.Succeeded)
+            IdentityResult response = await _userManager.ChangeEmailAsync(user, request.NewEmail, decodedToken);
+            string? message = response.Errors.FirstOrDefault()?.Description;
+            if (!response.Succeeded)
                 throw new InvalidOperationException($"Sorry, the update failed. {message}");
 
-           await _userManager.UpdateNormalizedEmailAsync(user);
+            await _userManager.UpdateNormalizedEmailAsync(user);
             return new Response
             {
                 StatusCode = 200,
@@ -279,7 +371,7 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<Response> ToggleUserActivation(string userId)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
             {
@@ -294,8 +386,6 @@ namespace Property_Management.BLL.Implementations
                 Message = "User activation toggle successful",
                 Action = "User activation."
             };
-            //Log.ForContext(new PropertyBagEnricher().Add("ToggleState", user.Active)
-            //).Information("User activation toggle successful");
         }
 
     }

@@ -6,6 +6,6 @@ namespace Property_Management.BLL.Interfaces
     public interface IEmailServices
     {
         Task<EmailResponse> SendMailAsync(EmailRequests mailRequest);
-        Task<EmailResponse> SendBulkMessageAsync(SendBulkEmailRequest bulkMessageRequest);
+        Task<EmailResponse> SendBulkMailAsync(SendBulkEmailRequest bulkMessageRequest);
     }
 }

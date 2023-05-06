@@ -14,7 +14,7 @@ namespace Property_Management.API.ProfileMapper
             CreateMap<AddOrUpdatePropertyRequest, Property>();
             CreateMap<AddOrUpdatePropertyRequest, LandLord>();
             CreateMap<CreateLeaseRequest, Lease>();
-            CreateMap<Tenant, TenantDTO>();
+            CreateMap<Tenant, TenantResponse>();
             CreateMap<PaymentRequest, Transaction>();
             CreateMap<EmailRequests, Email>()
                 .ForMember(src => src.ReceiverEmail, des => des.MapFrom(des => des.To))

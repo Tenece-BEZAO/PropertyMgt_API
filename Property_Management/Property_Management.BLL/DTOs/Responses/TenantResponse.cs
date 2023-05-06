@@ -2,7 +2,7 @@
 
 namespace Property_Management.BLL.DTOs.Responses
 {
-    public class TenantDTO
+    public class TenantResponse
     {
 
 
@@ -28,9 +28,9 @@ namespace Property_Management.BLL.DTOs.Responses
 
 
 
-        public static TenantDTO FromTenant(TenantDTO tenant)
+        public static TenantResponse FromTenant(TenantResponse tenant)
         {
-            return new TenantDTO
+            return new TenantResponse
             {
                 FirstName = tenant.FirstName,
                 LastName = tenant.LastName,

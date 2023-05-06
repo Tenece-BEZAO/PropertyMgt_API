@@ -44,6 +44,21 @@ namespace Property_Management.BLL.Implementations
         }
 
 
+        public async Task<PropertyResponse> GetProperty(string propertyId)
+        {
+            var PropertyToBeDeleted = await _propRepo.GetSingleByAsync(d => d.PropertyId == propertyId);
+            if (PropertyToBeDeleted == null)
+            {
+                throw new InvalidOperationException($"Property {propertyId} was not found");
+            }
+            var property = await _propRepo.GetSingleByAsync(l => l.PropertyId == propertyId);
+            if (property == null)
+                throw new InvalidOperationException($"Landlord with Property ID [{propertyId}] was not found.");
+
+            return new PropertyResponse { PropertyId = property.PropertyId, LandLordId = property.LandLordId,  Name = property.Name, Price = property.Price, Image = property.Image, Status = property.Status, IsDeleted = property.IsDeleted,};
+          
+         }  
+        
         public async Task<Response> DeleteProperty(string propertyId)
         {
             var PropertyToBeDeleted = await _propRepo.GetSingleByAsync(d => d.PropertyId == propertyId);
@@ -51,12 +66,12 @@ namespace Property_Management.BLL.Implementations
             {
                 throw new InvalidOperationException($"Property {propertyId} was not found");
             }
-            var landlord = await _propRepo.GetSingleByAsync(l => l.PropertyId == propertyId);
-            if (landlord == null)
+            var property = await _propRepo.GetSingleByAsync(l => l.PropertyId == propertyId);
+            if (property == null)
                 throw new InvalidOperationException($"Landlord with Property ID [{propertyId}] was not found.");
 
-            landlord.IsDeleted = true;
-          await _propRepo.UpdateAsync(landlord);
+            property.IsDeleted = true;
+          await _propRepo.UpdateAsync(property);
 
             return new Response
             {
