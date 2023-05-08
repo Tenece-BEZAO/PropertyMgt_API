@@ -19,5 +19,7 @@ namespace Property_Management.BLL.Interfaces
         Task<Response> ChangePassword(ChangePasswordRequest changePasswordRequest);
         Task<Response> ChangeEmailRequestAsync(string userId, string newEmail);
         Task<Response> ChangeEmail(ChangeEmailRequest request);
+        Task<Response> GoogleLoginAsync();
+        Task<Response> FaceBookLoginAsync();
     }
 }

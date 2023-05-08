@@ -187,5 +187,31 @@ namespace Property_Management.API.Controllers
             return Ok(response);
         }
 
+
+        [AllowAnonymous]
+        [HttpGet("google-login", Name = "google-login")]
+        [SwaggerOperation(Summary = "Login user with their google account.")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "User sign-in successfully.", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Sorry! error occured while processing your request.", Type = typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GoogleLogin()
+        {
+            Response response = await _userAuth.GoogleLoginAsync();
+            return Ok(response);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("facebook-login", Name = "facebook-login")]
+        [SwaggerOperation(Summary = "Login in user with their facebook account.")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "User sign-in successfully.", Type = typeof(Response))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Sorry! error occured while processing your request.", Type = typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> FaceBookLogin()
+        {
+            Response response = await _userAuth.FaceBookLoginAsync();
+            return Ok(response);
+        }
+
     }
+    //return AccessDenied();
 }

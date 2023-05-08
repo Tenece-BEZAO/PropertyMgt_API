@@ -1,5 +1,4 @@
 ﻿using MessageEncoder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +10,7 @@ using Property_Management.BLL.Utilities;
 using Property_Management.DAL.Entities;
 using Property_Management.DAL.Enums;
 using Property_Management.DAL.Interfaces;
+using System.Security.Claims;
 using static Property_Management.BLL.Utilities.UserType;
 
 namespace Property_Management.BLL.Implementations
@@ -342,7 +342,7 @@ namespace Property_Management.BLL.Implementations
                 Token = EncodedToken,
                 Message = "Token to change email was generated successfully.",
                 Action = "Change email request",
-                StatusCode = 200, 
+                StatusCode = 200,
             };
         }
 
@@ -388,5 +388,42 @@ namespace Property_Management.BLL.Implementations
             };
         }
 
+        public async Task<Response> GoogleLoginAsync()
+        {
+            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+                // return RedirectToAction(nameof(Login));
+                return new Response { StatusCode = 400, };
+
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
+            string[] userInfo = { info.Principal.FindFirst(ClaimTypes.Name).Value, info.Principal.FindFirst(ClaimTypes.Email).Value };
+            if (result.Succeeded)
+            {
+                return new Response { Action = "Google Login", Message = "User already exist and is signed-in Successfully.", StatusCode = 200 };
+            }
+            ApplicationUser user = new ApplicationUser
+            {
+                Email = info.Principal.FindFirst(ClaimTypes.Email).Value,
+                UserName = info.Principal.FindFirst(ClaimTypes.NameIdentifier).Value
+            };
+
+            IdentityResult identResult = await _userManager.CreateAsync(user);
+
+            if (!identResult.Succeeded)
+                throw new InvalidOperationException("Sorry! user creation failed. {errMessage}");
+
+                identResult = await _userManager.AddLoginAsync(user, info);
+                if (identResult.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, false);
+                    return new Response { Action = "Google Login", Message = "User signed-in Successfully.", StatusCode = 200 };
+                }
+            string? errorMessage = identResult.Errors.Select(e => e.Description).ToString();
+            return new Response { Message = errorMessage, StatusCode = 500 };
+        }
+        public async Task<Response> FaceBookLoginAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
