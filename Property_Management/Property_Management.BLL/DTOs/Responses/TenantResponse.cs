@@ -1,26 +1,13 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Property_Management.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Property_Management.BLL.DTOs.Responses
 {
-    public class TenantDTO
+    public class TenantResponse
     {
 
 
-        /* public string TenantId { get; set; }*/
+        public string TenantId { get; set; } = Guid.NewGuid().ToString();
         public string UserId { get; set; }
-        public string TenantId { get; set; }
         [Required(ErrorMessage = "LastName cannot be empty"), RegularExpression(@"^[\w ]*[a-zA-Z]+(([', -][a-zA-Z])?[a-zA-Z]*)\s*$",
          ErrorMessage = "Invalid Firstname !"), MaxLength(25), MinLength(2)]
         public string LastName { get; set; }
@@ -36,18 +23,15 @@ namespace Property_Management.BLL.DTOs.Responses
 
         public DateTime? MoveOutDate { get; set; } = DateTime.UtcNow;
         public string? NormalizedMoveOutDate { get; set; }
-        [AllowNull]
         public string Address { get; set; }
-        /* public string PropertyId { get; set; }*/
-        public List<LeaseDto> Leases { get; set; }
+        public IEnumerable<LeaseDto> Leases { get; set; }
 
 
 
-        public static TenantDTO FromTenant(Tenant tenant)
+        public static TenantResponse FromTenant(TenantResponse tenant)
         {
-            return new TenantDTO
+            return new TenantResponse
             {
-                TenantId = tenant.TenantId,
                 FirstName = tenant.FirstName,
                 LastName = tenant.LastName,
                 Address = tenant.Address,
@@ -65,7 +49,7 @@ namespace Property_Management.BLL.DTOs.Responses
 
         public class LeaseDto
         {
-         public string LeaseId { get; set; }
+         public string LeaseId { get; set; } = Guid.NewGuid().ToString();
         public string Description { get; set; }
         public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(1);
         public DateTime StartDate { get; set; } = DateTime.UtcNow;
@@ -74,7 +58,7 @@ namespace Property_Management.BLL.DTOs.Responses
 
         public class UnitDto
         {
-        public string UnitId { get; set; }
+        public string UnitId { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; }
         public string Description { get; set; }
         

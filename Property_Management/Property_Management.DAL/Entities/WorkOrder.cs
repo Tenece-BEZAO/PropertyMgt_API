@@ -8,6 +8,7 @@ namespace Property_Management.DAL.Entities
         public string WorkOrderId { get; set; }
         public string MaintenanceRequestId { get; set; }
         public string StaffId { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

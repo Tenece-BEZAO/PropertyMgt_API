@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Property_Management.BLL.DTOs.Requests
+﻿namespace Property_Management.BLL.DTOs.Requests
 {
     public class CreateLeaseRequest
     {
@@ -18,5 +16,7 @@ namespace Property_Management.BLL.DTOs.Requests
     {
         public string LeaseId { get; set; }
         public string PropertyId { get; set; }
+        public string TenantId { get; set; }
+        public bool AcceptLease { get; set; }
     }
 }

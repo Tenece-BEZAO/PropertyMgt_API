@@ -22,7 +22,7 @@
             return paymentType switch
             {
                 PaymentType.Cash => "Cash",
-                PaymentType.Paypal => "Paypal",
+                PaymentType.Paypal => "PayStack",
                 PaymentType.CreditCard => "Credit Card",
                 PaymentType.DebitCard => "Debit Card",
                 PaymentType.EFT => "Electronic Fund Transfer",

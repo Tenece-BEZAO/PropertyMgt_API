@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Property_Management.BLL.Services
+namespace Property_Management.BLL.Utilities
 {
     public class GenJwtToken
     {

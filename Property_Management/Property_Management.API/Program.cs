@@ -19,6 +19,12 @@ namespace Property_Management.API
             builder.Services.ConfigureIdentity();
             builder.Services.ConfigureJWT(builder);
             builder.Services.AddConnection(builder);
+            builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
 
             var app = builder.Build();
 
@@ -28,7 +34,8 @@ namespace Property_Management.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseRouting();
+            app.UseCors("AllowAll");
 
             app.ConfigureExceptionHandler(builder.Environment);
 

@@ -2,18 +2,12 @@
 
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Property_Management.BLL.DTOs.Request;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
 using Property_Management.DAL.Entities;
-
-using Microsoft.AspNetCore.Authentication;
 using Property_Management.DAL.Interfaces;
-using Property_Management.BLL.DTOs.Request;
-using SendGrid.Helpers.Errors.Model;
-using SendGrid.Helpers.Mail;
-using Microsoft.AspNetCore.Mvc;
-using Property_Management.DAL.Context;
 
 namespace Property_Management.BLL.Implementations
 {
@@ -21,32 +15,60 @@ namespace Property_Management.BLL.Implementations
     {
 
         private readonly IRepository<Tenant> _tenantRepo;
+        private readonly IRepository<Lease> _leaseRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IUserAuth _authService;
-        private readonly PMSDbContext _context;
-        public TenantServices(IUnitOfWork unitOfWork, IMapper mapper, IUserAuth authService, PMSDbContext context)
+        private readonly ISendMailService _sendMailService;
+        private readonly IUserAuth _userAuth;
+
+
+        public TenantServices(IUnitOfWork unitOfWork, IMapper mapper, ISendMailService sendMailService, IUserAuth userAuth)
         {
-            _context = context;
+            _sendMailService = sendMailService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _tenantRepo = _unitOfWork.GetRepository<Tenant>();
+            _leaseRepo = _unitOfWork.GetRepository<Lease>();
             _mapper = mapper;
-            _authService = authService;
+            _userAuth = userAuth;
         }
 
-        public async Task<string> CreateTenant(TenantDTO tenant)
+        public Task<Response> AcceptOrRejectTenant(AcceptTenantRequest request)
         {
-            if (tenant.UserId == null || tenant.UserId == "")
+            throw new NotImplementedException();
+        }
+
+        public async Task<EmailResponse> CreateTenant(UserRegistrationRequest request)
+        {
+           return await _userAuth.CreateUserAsync(request);
+        }
+
+
+        public async Task<Response> DeleteTenant(string id)
+        {
+            Tenant tenant = await _tenantRepo.GetByIdAsync(id);
+            if (tenant == null) throw new InvalidOperationException($"Tenant with the id {id} was not found.");
+
+            tenant.IsDeleted = true;
+             await _tenantRepo.UpdateAsync(tenant);
+            return new Response { Action = "Delete tenant", StatusCode = 200, Message = $"Tenant with email. {tenant.Email} has been deleted." };
+        }
+
+        public async Task<TenantResponse> UpdateTenant(TenantResponse tenantDto)
+        {
+            var tenant = await _tenantRepo.GetByIdAsync(tenantDto.TenantId);
+
+            if (tenant == null)
+                throw new InvalidOperationException($"Tenant with the id {tenantDto.TenantId} was not found.");
+
+            return TenantResponse.FromTenant(tenantDto);
+        }
+
+        public async Task<IEnumerable<TenantResponse>> GetAllTenants()
+        {
+            return (await _tenantRepo.GetAllAsync(include: u => u.Include(t => t.Lease))).Select(tenant => new TenantResponse
             {
-                var CreatedUserIdInfo = await _authService.CreateUserAsync(new UserRegistrationRequest { Email = tenant.Email });
-
-
-            }
-
-            Tenant newTenant = new Tenant
-            {
-                TenantId = Guid.NewGuid().ToString(),
+                TenantId = tenant.TenantId,
                 UserId = tenant.UserId,
                 FirstName = tenant.FirstName,
                 LastName = tenant.LastName,
@@ -56,179 +78,129 @@ namespace Property_Management.BLL.Implementations
                 PhoneNumber = tenant.PhoneNumber,
                 MoveInDate = tenant.MoveInDate,
                 MoveOutDate = tenant.MoveOutDate,
-            };
-
-
-            var info = await _tenantRepo.AddAsync(newTenant);
-            if (info != null)
-                return "Tenant with id:" + info.TenantId + " has been created";
-
-            throw new NotImplementedException("Tenant could not be created");
-
-        }
-
-
-        public async Task<bool> DeleteTenant(string id)
-        {
-            var result = _tenantRepo.DeleteByIdAsync(id);
-            if (result.IsCompletedSuccessfully) return true; return false;
-
-        }
-
-        public async Task<TenantDTO> EditTenant(string id, TenantDTO tenantDto)
-        {
-            var tenant = await _tenantRepo.GetByIdAsync(id);
-
-            if (tenant == null)
-            {
-                return null;
-            }
-
-            /*tenant.UserId = tenantDto.UserId;
-            tenant.Email = tenantDto.Email;
-            tenant.PhoneNumber = tenantDto.PhoneNumber;
-            tenant.Address = tenantDto.Address;
-            tenant.Occupation = tenantDto.Occupat*/
-            // update other properties
-
-
-
-            return TenantDTO.FromTenant(tenant);
-        }
-        /*public Task<bool> EditTenant(TenantDTO tenant)
-        {
-            Tenant UpdateTenant = new Tenant
-            {
-                UserId = tenant.UserId,
-                FirstName = tenant.FirstName,
-                LastName = tenant.LastName,
-                Address = tenant.Address,
-                Email = tenant.Email,
-                Occupation = tenant.Occupation,
-                PhoneNumber = tenant.PhoneNumber,
-                MoveInDate = tenant.MoveInDate,
-                MoveOutDate = tenant.MoveOutDate,
-            };
-            var result = _tenantRepo.UpdateAsync(UpdateTenant);
-
-            if (result.IsCompletedSuccessfully) return true; return false;
-
-
-
-        }*/
-
-
-
-       /* public async Task<IEnumerable<TenantDTO>> GetAllTenants()
-        {
-            var tenants = await _tenantRepo.GetAllAsync();
-
-            return tenants.Select(tenant => new TenantDTO
-            {
-                UserId = tenant.TenantId,
-                FirstName = tenant.FirstName,
-                LastName = tenant.LastName,
-                Email = tenant.Email,
-                PhoneNumber = tenant.PhoneNumber,
-                MoveInDate = tenant.MoveInDate,
-                MoveOutDate = tenant.MoveOutDate,
-
-            });
-        }*/
-        /* public async Task<TenantDTO> GetTenantById(string id)
-         {
-             var tenant = await  _tenantRepo.GetByIdAsync(id);
-             if (tenant == null)
-                 throw new NotFoundException("No tenant was found");
-
-             return TenantDTO.FromTenant(tenant);
-
-         }*/
-        public async Task<IEnumerable<TenantDTO>> GetAllTenants()
-        {
-            var tenants = await _context.Tenants.ToListAsync();
-            var tenantDtos = new List<TenantDTO>();
-
-            foreach (var tenant in tenants)
-            {
-                var leases = await _context.Leases
-                    .Include(l => l.Unit)
-                    .Where(l => l.TenantId == tenant.TenantId)
-                    .Select(l => new LeaseDto
-                    {
-                        LeaseId = l.Id,
-                        StartDate = l.StartDate,
-                        EndDate = l.EndDate,
-                        Unit = new UnitDto
-                        {
-                            UnitId = l.Unit.UnitId,
-                            Name = l.Unit.Name
-                        }
-                    })
-                    .ToListAsync();
-
-                var tenantDto = new TenantDTO
-                {
-                    TenantId = tenant.TenantId,
-                    FirstName = tenant.FirstName,
-                    LastName = tenant.LastName,
-                    Address = tenant.Address,
-                    Email = tenant.Email,
-                    Occupation = tenant.Occupation,
-                    PhoneNumber = tenant.PhoneNumber,
-                    MoveInDate = tenant.MoveInDate,
-                    MoveOutDate = tenant.MoveOutDate,
-                    Leases = leases
-                };
-                tenantDtos.Add(tenantDto);
-            }
-
-            return tenantDtos;
-        }
-
-        public async Task<TenantDTO> GetTenantById(string id)
-        {
-            var tenant = await _context.Tenants.FindAsync(id);
-
-            if (tenant == null)
-            {
-                return null;
-            }
-
-            var leases = await _context.Leases
-                .Include(l => l.Unit)
-                .Where(l => l.TenantId == id)
-                .Select(l => new LeaseDto
+                Leases = tenant.Lease.Select(l => new LeaseDto
                 {
                     LeaseId = l.Id,
                     StartDate = l.StartDate,
                     EndDate = l.EndDate,
-                    Unit = new UnitDto
-                    {
-                        UnitId = l.Unit.UnitId,
-                        Name = l.Unit.Name
-                    }
-                })
-                .ToListAsync();
+                    Description = l.Description,
+                }),
+            });
+        }
 
-            var tenantDto = new TenantDTO
+        public async Task<TenantResponse> GetTenantById(string id)
+        {
+            var tenant = await _tenantRepo.GetSingleByAsync(t => t.TenantId == id);
+            if (tenant == null) throw new InvalidOperationException($"Tenant with the id: {id} was not found.");
+
+           return _mapper.Map<TenantResponse>(tenant);
+        }
+
+
+        public async Task<IEnumerable<PaymentInfoResponse>> GetAllRentPaymentDetails()
+        {
+            return (await _leaseRepo.GetAllAsync(include: u => u.Include(t => t.Tenant))).Select(l => new PaymentInfoResponse
             {
-                TenantId = tenant.TenantId,
-                FirstName = tenant.FirstName,
-                LastName = tenant.LastName,
-                Address = tenant.Address,
-                Email = tenant.Email,
-                Occupation = tenant.Occupation,
-                PhoneNumber = tenant.PhoneNumber,
-                MoveInDate = tenant.MoveInDate,
-                MoveOutDate = tenant.MoveOutDate,
-                Leases = leases
-            };
-            return tenantDto;
+                Rent = l.Rent,
+                SecurityDeposit = l.SecurityDeposit,
+                TenantResponse = new TenantPaymentInfoResponse
+                {
+                    UserId = l.Tenant.UserId,
+                    FullName = $"{l.Tenant.FirstName} {l.Tenant.LastName}",
+                    Address = l.Tenant.Address,
+                    Phone = l.Tenant.PhoneNumber,
+                }
+            });
+        }
+
+        public async Task<IEnumerable<PaymentInfoResponse>> GetTenantWhosPaymentDetailsAreStillUpToDate()
+        {
+            var paymentInfos = (await _leaseRepo.GetByAsync(
+                predicate: c => c.Rent > decimal.Zero && c.EndDate <= DateTime.Now && c.Status,
+                orderBy: t => t.OrderBy(tenant => tenant.StartDate),
+                include: u => u.Include(t => t.Tenant))).Select(l => new PaymentInfoResponse
+                {
+                    Rent = l.Rent,
+                    SecurityDeposit = l.SecurityDeposit,
+                    TenantResponse = new TenantPaymentInfoResponse
+                    {
+                        UserId = l.Tenant.UserId,
+                        FullName = $"{l.Tenant.FirstName} {l.Tenant.LastName}",
+                        Address = l.Tenant.Address,
+                        Phone = l.Tenant.PhoneNumber,
+                    }
+                });
+
+            if (paymentInfos == null) throw new Exception("No item found.");
+
+            return paymentInfos;
+        }
+
+        public async Task<IEnumerable<PaymentInfoResponse>> GetTenantWhosRentHasExpired()
+        {
+
+            IEnumerable<PaymentInfoResponse> paymentDetails = (await _leaseRepo.GetByAsync(
+                predicate: c => c.Rent < decimal.One && c.EndDate < DateTime.Now && c.Status,
+                orderBy: t => t.OrderBy(tenant => tenant.StartDate),
+                include: u => u.Include(t => t.Tenant))).Select(l => new PaymentInfoResponse
+                {
+                    MovinDate = l.StartDate.ToLongDateString(),
+                    EndDate = l.EndDate.ToLongDateString(),
+                    Rent = l.Rent,
+                    SecurityDeposit = l.SecurityDeposit,
+                    TenantResponse = new TenantPaymentInfoResponse
+                    {
+                        UserId = l.Tenant.UserId,
+                        FullName = $"{l.Tenant.FirstName} {l.Tenant.LastName}",
+                        Address = l.Tenant.Address,
+                        Phone = l.Tenant.PhoneNumber,
+                    }
+                });
+
+            if (paymentDetails == null) throw new Exception("No item was found.");
+
+            return paymentDetails;
         }
 
 
 
+        public async Task<Tenant> GetRentPaymentDetails(string leaseId)
+        {
+            Tenant tenantDetails = await _tenantRepo.GetSingleByAsync(t => t.LeaseId == leaseId);
+            if (tenantDetails == null)
+                throw new InvalidOperationException($"The tenant with lease id {leaseId} does not exist.");
+            return tenantDetails;
+        }
 
+        public Task<Response> GetSecurityDeposit(string tenantId)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<Response> NofityRentExiration(string tenantId)
+        {
+            Tenant rentExpiredTenant = await _tenantRepo.GetSingleByAsync(predicate: t => t.TenantId == tenantId, include: p => p.Include(tenant => tenant.Payments));
+            if (rentExpiredTenant == null)
+                throw new InvalidOperationException($"Sorry!. tenant with the Id {tenantId} does't exist.");
+
+            Payment? tenantPaymentDetail = rentExpiredTenant.Payments.FirstOrDefault(te => te.PaymentDate <= DateTime.UtcNow);
+            if (tenantPaymentDetail == null)
+            {
+                EmailResponse mailResponse = await _sendMailService.RentExpireMailAsync(rentExpiredTenant, "Your rent is still active.", false);
+                return new Response { Action = "Rent Expire alert", StatusCode = 200, Message = "Your rent is still active.", IsEmailSent = true};
+            }
+            EmailResponse mailResponse2 = await _sendMailService.RentExpireMailAsync(rentExpiredTenant, "Your rent has expired.", true);
+            return new Response { Action = "Rent Expire alert", StatusCode = 200, Message = "Your rent has expired." };
+
+        }
+
+        Task<IEnumerable<Tenant>> ITenantServices.GetRentPaymentDetails(string tenantId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Response> GetAllSecurityDeposit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

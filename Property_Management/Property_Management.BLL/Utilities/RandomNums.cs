@@ -1,4 +1,4 @@
-﻿namespace Property_Management.BLL.Services
+﻿namespace Property_Management.BLL.Utilities
 {
     public class RandomNums
     {

@@ -11,6 +11,7 @@ namespace Property_Management.DAL.Entities
         public string Description { get; set; }
         public string ReportedTo { get; set; }
         public string Priority { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public string LoggedBy { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

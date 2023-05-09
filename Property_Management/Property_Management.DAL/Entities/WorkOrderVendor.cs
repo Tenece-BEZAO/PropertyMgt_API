@@ -17,5 +17,6 @@ namespace Property_Management.DAL.Entities
         public string WorkOrderId { get; set; }
         public WorkOrder WorkOrders { get; set; }
         public Vendor Vendors { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 }

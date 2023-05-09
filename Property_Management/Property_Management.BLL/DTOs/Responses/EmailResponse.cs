@@ -1,9 +1,12 @@
-﻿using Property_Management.DAL.Entities;
-
-namespace Property_Management.BLL.DTOs.Response;
-
-public class UserMailResponse
+﻿namespace Property_Management.BLL.DTOs.Responses
 {
-    public ApplicationUser User { get; set; }
-    public string FirstName { get; set; }
+    public class EmailResponse
+    {
+        public string SenderEmail { get; set; }
+        public string ReceiverEmail { get; set; }
+        public IEnumerable<string> Receivers { get; set; }
+        public string Subject { get; set; }
+        public string Date { get; set; }
+        public bool Sent { get; set; }
+    }
 }

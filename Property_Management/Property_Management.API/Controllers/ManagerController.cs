@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
@@ -8,8 +7,8 @@ using Property_Management.BLL.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
-{ 
-    [Authorize(Roles = "manager")]
+{
+    [Authorize(Roles = "admin, manager, landlord, tenant")]
     [Route("api/manager")]
     [ApiController]
     public class ManagerController : ControllerBase
@@ -32,8 +31,8 @@ namespace Property_Management.API.Controllers
             return Ok(result);
         }
 
-
-        [HttpDelete("{propertyId}")]
+        [Authorize(Roles = "admin, manager, landlord")]
+        [HttpDelete("delete-property")]
         [SwaggerOperation(Summary = "Delete a single Property")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Property added successfully", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "The request may be missing required fields or contain invalid data", Type = typeof(ErrorResponse))]
@@ -43,8 +42,21 @@ namespace Property_Management.API.Controllers
                 var response = await _managerServices.DeleteProperty(propertyId);
                 return Ok(response);
         }
+        
+        
+        [Authorize]
+        [HttpGet("get-property")]
+        [SwaggerOperation(Summary = "Get a single property")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Property fetched successfully", Type = typeof(PropertyResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "The request may be missing required fields or contain invalid data", Type = typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetProperty(string propertyId)
+        {
+                PropertyResponse response = await _managerServices.GetProperty(propertyId);
+                return Ok(response);
+        }
 
-
+        [Authorize(Roles = "manager, landlord")]
         [HttpPut("update-property")]
         [SwaggerOperation(Summary = "Update a property")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "property added successfully", Type = typeof(Response))]
@@ -56,8 +68,8 @@ namespace Property_Management.API.Controllers
                 return Ok(response);
         }
 
-
-        [HttpGet("Get-all-Properties")]
+        [Authorize]
+        [HttpGet("get-all-properties")]
         [SwaggerOperation(Summary = "Get all properties")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Gets all properties", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "The request may be missing required fields or contain invalid data", Type = typeof(ErrorResponse))]
@@ -69,7 +81,7 @@ namespace Property_Management.API.Controllers
         }
 
 
-        [HttpGet("Get-All-Avaliable-Or-Unavialble-Properties")]
+        [HttpGet("get-all-avaliable-or-unavialble-properties")]
         [SwaggerOperation(Summary = "Get all Available or Unrented Properties")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Adds a property.", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "The request may be missing required fields or contain invalid data", Type = typeof(ErrorResponse))]
@@ -82,8 +94,8 @@ namespace Property_Management.API.Controllers
 
 
 
-        [HttpGet("Get-All-Rented-Or-Non-Rented-Properties-By-LandLordID")]
-        [SwaggerOperation(Summary = "Get all Rented and non Rented Properties by LandLordID")]
+        [HttpGet("get-all-rented-or-non-rented-properties-by-landLord-id")]
+        [SwaggerOperation(Summary = "Get all Rented and non Rented Properties by LandLordId")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Adds a property.", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "The request may be missing required fields or contain invalid data", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]

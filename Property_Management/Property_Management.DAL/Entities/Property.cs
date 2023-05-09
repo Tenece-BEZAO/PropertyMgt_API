@@ -9,7 +9,8 @@ namespace Property_Management.DAL.Entities
         public string? LeaseId { get; set; }
         public string Address { get; set; }
         public string? City { get; set; }
-        public bool? Status { get; set; }
+        public bool Status { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public string? Zipcode { get; set; }
         public string? NumOfUnits { get; set; }
         [Precision(18, 2)]
