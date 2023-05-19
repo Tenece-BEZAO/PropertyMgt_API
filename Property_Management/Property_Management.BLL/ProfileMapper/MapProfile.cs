@@ -16,10 +16,10 @@ namespace Property_Management.API.ProfileMapper
             CreateMap<CreateLeaseRequest, Lease>();
             CreateMap<Tenant, TenantResponse>();
             CreateMap<PaymentRequest, Transaction>();
+            CreateMap<Review, SaveReviewRequest>().ReverseMap();
             CreateMap<EmailRequests, Email>()
                 .ForMember(src => src.ReceiverEmail, des => des.MapFrom(des => des.To))
                 .ForMember(src => src.SenderEmail, des => des.MapFrom(des => des.From));
-
         }
     }
 }

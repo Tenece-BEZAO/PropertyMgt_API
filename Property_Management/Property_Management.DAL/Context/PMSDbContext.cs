@@ -16,6 +16,8 @@ namespace Property_Management.DAL.Context
         public DbSet<Unit> Units { get; set; }
         public DbSet<Lease> Leases { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<NewsLetter> NewsLetters { get; set; }
         public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
         public DbSet<WorkOrderVendor> WorkOrderVendors { get; set; }
         public DbSet<SecurityDepositReturn> SecurityDepositReturns { get; set; }
@@ -108,6 +110,7 @@ namespace Property_Management.DAL.Context
             modelBuilder.Entity<Lease>(entity =>
             {
                 entity.Property(prop => prop.UpcomingTenant).IsRequired(false);
+                entity.Property(prop => prop.TenantId).IsRequired(false);
                 entity.Property(prop => prop.PaymentId).IsRequired(false);
                 entity.Property(prop => prop.Description).IsRequired(true);
                 entity.HasOne(p => p.Tenant).WithMany(p => p.Lease).HasForeignKey(p => p.TenantId).OnDelete(DeleteBehavior.NoAction);

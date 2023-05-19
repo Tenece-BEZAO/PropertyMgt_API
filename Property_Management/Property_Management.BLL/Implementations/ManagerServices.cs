@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
@@ -46,17 +47,44 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<PropertyResponse> GetProperty(string propertyId)
         {
-            var PropertyToBeDeleted = await _propRepo.GetSingleByAsync(d => d.PropertyId == propertyId);
-            if (PropertyToBeDeleted == null)
+            Property fetchedPropWithLease = await _propRepo.GetSingleByAsync(predicate: d => d.PropertyId == propertyId, include: prop => prop.Include(p => p.Lease));
+            Property fetchedProp = await _propRepo.GetSingleByAsync(predicate: d => d.PropertyId == propertyId);
+            if (fetchedProp == null)
             {
                 throw new InvalidOperationException($"Property {propertyId} was not found");
             }
-            var property = await _propRepo.GetSingleByAsync(l => l.PropertyId == propertyId);
-            if (property == null)
-                throw new InvalidOperationException($"Landlord with Property ID [{propertyId}] was not found.");
 
-            return new PropertyResponse { PropertyId = property.PropertyId, LandLordId = property.LandLordId,  Name = property.Name, Price = property.Price, Image = property.Image, Status = property.Status, IsDeleted = property.IsDeleted,};
-          
+            if(fetchedPropWithLease == null)
+            {
+                return new PropertyResponse
+                {
+                    PropertyId = fetchedProp.PropertyId,
+                    LandLordId = fetchedProp.LandLordId,
+                    Name = fetchedProp.Name,
+                    Price = fetchedProp.Price,
+                    Image = fetchedProp.Image,
+                    Status = fetchedProp.Status,
+                    IsDeleted = fetchedProp.IsDeleted,
+                };
+            }
+
+            return new PropertyResponse 
+            {
+                Lease = new LeaseResponse
+                {
+                    LeaseId = fetchedPropWithLease.Lease.Id,
+                    Description = fetchedPropWithLease.Lease.Description,
+                    StartDate = fetchedPropWithLease.Lease.StartDate,
+                    EndDate = fetchedPropWithLease.Lease.EndDate,
+                },
+                PropertyId = fetchedPropWithLease.PropertyId,
+                LandLordId = fetchedPropWithLease.LandLordId,
+                Name = fetchedPropWithLease.Name,
+                Price = fetchedPropWithLease.Price,
+                Image = fetchedPropWithLease.Image,
+                Status = fetchedPropWithLease.Status, 
+                IsDeleted = fetchedPropWithLease.IsDeleted,
+            };
          }  
         
         public async Task<Response> DeleteProperty(string propertyId)

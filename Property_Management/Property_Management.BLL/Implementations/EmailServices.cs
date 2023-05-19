@@ -3,6 +3,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using MimeKit.Text;
 using Property_Management.BLL.DTOs.Requests;
+using Microsoft.AspNetCore.Identity;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
 using Property_Management.DAL.Entities;
@@ -13,14 +14,60 @@ namespace Property_Management.BLL.Implementations
     public class EmailServices : IEmailServices
     {
         private readonly IRepository<Email> _mailRepo;
+        private readonly IRepository<ApplicationUser> _userRepo;
+        private readonly IRepository<NewsLetter> _newsLetterRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public EmailServices(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public EmailServices(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _mailRepo = _unitOfWork.GetRepository<Email>();
+            _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
+            _newsLetterRepo = _unitOfWork.GetRepository<NewsLetter>();
+        }
+
+        public async Task<SubscriptionResponse> SubscribeNewsletterEmailAsync(string email)
+        {
+            bool emailExist = await _newsLetterRepo.AnyAsync(n => n.Email == email);
+            if (emailExist) throw new InvalidOperationException("This email already subscribed.");
+
+            NewsLetter newNewsLeter = new NewsLetter { Email = email };
+            ApplicationUser? user = await _userManager.FindByEmailAsync(email);
+            await _newsLetterRepo.AddAsync(newNewsLeter);
+            if (user == null)
+            {
+                return new SubscriptionResponse {UserExist = false, StatusCode = 200, Message = "Subscription successfull" };
+            }
+
+            user.IsSubscribed = true;
+            await _userRepo.UpdateAsync(user);
+            return new SubscriptionResponse { UserExist = true, UserName = user.UserName, Message = "Subscription successful.", StatusCode = 201 };
+        }
+
+        public async Task<IEnumerable<FetchSubcribedUserEmailResponse>> GetAllSubscribedEmailAsync()
+        {
+            IEnumerable<NewsLetter> subscribedUsers = await _newsLetterRepo.GetAllAsync();
+            if (subscribedUsers == null)
+                throw new InvalidOperationException("No user found. list is empty.");
+
+           return subscribedUsers.Select(le => new FetchSubcribedUserEmailResponse
+            {
+             Email = le.Email,
+            });
+        }
+
+        public async Task<FetchSubcribedUserEmailResponse> GetSubscribedEmailAsync(string email)
+        {
+            NewsLetter subscribedUser = await _newsLetterRepo.GetSingleByAsync(predicate: ne => ne.Email == email);
+            if(subscribedUser == null) throw new InvalidOperationException("This user has not submitted any review.");
+
+            return new FetchSubcribedUserEmailResponse
+            {
+                Email = subscribedUser.Email,
+            };
         }
 
         public async Task<EmailResponse> SendMailAsync(EmailRequests mailRequest)

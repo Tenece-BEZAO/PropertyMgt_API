@@ -11,5 +11,6 @@ namespace Property_Management.DAL.Entities
         public UserType UserTypeId { get; set; }
         public UserRole UserRole { get; set; }
         public DateTime BirthDay { get; set; }
+        public bool IsSubscribed { get; set; }
     }
 }

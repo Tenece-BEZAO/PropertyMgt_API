@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Property_Management.DAL.Entities;
 using Property_Management.DAL.Enums;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,10 +10,11 @@ namespace Property_Management.BLL.Utilities
 {
     public class GenJwtToken
     {
-        public static string CreateToken(ApplicationUser user)
+        public static string CreateToken(ApplicationUser user, IConfiguration config)
         {
             JwtSecurityTokenHandler jwTokenHandler = new();
-            byte[] key = Encoding.ASCII.GetBytes("K3llY0dka4938-4380ls99430-943ofkakjslxzdoyb");
+            string? secretKey = config["JwtConfig:Secret"];
+            byte[] key = Encoding.ASCII.GetBytes(secretKey);
             string? userRole = user.UserRole.GetStringValue().ToLower();
             SecurityTokenDescriptor tokenDescriptor = new()
             {

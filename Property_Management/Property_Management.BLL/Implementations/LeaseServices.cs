@@ -29,13 +29,20 @@ namespace Property_Management.BLL.Implementations
         }
         public async Task<Response> CreateLease(CreateLeaseRequest request)
         {
-            Tenant tenant = await _tenantRepo.GetSingleByAsync(tenant => tenant.TenantId == request.TenantId);
-            if (tenant == null)
-                throw new InvalidOperationException($"Tenant with the id {request.TenantId} was not found.");
+            Property property = await _propRepo.GetSingleByAsync(tenant => tenant.PropertyId == request.PropertyId);
+            if (property == null)
+                throw new InvalidOperationException($"The property with the id {request.PropertyId} was not found.");
 
-            var newLease = _mapper.Map<Lease>(request);
+            bool leaseExist = await _propRepo.AnyAsync(tenant => tenant.LeaseId == request.PropertyId);
+            if (leaseExist)
+                throw new InvalidOperationException($"The property with the id {request.PropertyId} was has already been asigned a lease.");
+
+            string leaseId = Guid.NewGuid().ToString();
+            Lease lease = new Lease { Id = leaseId };
+            Lease newLease = _mapper.Map(request, lease);
+            property.LeaseId = leaseId;
             await _leaseRepo.AddAsync(newLease);
-
+            await _propRepo.UpdateAsync(property);
             return new Response
             {
                 Action = "Lease Creation.",
