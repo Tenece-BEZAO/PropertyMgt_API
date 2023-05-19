@@ -20,7 +20,6 @@ namespace Property_Management.API.ProfileMapper
             CreateMap<EmailRequests, Email>()
                 .ForMember(src => src.ReceiverEmail, des => des.MapFrom(des => des.To))
                 .ForMember(src => src.SenderEmail, des => des.MapFrom(des => des.From));
-
         }
     }
 }

@@ -43,7 +43,6 @@ namespace Property_Management.BLL.Implementations
             property.LeaseId = leaseId;
             await _leaseRepo.AddAsync(newLease);
             await _propRepo.UpdateAsync(property);
-
             return new Response
             {
                 Action = "Lease Creation.",
