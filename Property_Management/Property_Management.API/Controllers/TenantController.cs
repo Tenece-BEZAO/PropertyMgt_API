@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Property_Management.BLL.DTOs.Request;
 using Property_Management.BLL.DTOs.Responses;
-using Property_Management.BLL.Implementations;
 using Property_Management.BLL.Infrastructure;
 using Property_Management.BLL.Interfaces;
 using Property_Management.DAL.Entities;
@@ -32,7 +31,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> GetAllTenants()
         {
-            var result = await _tenantService.GetAllTenants();
+            IEnumerable<TenantResponse> result = await _tenantService.GetAllTenants();
             return Ok(result);
         }
 
@@ -44,7 +43,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<ActionResult<TenantResponse>> GetTenantById(string id)
         {
-            var tenant = await _tenantService.GetTenantById(id);
+            TenantResponse tenant = await _tenantService.GetTenantById(id);
                 return Ok(tenant);
         }
 
@@ -54,9 +53,9 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "This route creates a tenant in the database using userId", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create tenant", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
-        public async Task<ActionResult<int>> CreateTenant(UserRegistrationRequest request)
+        public async Task<IActionResult> CreateTenant(UserRegistrationRequest request)
         {
-            var tenantId = await _tenantService.CreateTenant(request);
+            EmailResponse tenantId = await _tenantService.CreateTenant(request);
             return Ok(tenantId);
         }
         [HttpDelete]
@@ -65,9 +64,9 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "This route deletes a tenant in the database using the id", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to delete a tenant by id", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
-        public async Task<IActionResult> DeleteStudent(string id)
+        public async Task<IActionResult> DeleteTenant(string id)
         {
-            var result = await _tenantService.DeleteTenant(id);
+            Response result = await _tenantService.DeleteTenant(id);
             return Ok(result);
         }
 
@@ -81,8 +80,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(Response))]
         public async Task<IActionResult> UpdateTenant(TenantResponse tenantDto)
         {
-            
-            var result = await _tenantService.UpdateTenant(tenantDto);
+            TenantResponse result = await _tenantService.UpdateTenant(tenantDto);
             return Ok(result);
         }
 

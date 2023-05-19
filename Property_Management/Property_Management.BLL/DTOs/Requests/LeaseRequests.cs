@@ -3,7 +3,6 @@
     public class CreateLeaseRequest
     {
         public string PropertyId { get; set; }
-        public string TenantId { get; set; }
         public decimal Rent { get; set; }
         public DateTime StartDate { get; set; }
         public bool Status { get; set; }

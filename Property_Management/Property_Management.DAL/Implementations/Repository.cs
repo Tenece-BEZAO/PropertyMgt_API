@@ -316,14 +316,14 @@ namespace Property_Management.DAL.Implementation
             return await _dbSet.FindAsync(id);
         }
 
-        //public async Task<PagedList<T>> GetPagedItems(RequestParameters parameters, Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
-        //{
-        //    var skip = (parameters.PageNumber - 1) * parameters.PageSize;
-        //    var items = await ConstructQueryable(predicate, parameters.OrderBy.ToLower(), skip, parameters.PageSize, include).ToListAsync();
-        //    var count = await CountAsync(predicate);
-        //    return new PagedList<T>(items, count, parameters.PageNumber, parameters.PageSize);
-        //}
-
+       /* public async Task<PagedList<T>> GetPagedItems(RequestParameters parameters, Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            var skip = (parameters.PageNumber - 1) * parameters.PageSize;
+            var items = await ConstructQueryable(predicate, parameters.OrderBy.ToLower(), skip, parameters.PageSize, include).ToListAsync();
+            var count = await CountAsync(predicate);
+            return new PagedList<T>(items, count, parameters.PageNumber, parameters.PageSize);
+        }
+*/
 
         public virtual IQueryable<T> GetQueryable(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, int? skip = null, int? take = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {

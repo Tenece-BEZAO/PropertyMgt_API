@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Property_Management.DAL.Context;
 
@@ -11,9 +12,11 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    partial class PMSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230512211949_allowNullTenantIdOnLeaseTable")]
+    partial class allowNullTenantIdOnLeaseTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,9 +182,6 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSubscribed")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -471,23 +471,6 @@ namespace Property_Management.DAL.Migrations
                     b.ToTable("MaintenanceRequests");
                 });
 
-            modelBuilder.Entity("Property_Management.DAL.Entities.NewsLetter", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("SubcribedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NewsLetters");
-                });
-
             modelBuilder.Entity("Property_Management.DAL.Entities.Payment", b =>
                 {
                     b.Property<string>("Id")
@@ -573,32 +556,6 @@ namespace Property_Management.DAL.Migrations
                     b.HasIndex("LeaseId");
 
                     b.ToTable("Properties");
-                });
-
-            modelBuilder.Entity("Property_Management.DAL.Entities.Review", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ReviewMsg")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("SubmitedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.SecurityDepositReturn", b =>
@@ -1146,17 +1103,6 @@ namespace Property_Management.DAL.Migrations
                     b.Navigation("LandLord");
 
                     b.Navigation("Lease");
-                });
-
-            modelBuilder.Entity("Property_Management.DAL.Entities.Review", b =>
-                {
-                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.SecurityDepositReturn", b =>

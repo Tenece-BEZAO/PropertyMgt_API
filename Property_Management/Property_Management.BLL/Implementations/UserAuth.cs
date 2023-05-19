@@ -148,7 +148,7 @@ namespace Property_Management.BLL.Implementations
 
 
             bool? birthday = user.BirthDay.Date.DayOfYear == DateTime.Now.Date.DayOfYear;
-            string userToken = GenJwtToken.CreateToken(user);
+            string userToken = GenJwtToken.CreateToken(user, _configuration);
             DateTime TwoWeeks = DateTime.Now.AddDays(14);
             return new AuthenticationResponse
             {
@@ -190,7 +190,7 @@ namespace Property_Management.BLL.Implementations
             if (!result)
                 throw new InvalidOperationException("Invalid token");
 
-            string userToken = GenJwtToken.CreateToken(user);
+            string userToken = GenJwtToken.CreateToken(user, _configuration);
             bool? birthday = (user.BirthDay.Date == DateTime.Now) ? true : false;
             return new AuthenticationResponse
             {
