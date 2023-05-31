@@ -8,6 +8,7 @@ namespace Property_Management.DAL.Entities
         public string TenantId { get; set; }
         public string PaymentId { get; set; }
         public string PropertyId { get; set; }
+        public string UnitId { get; set; }
         public string Description { get; set; }
         public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(1);
         public DateTime StartDate { get; set; } = DateTime.UtcNow;

@@ -34,7 +34,7 @@ namespace Property_Management.DAL.Entities
         public string? LeaseId { get; set; }
         public string? SecurityId { get; set; }
         public IEnumerable<Lease> Lease {get; set;}
-        public Unit Units { get; set; }
+        public Unit Unit { get; set; }
         public  virtual ICollection<Payment> Payments { get; set; }
         public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
         public LandLord LandLord { get; set; }

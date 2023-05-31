@@ -41,7 +41,7 @@ namespace Property_Management.DAL.Context
                 entity.Property(u => u.Address).IsRequired(false);
                 entity.HasIndex(u => u.Email, "IX_UniqueEmail").IsUnique();
                 entity.HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber").IsUnique();
-                entity.HasOne(p => p.Units).WithMany(p => p.Tenants).HasForeignKey(p => p.UnitId).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(p => p.Unit).WithMany(p => p.Tenants).HasForeignKey(p => p.UnitId).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<LandLord>(entity =>
@@ -75,7 +75,7 @@ namespace Property_Management.DAL.Context
 
             modelBuilder.Entity<MaintenanceRequest>(entity =>
             {
-                entity.HasOne(p => p.Tenants)
+                entity.HasOne(p => p.Tenant)
   .WithMany(p => p.MaintenanceRequests)
   .HasForeignKey(p => p.LoggedBy)
   .OnDelete(DeleteBehavior.NoAction);
@@ -83,7 +83,7 @@ namespace Property_Management.DAL.Context
 
 
             modelBuilder.Entity<MaintenanceRequest>()
-       .HasOne(p => p.Employees)
+       .HasOne(p => p.Employee)
        .WithMany(p => p.MaintenanceRequests)
        .HasForeignKey(p => p.ReportedTo)
        .OnDelete(DeleteBehavior.NoAction);

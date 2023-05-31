@@ -16,6 +16,7 @@ namespace Property_Management.DAL.Entities
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public string Occupation { get; set; }
+        public bool Available { get; set; }
         public string Address { get; set; }
         public bool IsDeleted { get; set; } = false;
         public virtual ICollection<Unit> Units { get; set; }
