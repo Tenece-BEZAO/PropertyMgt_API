@@ -12,6 +12,7 @@ namespace Property_Management.DAL.Entities
         public string Description { get; set; }
         public string ReportedTo { get; set; }
         public Priority Priority { get; set; }
+        public string Priority { get; set; }
         public bool IsDeleted { get; set; } = false;
         public string LoggedBy { get; set; }
         [DataType(DataType.Date)]

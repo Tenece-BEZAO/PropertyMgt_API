@@ -85,7 +85,6 @@ namespace Property_Management.BLL.Implementations
                 Status = fetchedPropWithLease.Status, 
                 IsDeleted = fetchedPropWithLease.IsDeleted,
             };
-          
          }  
         
         public async Task<Response> DeleteProperty(string propertyId)

@@ -134,3 +134,4 @@ Below are the entities used:
 * [Egbujie Chizoba Esther](https://github.com/Chizober)
 * [Kelechi Amos](https://github.com/Kellyncodes)
 * [Gilbert ](https://github.com/gillb08)
+* [Slimcent ](https://github.com/Slimcent)
