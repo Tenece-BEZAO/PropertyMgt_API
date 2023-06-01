@@ -6,10 +6,10 @@ namespace Property_Management.DAL.Entities
       public class Unit
       {
         
-    public string UnitId { get; set; }
-    public string PropertyId { get; set; }
-    public int NumOfBedRooms { get; set; }
-    public int UnitType { get; set; }
+        public string UnitId { get; set; }
+        public string PropertyId { get; set; }
+        public int NumOfBedRooms { get; set; }
+        public int UnitType { get; set; }
         public string TenantId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
 using Property_Management.BLL.Models;
@@ -9,91 +12,51 @@ using Property_Management.DAL.Interfaces;
 
 namespace Property_Management.BLL.Implementations
 {
-    public class MaintenaceRequestServices : IMaintenanceRequestServices
+   public class MaintenanceRequestServices : IMaintenanceRequestServices
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IRepository<Tenant> _tenantRepo;
-        private readonly IRepository<MaintenanceRequest> _maintenaceRequestRepo;
+        private readonly IRepository<MaintenanceRequest> _requestRepository;
+        private readonly IRepository<Property> _propertyRepository;
+        private readonly IRepository<Unit> _unitRepository;
 
-        public MaintenaceRequestServices(IUnitOfWork unitOfWork, IMapper mapper)
+        public MaintenanceRequestServices(IMapper mapper, IRepository<MaintenanceRequest> requestRepository, IRepository<Property> propertyRepository, IRepository<Unit> unitRepository)
         {
-            _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _maintenaceRequestRepo = _unitOfWork.GetRepository<MaintenanceRequest>();
-            _tenantRepo = _unitOfWork.GetRepository<Tenant>();
+            _requestRepository = requestRepository;
+            _propertyRepository = propertyRepository;
+            _unitRepository = unitRepository;
         }
 
-        public async Task<Response> AddOrUpdateAsync(AddOrUpdateMaintenanceVM model)
+        public async Task<Response> CreateMaintenanceRequestAsync(MaintenanceRequestrequests requests)
         {
+            // Map request DTO to the maintenance request entity 
+            var maintenanceRequest = _mapper.Map<MaintenanceRequest>(requests);
 
-            // _taskRepo.GetSingleByAsync(t => t.UserId == model.UserId && t.Id == model.TaskId);
-
-            Tenant tenant = await _tenantRepo.GetSingleByAsync(u => u.TenantId == model.TenantId, include: u => u.Include(x => x.MaintenanceRequests), tracking: true);
-
-            if (tenant == null)
+            // Retrieve the property and unit associated with the request and check if they exist 
+            var property = await _propertyRepository.GetByIdAsync(requests.PropertyId);
+            if (property == null)
             {
-                return new Response
-                {
-                    StatusCode = 400,
-                    Message = $"tenant with id:{model.TenantId} wasn't found",
-                    Action = $"Maintainace request {false}"
-                };
+                throw new InvalidOperationException($"The Property with the id {requests.PropertyId}was not found.");
             }
-
-            MaintenanceRequest maintenance = tenant.MaintenanceRequests.SingleOrDefault(t => t.MaintenanceRequestId == model.MaintenanceRequestId);
-
-
-            if (maintenance != null)
+            var unit = await _unitRepository.GetByIdAsync(requests.UnitId);
+            if (unit == null)
             {
-
-                _mapper.Map(model, maintenance);
-
-                //
-                // task.Title = model.Title;
-                // task.Description = model.Description;
-                // task.Priority = (model.Priority ?? Priority.Normal);
-                // task.DueDate = model.DueDate;
-
-                await _unitOfWork.SaveChangesAsync();
-                return new Response
-                {
-                    StatusCode = 400,
-                    Message = $"tenant with id:{model.TenantId} has been updated.",
-                    Action = $"Maintainace request {true}"
-                };
+                throw new InvalidOperationException($"The Unit with unit Id {requests.UnitId} was not found");
             }
+            maintenanceRequest.Property = property;
+            maintenanceRequest.Unit = unit;
 
-            // var newTask = _mapper.Map<AddOrUpdateTaskVM,Todo>(model);
-            var newMaintenaceRequest = _mapper.Map<MaintenanceRequest>(model);
+            // Save the maintenance request to the database
+            await _requestRepository.AddAsync(maintenanceRequest);
 
-            // var newTask = new Todo
-            // {
-            //  
-            //     Title = model.Title,
-            //     Description = model.Description,
-            //     Priority = model.Priority ?? Priority.Normal,
-            //     DueDate = model.DueDate,
-            //
-            // };
-            tenant.MaintenanceRequests.Add(newMaintenaceRequest);
-
-            var rowChanges = await _unitOfWork.SaveChangesAsync();
-
-            return rowChanges > 0 ? new Response
+            return new Response
             {
-                StatusCode = 400,
-                Message = $"tenant with id:{model.TenantId} wasn't found",
-                Action = $"Maintainace request {false}"
-            } : new Response
-            {
-                StatusCode = 400,
-                Message = $"tenant with id:{model.TenantId} wasn't found",
-                Action = $"Maintainace request {false}"
+                StatusCode = 201,
+                Message = "Maintenance request created successfully",
+                Action = "Creating maintenance request"
             };
-
+            
         }
-
-
     }
+    
 }

@@ -26,6 +26,6 @@ namespace Property_Management.DAL.Entities
 
 
         public List<WorkOrder> WorkOrder { get; set; }
-
+        public Property Property { get; set; }
     }
 }
