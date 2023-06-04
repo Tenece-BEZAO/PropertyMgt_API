@@ -7,8 +7,8 @@ using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Interfaces;
 using Property_Management.BLL.Utilities;
 using Property_Management.DAL.Entities;
+using Property_Management.DAL.Enums;
 using Property_Management.DAL.Interfaces;
-
 
 namespace Property_Management.BLL.Implementations
 {
@@ -39,7 +39,7 @@ namespace Property_Management.BLL.Implementations
             _tenantRepo = _unitOfWork.GetRepository<Tenant>();
         }
 
-        public async Task<IEnumerable<TransactionResponse>> GetAllPayment()
+        public async Task<IEnumerable<TransactionResponse>> GetAllPaymentAsync()
         {
             IEnumerable<Transaction> transacation = await _transRepo.GetByAsync(trans => trans.Amount > decimal.Zero);
             if (transacation == null)
@@ -57,7 +57,7 @@ namespace Property_Management.BLL.Implementations
         }
 
 
-        public async Task<TransactionResponse> GetPayment(string Id)
+        public async Task<TransactionResponse> GetPaymentAsync(string Id)
         {
             Transaction transaction = await _transRepo.GetSingleByAsync(trans => trans.Amount > decimal.Zero);
             if (transaction == null)
@@ -74,16 +74,17 @@ namespace Property_Management.BLL.Implementations
             };
         }
 
-        public async Task<PaymentResponse> MakePayment(PaymentRequest request)
+        public async Task<PaymentResponse> MakePaymentAsync(PaymentRequest request)
         {
-            Tenant? tenant = await _tenantRepo.GetSingleByAsync(t => t.Email == request.Email);
-            if (tenant == null)
+            ApplicationUser? user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
                 throw new InvalidOperationException($"user with the email {request.Email} was not found.");
 
             string refernceKey = RandomNums.GenerateRandomNumbers().ToString();
             TransactionInitializeRequest transRequest = new()
             {
-                AmountInKobo = request.Amount * 100, // 1 kobo * 100 = 1 Naira
+                AmountInKobo = (int)request.Amount * 100, // 1 kobo * 100 = 1 Naira
                 Email = request.Email,
                 Reference = refernceKey,
                 Currency = "NGN",
@@ -100,25 +101,26 @@ namespace Property_Management.BLL.Implementations
 
             Payment newPayment = new Payment()
             {
-                LeaseId = tenant.LeaseId,
-                TenantId = tenant.TenantId,
+                Id = Guid.NewGuid().ToString(),
+                UserId = user.Id,
                 Amount = request.Amount,
-                IsDeleted = false,
                 PaymentDate = DateTime.UtcNow,
                 PaymentType = request.PaymentType,
+                PaymentFor = request.PaymentFor
             };
             await _paymentRepo.AddAsync(newPayment);
             return new PaymentResponse
             {
+                Id = newPayment.Id,
                 Message = $"{request.Name} your Payment link has been generated: {response.Data.AuthorizationUrl} use this link to complete your payment.",
-                PaymentFor = $"{request.PaymentFor} payment",
+                PaymentFor = $"{request.PaymentFor.GetStringValue()} payment",
                 TransactionAmount = request.Amount,
                 PaymentLink = response.Data.AuthorizationUrl,
                 ReferenceKey = refernceKey,
             };
         }
 
-        public async Task<Response> VerifyPayment(string userId, string reference)
+        public async Task<Response> VerifyPaymentAsync(string reference)
         {
             TransactionVerifyResponse response = PaystackApi.Transactions.Verify(reference);
             if (response.Data.Status != "success")
@@ -126,17 +128,17 @@ namespace Property_Management.BLL.Implementations
 
             Transaction transaction = await _transRepo.GetSingleByAsync(trans => trans.TransactionRefereal == reference);
             if (transaction == null)
-                throw new InvalidOperationException($"Transaction was not found. {response.Data.GatewayResponse}"); 
+                throw new InvalidOperationException($"Transaction was not found. {response.Data.GatewayResponse}");
 
-            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+            ApplicationUser? user = await _userManager.FindByEmailAsync(transaction.Email);
             if (user == null)
-                throw new InvalidOperationException($"User with the id {userId} was not found.");
+                throw new InvalidOperationException($"User with the email {transaction.Email} was not found.");
 
             transaction.Status = true;
             await _transRepo.UpdateAsync(transaction);
             string message = $"Payment verification succesful. {response.Data.GatewayResponse}";
-           EmailResponse emailResponse = await _sendMailService.PaymentVerifiedMailAsync(user, message);
-            return new Response { Message = message, Action = "Payment verification", StatusCode = 200, IsEmailSent = emailResponse.Sent};
+            EmailResponse emailResponse = await _sendMailService.PaymentVerifiedMailAsync(user, message);
+            return new Response { Message = message, Action = "Payment verification", StatusCode = 200, IsEmailSent = emailResponse.Sent };
         }
     }
 }

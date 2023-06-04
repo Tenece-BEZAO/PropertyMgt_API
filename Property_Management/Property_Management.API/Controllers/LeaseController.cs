@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Property_Management.API.Controllers
 {
     [Authorize(Roles = "landlord")]
-    [Route("api/[controller]")]
+    [Route("api/lease")]
     [ApiController]
     public class LeaseController : ControllerBase
     {

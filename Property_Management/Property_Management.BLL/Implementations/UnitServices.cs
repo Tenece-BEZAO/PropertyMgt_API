@@ -25,15 +25,18 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<bool> CreateUnitAsync(NewUnitRequest request)
         {
-            if (request == null) throw new InvalidOperationException("Request body cannot be empty.");
+            bool isPropExistInUnit = await _unitRepo.AnyAsync(u => u.PropertyId == request.PropertyId);
+            if (isPropExistInUnit) throw new InvalidOperationException("Sorry! this property already exist in this unit.");
+
             request.UnitId = Guid.NewGuid().ToString();
             Unit newUnit = _mapper.Map<Unit>(request);
             Unit response = await _unitRepo.AddAsync(newUnit);
             Lease newLeaseWithUnitId = await _leaseRepo.GetSingleByAsync(l => l.PropertyId == request.PropertyId);
+            if (newLeaseWithUnitId != null)
+            {
             newLeaseWithUnitId.UnitId = request.UnitId;
             await _leaseRepo.UpdateAsync(newLeaseWithUnitId);
-            if (response == null)
-                throw new InvalidOperationException("Sorry something went wrong while trying to create the unit. Do try again.");
+            }
             return true;
         }
 
@@ -61,7 +64,7 @@ namespace Property_Management.BLL.Implementations
             };
         }
 
-        public async Task<IEnumerable<UnitResponse>> GetUnitsAsync()
+        public async Task<IEnumerable<UnitResponse>> GetUnitsAsync(RequestParameters requestParam)
         {
             if (!await _unitRepo.AnyAsync())
                 throw new InvalidOperationException("Unit is empty.");

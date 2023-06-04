@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Property_Management.DAL.Entities
 {
@@ -16,7 +14,7 @@ namespace Property_Management.DAL.Entities
         public string? FirstName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; } 
         public List<WorkOrderVendor> WorkOrderVendors { get; set; } 
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Property_Management.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,14 +30,15 @@ namespace Property_Management.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     ProfileImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     UserTypeId = table.Column<int>(type: "int", nullable: false),
                     UserRole = table.Column<int>(type: "int", nullable: false),
                     BirthDay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsSubscribed = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -71,6 +72,19 @@ namespace Property_Management.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Emails", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NewsLetters",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SubcribedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NewsLetters", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -224,6 +238,7 @@ namespace Property_Management.DAL.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Occupation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Available = table.Column<bool>(type: "bit", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -266,14 +281,35 @@ namespace Property_Management.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SubmitedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReviewMsg = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Rating = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reviews_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "InspectionChecks",
                 columns: table => new
                 {
                     InspectionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateLogged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    InspectedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    InspectedBy = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     NoOfUnits = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnitId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UnitId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     NoOfDevicesDamaged = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -293,9 +329,10 @@ namespace Property_Management.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PaymentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PropertyId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PropertyId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UnitId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -303,8 +340,7 @@ namespace Property_Management.DAL.Migrations
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Rent = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     SecurityDeposit = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    UpcomingTenant = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    UnitId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UpcomingTenant = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -320,10 +356,9 @@ namespace Property_Management.DAL.Migrations
                     LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<bool>(type: "bit", nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Zipcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NumOfUnits = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -348,15 +383,15 @@ namespace Property_Management.DAL.Migrations
                 columns: table => new
                 {
                     UnitId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PropertyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PropertyId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     NumOfBedRooms = table.Column<int>(type: "int", nullable: false),
-                    UnitType = table.Column<int>(type: "int", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TenantsId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    UnitType = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Rent = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    StaffId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    StaffId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -365,14 +400,12 @@ namespace Property_Management.DAL.Migrations
                         name: "FK_Units_Employees_StaffId",
                         column: x => x.StaffId,
                         principalTable: "Employees",
-                        principalColumn: "StaffId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "StaffId");
                     table.ForeignKey(
                         name: "FK_Units_Properties_PropertyId",
                         column: x => x.PropertyId,
                         principalTable: "Properties",
-                        principalColumn: "PropertyId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "PropertyId");
                 });
 
             migrationBuilder.CreateTable(
@@ -380,7 +413,7 @@ namespace Property_Management.DAL.Migrations
                 columns: table => new
                 {
                     TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UnitId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -394,11 +427,11 @@ namespace Property_Management.DAL.Migrations
                     MoveOutDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NormalizedMoveOutDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityDepositReturnId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityDepositReturnsId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LandLordId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MaintenanceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LeaseId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    PaymentsId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LeaseId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -429,30 +462,29 @@ namespace Property_Management.DAL.Migrations
                 name: "MaintenanceRequests",
                 columns: table => new
                 {
-                    MaintenanceRequestId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UnitId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReportedTo = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VendorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Priority = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    LoggedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RequestedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateLogged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VendorId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MaintenanceRequests", x => x.MaintenanceRequestId);
+                    table.PrimaryKey("PK_MaintenanceRequests", x => x.Id);
                     table.ForeignKey(
                         name: "FK_MaintenanceRequests_Employees_ReportedTo",
                         column: x => x.ReportedTo,
                         principalTable: "Employees",
                         principalColumn: "StaffId");
                     table.ForeignKey(
-                        name: "FK_MaintenanceRequests_Tenants_LoggedBy",
-                        column: x => x.LoggedBy,
+                        name: "FK_MaintenanceRequests_Tenants_RequestedBy",
+                        column: x => x.RequestedBy,
                         principalTable: "Tenants",
                         principalColumn: "TenantId");
                     table.ForeignKey(
@@ -474,15 +506,23 @@ namespace Property_Management.DAL.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PaymentType = table.Column<int>(type: "int", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LeaseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PaymentFor = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Payments_Leases_LeaseId",
                         column: x => x.LeaseId,
@@ -493,8 +533,7 @@ namespace Property_Management.DAL.Migrations
                         name: "FK_Payments_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
-                        principalColumn: "TenantId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "TenantId");
                 });
 
             migrationBuilder.CreateTable(
@@ -545,7 +584,7 @@ namespace Property_Management.DAL.Migrations
                 {
                     WorkOrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MaintenanceRequestId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    StaffId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StaffId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateCompleted = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -559,13 +598,12 @@ namespace Property_Management.DAL.Migrations
                         name: "FK_WorkOrders_Employees_StaffId",
                         column: x => x.StaffId,
                         principalTable: "Employees",
-                        principalColumn: "StaffId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "StaffId");
                     table.ForeignKey(
                         name: "FK_WorkOrders_MaintenanceRequests_MaintenanceRequestId",
                         column: x => x.MaintenanceRequestId,
                         principalTable: "MaintenanceRequests",
-                        principalColumn: "MaintenanceRequestId");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_WorkOrders_Units_UnitId",
                         column: x => x.UnitId,
@@ -578,10 +616,10 @@ namespace Property_Management.DAL.Migrations
                 columns: table => new
                 {
                     WorkOrderVendorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    VendorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    VendorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Cost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     DateCompleted = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    WorkOrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    WorkOrderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -591,14 +629,12 @@ namespace Property_Management.DAL.Migrations
                         name: "FK_WorkOrderVendors_Vendors_VendorId",
                         column: x => x.VendorId,
                         principalTable: "Vendors",
-                        principalColumn: "VendorId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "VendorId");
                     table.ForeignKey(
                         name: "FK_WorkOrderVendors_WorkOrders_WorkOrderId",
                         column: x => x.WorkOrderId,
                         principalTable: "WorkOrders",
-                        principalColumn: "WorkOrderId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "WorkOrderId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -676,14 +712,14 @@ namespace Property_Management.DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MaintenanceRequests_LoggedBy",
-                table: "MaintenanceRequests",
-                column: "LoggedBy");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_MaintenanceRequests_ReportedTo",
                 table: "MaintenanceRequests",
                 column: "ReportedTo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaintenanceRequests_RequestedBy",
+                table: "MaintenanceRequests",
+                column: "RequestedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaintenanceRequests_UnitId",
@@ -706,6 +742,11 @@ namespace Property_Management.DAL.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Payments_UserId",
+                table: "Payments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Properties_LandLordId",
                 table: "Properties",
                 column: "LandLordId");
@@ -714,6 +755,11 @@ namespace Property_Management.DAL.Migrations
                 name: "IX_Properties_LeaseId",
                 table: "Properties",
                 column: "LeaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_UserId",
+                table: "Reviews",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SecurityDepositReturns_LeavingTenant",
@@ -770,7 +816,9 @@ namespace Property_Management.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Units_PropertyId",
                 table: "Units",
-                column: "PropertyId");
+                column: "PropertyId",
+                unique: true,
+                filter: "[PropertyId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Units_StaffId",
@@ -807,8 +855,7 @@ namespace Property_Management.DAL.Migrations
                 table: "InspectionChecks",
                 column: "UnitId",
                 principalTable: "Units",
-                principalColumn: "UnitId",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "UnitId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Leases_SecurityDepositReturns_UpcomingTenant",
@@ -893,7 +940,13 @@ namespace Property_Management.DAL.Migrations
                 name: "InspectionChecks");
 
             migrationBuilder.DropTable(
+                name: "NewsLetters");
+
+            migrationBuilder.DropTable(
                 name: "Payments");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Transactions");

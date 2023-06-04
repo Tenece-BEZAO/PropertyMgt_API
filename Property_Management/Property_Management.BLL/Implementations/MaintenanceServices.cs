@@ -29,7 +29,7 @@ namespace Property_Management.BLL.Implementations
         }
         public async Task<bool> AddMaintenanceAsync(AddMaintenanceRequest request)
         {
-            if (request == null) throw new InvalidOperationException("Request body cannot be empty.");
+            if (request == null) throw new InvalidOperationException("Request emailBody cannot be empty.");
 
             bool isUnitxist = await _unitRepo.AnyAsync(u => u.UnitId == request.UnitId);
             if (!isUnitxist) throw new InvalidOperationException($"Unit with the Id {request.UnitId} does not exist.");
@@ -58,12 +58,11 @@ namespace Property_Management.BLL.Implementations
         public async Task<IEnumerable<MrResponse>> GetAllRequestAsync()
         {
             IEnumerable<MaintenanceRequest> mrTenant = (await _mrRepo.GetByAsync(
-                predicate: mr => mr.Id != null && mr.Tenant != null && mr.Tenant.Property != null && mr.Tenant.Property.Unit != null,
-                include: mr => mr.Include(m => m.Tenant).ThenInclude(p => p.Property).ThenInclude(u => u.Unit)));
-            if (mrTenant == null) throw new InvalidOperationException("Maintenance request was empty.");
+                include: mr => mr.Include(m => m.Unit).ThenInclude(p => p.Tenants).ThenInclude(u => u.Property)));
+            if (!mrTenant.Any()) throw new InvalidOperationException("Maintenance request was empty.");
 
-            IEnumerable<MaintenanceRequest> mrStaff = (await _mrRepo.GetByAsync(predicate: mr => mr.Employee != null, include: mr => mr.Include(m => m.Employee)));
-            if (mrStaff == null) throw new InvalidOperationException("No maintenance request to any employee yet.");
+            IEnumerable<MaintenanceRequest> mrStaff = (await _mrRepo.GetByAsync(predicate: mr => mr.ReportedTo != null, include: mr => mr.Include(m => m.Employee)));
+            if (!mrStaff.Any()) throw new InvalidOperationException("No Employee found.");
 
             return mrTenant.Join(mrStaff, mrT => mrT.Id, mrS => mrS.Id, (mr, sMr) =>
                      new MrResponse
@@ -74,16 +73,19 @@ namespace Property_Management.BLL.Implementations
                             TenantName = $"{mr?.Tenant?.FirstName} {mr?.Tenant?.LastName}",
                             Property = new PropertyResponse
                             {
-                                Name = mr?.Tenant?.Property?.Name,
-                                Price = mr.Tenant.Property.Price,
-                                Status = mr.Tenant.Property.Status,
-                                Image = mr?.Tenant?.Property?.Image,
+                                Name = mr?.Tenant.Unit.Property.Name,
+                                Price = mr.Tenant.Unit.Property.Price,
+                                Status = mr.Tenant.Unit.Property.Status,
+                                Image = mr?.Tenant.Unit.Property.Image,
+                                PropertyId = mr?.Tenant.Unit.Property.PropertyId,
+                                LandLordId = mr?.Tenant.Unit.Property.LandLordId,
                                 Unit = new UnitResponse
                                 {
-                                    UnitDescription = mr?.Tenant?.Property?.Unit?.Description,
-                                    UnitName = mr?.Tenant?.Property?.Unit?.Name,
-                                    UnitType = mr?.Tenant?.Property.Unit?.UnitType.GetStringValue(),
-                                    NumberOfRooms = mr.Tenant.Property.Unit.NumOfBedRooms
+                                    UnitId = mr?.Tenant.Unit?.UnitId,
+                                    UnitDescription = mr?.Tenant?.Unit?.Description,
+                                    UnitName = mr?.Tenant?.Unit?.Name,
+                                    UnitType = mr?.Tenant?.Unit?.UnitType.GetStringValue(),
+                                    NumberOfRooms = mr.Tenant.Unit.NumOfBedRooms
                                 },
                             },
                          },
@@ -104,7 +106,12 @@ namespace Property_Management.BLL.Implementations
 
         public async Task<MrResponse> GetRequestAsync(string mrId)
         {
-            MaintenanceRequest MR = await _mrRepo.GetSingleByAsync(predicate: mr => mr.Id == mrId, include: i => i.Include(t => t.Tenant).ThenInclude(prop => prop.Property).ThenInclude(u => u.Unit));
+            bool isMrExist = await _mrRepo.AnyAsync(mr => mr.Id == mrId);
+            if (!isMrExist) throw new InvalidOperationException("No maintenance request with this Id exist.");
+
+            MaintenanceRequest MR = (await _mrRepo.GetSingleByAsync(
+                predicate: mr => mr.Id == mrId && mr.RequestedBy != null && mr.Tenant.Property.Unit != null && mr.Tenant.Property != null,
+               include: mr => mr.Include(m => m.Tenant).ThenInclude(p => p.Property).ThenInclude(u => u.Unit)));
             if (MR == null) throw new InvalidOperationException("No Maintenance request found.");
             Staff staff = await _staffRepo.GetSingleByAsync(s => s.StaffId == MR.ReportedTo);
             if (staff == null) throw new InvalidOperationException("Error! staff not found.");
@@ -114,18 +121,21 @@ namespace Property_Management.BLL.Implementations
                 Description = MR.Description,
                 Tenant = new TenantMrResponse
                 {
-                    TenantName = $"{MR.Tenant.FirstName} {MR.Tenant.LastName}",
+                    TenantName = $"{MR?.Tenant?.FirstName} {MR?.Tenant?.LastName}",
                     Property = new PropertyResponse
                     {
-                        Name = MR.Tenant.Property.Name,
+                        Name =  MR?.Tenant.Property.Name,
                         Price = MR.Tenant.Property.Price,
                         Status = MR.Tenant.Property.Status,
-                        Image = MR.Tenant.Property.Image,
+                        Image = MR?.Tenant.Property.Image,
+                        PropertyId = MR?.Tenant.Property.PropertyId,
+                        LandLordId = MR?.Tenant.Property.LandLordId,
                         Unit = new UnitResponse
                         {
-                            UnitDescription = MR.Tenant.Property.Unit.Description,
-                            UnitName = MR.Tenant.Property.Unit.Name,
-                            UnitType = MR.Tenant.Property.Unit.UnitType.GetStringValue(),
+                            UnitId = MR?.Tenant.Property.Unit?.UnitId,
+                            UnitDescription = MR?.Tenant?.Property?.Unit?.Description,
+                            UnitName = MR?.Tenant?.Property?.Unit?.Name,
+                            UnitType = MR?.Tenant?.Property.Unit?.UnitType.GetStringValue(),
                             NumberOfRooms = MR.Tenant.Property.Unit.NumOfBedRooms
                         },
                     },

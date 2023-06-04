@@ -18,7 +18,7 @@ namespace Property_Management.DAL.Entities
         public string Occupation { get; set; }
         public string? Address { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public string PropertyId { get; set; }
+        public string? PropertyId { get; set; }
         public string? TenantId { get; set; }
 
         public virtual ICollection<Tenant> Tenant { get; set; }

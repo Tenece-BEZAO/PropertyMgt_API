@@ -4,6 +4,7 @@ using Property_Management.BLL.DTOs.Requests;
 using Property_Management.BLL.DTOs.Responses;
 using Property_Management.BLL.Infrastructure;
 using Property_Management.BLL.Interfaces;
+using Property_Management.DAL.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
@@ -60,9 +61,9 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Returns list of all available units", Type = typeof(UnitResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Unit with this Id was not found.", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetUnits()
+        public async Task<IActionResult> GetUnits([FromQuery] RequestParameters requestParam)
         {
-            IEnumerable<UnitResponse> response = await _unitServices.GetUnitsAsync();
+            IEnumerable<UnitResponse> response = await _unitServices.GetUnitsAsync(requestParam);
             return Ok(response);
         }
 

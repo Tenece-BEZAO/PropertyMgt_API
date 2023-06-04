@@ -19,6 +19,8 @@ namespace Property_Management.API.Extension
             services.AddScoped<IEmailServices, EmailServices>();
             services.AddScoped<ISendMailService, SendMailService>();
             services.AddScoped<IReviewServices, ReviewServices>();
+            services.AddScoped<IUnitServices, UnitServices>();
+            services.AddScoped<IMaintenanceServices, MaintenanceServices>();
             services.AddScoped<IApplicationBuilder, ApplicationBuilder>();
             services.AddTransient<IUnitOfWork, UnitOfWork<PMSDbContext>>();
             services.AddTransient<IServiceFactory, ServiceFactory>();

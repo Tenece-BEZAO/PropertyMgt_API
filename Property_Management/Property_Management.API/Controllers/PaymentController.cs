@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Property_Management.API.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/payment")]
     [ApiController]
     public class PaymentController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<IActionResult> MakePayment(PaymentRequest request)
         {
-            PaymentResponse response = await _paymentServices.MakePayment(request);
+            PaymentResponse response = await _paymentServices.MakePaymentAsync(request);
             return Ok(response);
         }
 
@@ -37,7 +37,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetAllPayment()
         {
-            IEnumerable<TransactionResponse> response = await _paymentServices.GetAllPayment();
+            IEnumerable<TransactionResponse> response = await _paymentServices.GetAllPaymentAsync();
             return Ok(response);
         }
 
@@ -48,7 +48,7 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetPayment(string Id)
         {
-            TransactionResponse response = await _paymentServices.GetPayment(Id);
+            TransactionResponse response = await _paymentServices.GetPaymentAsync(Id);
             return Ok(response);
         }
 
@@ -57,9 +57,9 @@ namespace Property_Management.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Payment verification succesful.", Type = typeof(Response))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Sorry! verification failed. Error occured while trying to verify the transaction. It seems your payment was not successful.", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> VerifyPayment(string userId, string reference)
+        public async Task<IActionResult> VerifyPayment(string reference)
         {
-            Response response = await _paymentServices.VerifyPayment(userId, reference);
+            Response response = await _paymentServices.VerifyPaymentAsync(reference);
             return Ok(response);
         }
     }
