@@ -5,9 +5,9 @@ namespace Property_Management.BLL.Interfaces
 {
     public interface IPaymentServices
     {
-        Task<PaymentResponse> MakePayment(PaymentRequest request);
-        Task<IEnumerable<TransactionResponse>> GetAllPayment();
-        Task<TransactionResponse> GetPayment(string Id);
-        Task<Response> VerifyPayment(string userId, string reference);
+        Task<PaymentResponse> MakePaymentAsync(PaymentRequest request);
+        Task<IEnumerable<TransactionResponse>> GetAllPaymentAsync();
+        Task<TransactionResponse> GetPaymentAsync(string Id);
+        Task<Response> VerifyPaymentAsync(string reference);
     }
 }

@@ -6,8 +6,8 @@ namespace Property_Management.BLL.DTOs.Requests
     {
         public string? Name { get; set; }
         public string? Email { get; set; }
-        public int Amount { get; set; }
+        public decimal Amount { get; set; }
         public PaymentType PaymentType { get; set; }
-        public string PaymentFor { get; set; }
+        public PaymentFor PaymentFor { get; set; }
     }
 }

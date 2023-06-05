@@ -41,7 +41,7 @@ namespace Property_Management.DAL.Context
                 entity.Property(u => u.Address).IsRequired(false);
                 entity.HasIndex(u => u.Email, "IX_UniqueEmail").IsUnique();
                 entity.HasIndex(u => u.PhoneNumber, "IX_UniquePhoneNumber").IsUnique();
-                entity.HasOne(p => p.Units).WithMany(p => p.Tenants).HasForeignKey(p => p.UnitId).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(p => p.Unit).WithMany(p => p.Tenants).HasForeignKey(p => p.UnitId).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<LandLord>(entity =>
@@ -56,9 +56,11 @@ namespace Property_Management.DAL.Context
                 entity.Property(prop => prop.TransactionRefereal).IsRequired(false);
             });
 
-            modelBuilder.Entity<Unit>()
-                .Property(t => t.Description)
+            modelBuilder.Entity<Unit>(entity =>
+            {
+                entity.Property(u => u.Description)
                 .HasMaxLength(1000);
+            });
 
             modelBuilder.Entity<InspectionCheck>()
                 .HasOne(p => p.Employees)
@@ -75,18 +77,16 @@ namespace Property_Management.DAL.Context
 
             modelBuilder.Entity<MaintenanceRequest>(entity =>
             {
-                entity.HasOne(p => p.Tenants)
-  .WithMany(p => p.MaintenanceRequests)
-  .HasForeignKey(p => p.LoggedBy)
-  .OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(p => p.Tenant)
+                .WithMany(p => p.MaintenanceRequests)
+                .HasForeignKey(p => p.RequestedBy)
+                .OnDelete(DeleteBehavior.NoAction);
+
+               entity.HasOne(p => p.Employee)
+              .WithMany(p => p.MaintenanceRequests)
+              .HasForeignKey(p => p.ReportedTo)
+              .OnDelete(DeleteBehavior.NoAction);
             });
-
-
-            modelBuilder.Entity<MaintenanceRequest>()
-       .HasOne(p => p.Employees)
-       .WithMany(p => p.MaintenanceRequests)
-       .HasForeignKey(p => p.ReportedTo)
-       .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Property>(entity =>
             {
@@ -96,9 +96,9 @@ namespace Property_Management.DAL.Context
                 .HasForeignKey(p => p.LandLordId)
                 .OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(p => p.Lease)
-             .WithMany(p => p.Property)
-             .HasForeignKey(p => p.LeaseId)
-             .OnDelete(DeleteBehavior.NoAction);
+               .WithMany(p => p.Property)
+               .HasForeignKey(p => p.LeaseId)
+               .OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<SecurityDepositReturn>()
@@ -111,15 +111,9 @@ namespace Property_Management.DAL.Context
             {
                 entity.Property(prop => prop.UpcomingTenant).IsRequired(false);
                 entity.Property(prop => prop.TenantId).IsRequired(false);
-                entity.Property(prop => prop.PaymentId).IsRequired(false);
                 entity.Property(prop => prop.Description).IsRequired(true);
                 entity.HasOne(p => p.Tenant).WithMany(p => p.Lease).HasForeignKey(p => p.TenantId).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(p => p.SecurityDepositReturns).WithMany().HasForeignKey(p => p.UpcomingTenant).OnDelete(DeleteBehavior.NoAction);
-            });
-
-            modelBuilder.Entity<Payment>(entity =>
-            {
-                entity.Property(prop => prop.LeaseId).IsRequired(true);
             });
 
             modelBuilder.Entity<SecurityDepositReturn>()

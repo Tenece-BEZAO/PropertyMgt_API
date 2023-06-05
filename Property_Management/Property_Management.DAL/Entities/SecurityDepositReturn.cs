@@ -22,10 +22,10 @@ namespace Property_Management.DAL.Entities
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ReturnDate { get; set; }
 
-        public Tenant? Tenant { get; set; }
-        public Lease? Lease { get; set; }
-        public Property? Property { get; set; }
-        public Unit? Units { get; set; }
+        public Tenant Tenant { get; set; }
+        public Lease Lease { get; set; }
+        public Property Property { get; set; }
+        public Unit Units { get; set; }
 
 
 

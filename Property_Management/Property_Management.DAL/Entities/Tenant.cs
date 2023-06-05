@@ -7,7 +7,7 @@ namespace Property_Management.DAL.Entities
     {
         [Key]
         public string TenantId { get; set; }
-        public string? UserId { get; set; }
+        public string UserId { get; set; }
         public string UnitId { get; set; }
         [Required(ErrorMessage = "LastName cannot be empty"), RegularExpression(@"^[\w ]*[a-zA-Z]+(([', -][a-zA-Z])?[a-zA-Z]*)\s*$",
          ErrorMessage = "Invalid Firstname !"), MaxLength(25), MinLength(2)]
@@ -27,14 +27,14 @@ namespace Property_Management.DAL.Entities
         public DateTime? MoveOutDate { get; set; } = DateTime.UtcNow;
         public string? NormalizedMoveOutDate { get; set; }
         [AllowNull]
-        public string Address { get; set; }
-        public string? SecurityDepositReturnId { get; set; }
+        public string? Address { get; set; }
+        public string? SecurityDepositReturnsId { get; set; }
         public string? LandLordId { get; set; }
         public string? MaintenanceId { get; set; }
+        public string? PaymentsId { get; set; }
         public string? LeaseId { get; set; }
-        public string? SecurityId { get; set; }
         public IEnumerable<Lease> Lease {get; set;}
-        public Unit Units { get; set; }
+        public Unit Unit { get; set; }
         public  virtual ICollection<Payment> Payments { get; set; }
         public virtual ICollection<MaintenanceRequest> MaintenanceRequests { get; set; }
         public LandLord LandLord { get; set; }

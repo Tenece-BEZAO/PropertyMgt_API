@@ -12,8 +12,8 @@ using Property_Management.DAL.Context;
 namespace Property_Management.DAL.Migrations
 {
     [DbContext(typeof(PMSDbContext))]
-    [Migration("20230513175212_choreDatabaTypeOnReviewTB")]
-    partial class choreDatabaTypeOnReviewTB
+    [Migration("20230601231803_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -177,11 +177,13 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSubscribed")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -284,7 +286,6 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InspectedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
@@ -298,7 +299,6 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UnitId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("InspectionId");
@@ -378,7 +378,6 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PropertyId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Rent")
@@ -417,11 +416,8 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.MaintenanceRequest", b =>
                 {
-                    b.Property<string>("MaintenanceRequestId")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateLogged")
                         .HasColumnType("datetime2");
@@ -436,20 +432,19 @@ namespace Property_Management.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LoggedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Priority")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
 
                     b.Property<string>("ReportedTo")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("RequestedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("UnitId")
                         .IsRequired()
@@ -458,17 +453,34 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("VendorId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("MaintenanceRequestId");
-
-                    b.HasIndex("LoggedBy");
+                    b.HasKey("Id");
 
                     b.HasIndex("ReportedTo");
+
+                    b.HasIndex("RequestedBy");
 
                     b.HasIndex("UnitId");
 
                     b.HasIndex("VendorId");
 
                     b.ToTable("MaintenanceRequests");
+                });
+
+            modelBuilder.Entity("Property_Management.DAL.Entities.NewsLetter", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SubcribedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewsLetters");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Payment", b =>
@@ -490,10 +502,16 @@ namespace Property_Management.DAL.Migrations
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("PaymentFor")
+                        .HasColumnType("int");
+
                     b.Property<int>("PaymentType")
                         .HasColumnType("int");
 
                     b.Property<string>("TenantId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -502,6 +520,8 @@ namespace Property_Management.DAL.Migrations
                     b.HasIndex("LeaseId");
 
                     b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Payments");
                 });
@@ -534,9 +554,6 @@ namespace Property_Management.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NumOfUnits")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
@@ -646,6 +663,9 @@ namespace Property_Management.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -732,6 +752,9 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("Occupation")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PaymentsId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -739,10 +762,7 @@ namespace Property_Management.DAL.Migrations
                     b.Property<string>("PropertyId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SecurityDepositReturnId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SecurityId")
+                    b.Property<string>("SecurityDepositReturnsId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UnitId")
@@ -825,7 +845,6 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PropertyId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Rent")
@@ -833,11 +852,9 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("StaffId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TenantId")
-                        .IsRequired()
+                    b.Property<string>("TenantsId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UnitType")
@@ -845,7 +862,9 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasKey("UnitId");
 
-                    b.HasIndex("PropertyId");
+                    b.HasIndex("PropertyId")
+                        .IsUnique()
+                        .HasFilter("[PropertyId] IS NOT NULL");
 
                     b.HasIndex("StaffId");
 
@@ -906,7 +925,6 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("StaffId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UnitId")
@@ -939,11 +957,9 @@ namespace Property_Management.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("VendorId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("WorkOrderId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("WorkOrderVendorId");
@@ -1011,14 +1027,11 @@ namespace Property_Management.DAL.Migrations
                     b.HasOne("Property_Management.DAL.Entities.Staff", "Employees")
                         .WithMany("InspectionChecks")
                         .HasForeignKey("InspectedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Property_Management.DAL.Entities.Unit", "Units")
                         .WithMany("inspectionChecks")
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UnitId");
 
                     b.Navigation("Employees");
 
@@ -1062,15 +1075,15 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.MaintenanceRequest", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.Tenant", "Tenants")
+                    b.HasOne("Property_Management.DAL.Entities.Staff", "Employee")
                         .WithMany("MaintenanceRequests")
-                        .HasForeignKey("LoggedBy")
+                        .HasForeignKey("ReportedTo")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Property_Management.DAL.Entities.Staff", "Employees")
+                    b.HasOne("Property_Management.DAL.Entities.Tenant", "Tenant")
                         .WithMany("MaintenanceRequests")
-                        .HasForeignKey("ReportedTo")
+                        .HasForeignKey("RequestedBy")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1084,9 +1097,9 @@ namespace Property_Management.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("VendorId");
 
-                    b.Navigation("Employees");
+                    b.Navigation("Employee");
 
-                    b.Navigation("Tenants");
+                    b.Navigation("Tenant");
 
                     b.Navigation("Unit");
 
@@ -1101,15 +1114,19 @@ namespace Property_Management.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Property_Management.DAL.Entities.Tenant", "Tenant")
+                    b.HasOne("Property_Management.DAL.Entities.Tenant", null)
                         .WithMany("Payments")
-                        .HasForeignKey("TenantId")
+                        .HasForeignKey("TenantId");
+
+                    b.HasOne("Property_Management.DAL.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Lease");
 
-                    b.Navigation("Tenant");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Property", b =>
@@ -1195,7 +1212,7 @@ namespace Property_Management.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("PropertyId");
 
-                    b.HasOne("Property_Management.DAL.Entities.Unit", "Units")
+                    b.HasOne("Property_Management.DAL.Entities.Unit", "Unit")
                         .WithMany("Tenants")
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1209,7 +1226,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.Navigation("Property");
 
-                    b.Navigation("Units");
+                    b.Navigation("Unit");
 
                     b.Navigation("User");
                 });
@@ -1217,16 +1234,12 @@ namespace Property_Management.DAL.Migrations
             modelBuilder.Entity("Property_Management.DAL.Entities.Unit", b =>
                 {
                     b.HasOne("Property_Management.DAL.Entities.Property", "Property")
-                        .WithMany("Units")
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithOne("Unit")
+                        .HasForeignKey("Property_Management.DAL.Entities.Unit", "PropertyId");
 
                     b.HasOne("Property_Management.DAL.Entities.Staff", "Staff")
                         .WithMany("Units")
-                        .HasForeignKey("StaffId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StaffId");
 
                     b.Navigation("Property");
 
@@ -1243,9 +1256,7 @@ namespace Property_Management.DAL.Migrations
 
                     b.HasOne("Property_Management.DAL.Entities.Staff", "Employees")
                         .WithMany("WorkOrders")
-                        .HasForeignKey("StaffId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StaffId");
 
                     b.HasOne("Property_Management.DAL.Entities.Unit", null)
                         .WithMany("WorkOrders")
@@ -1258,19 +1269,15 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.WorkOrderVendor", b =>
                 {
-                    b.HasOne("Property_Management.DAL.Entities.Vendor", "Vendors")
+                    b.HasOne("Property_Management.DAL.Entities.Vendor", "Vendor")
                         .WithMany("WorkOrderVendors")
-                        .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("VendorId");
 
                     b.HasOne("Property_Management.DAL.Entities.WorkOrder", "WorkOrders")
                         .WithMany("WorkOrderVendors")
-                        .HasForeignKey("WorkOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WorkOrderId");
 
-                    b.Navigation("Vendors");
+                    b.Navigation("Vendor");
 
                     b.Navigation("WorkOrders");
                 });
@@ -1296,7 +1303,8 @@ namespace Property_Management.DAL.Migrations
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Property", b =>
                 {
-                    b.Navigation("Units");
+                    b.Navigation("Unit")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Property_Management.DAL.Entities.Staff", b =>

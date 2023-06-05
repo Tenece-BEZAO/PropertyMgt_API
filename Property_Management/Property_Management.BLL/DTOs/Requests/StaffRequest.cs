@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Property_Management.DAL.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Property_Management.BLL.DTOs.Request;
 
 public class StaffProfileRequest : RequestParameters
 {
-    public StaffProfileRequest() => OrderBy = "Surname";
+    public StaffProfileRequest() => OrderBy = "FirstName";
 
     [Required]
     public string RoleName { get; set; }

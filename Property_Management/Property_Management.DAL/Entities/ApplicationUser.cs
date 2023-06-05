@@ -5,7 +5,6 @@ namespace Property_Management.DAL.Entities
 {
     public class ApplicationUser : IdentityUser
     {
-        public override string Email { get; set; }
         public string ProfileImage { get; set; }
         public bool Active { get; set; }
         public UserType UserTypeId { get; set; }

@@ -5,9 +5,9 @@ namespace Property_Management.DAL.Entities
     public class Lease
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string TenantId { get; set; }
-        public string PaymentId { get; set; }
-        public string PropertyId { get; set; }
+        public string? TenantId { get; set; }
+        public string? PropertyId { get; set; }
+        public string? UnitId { get; set; }
         public string Description { get; set; }
         public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(1);
         public DateTime StartDate { get; set; } = DateTime.UtcNow;
@@ -21,7 +21,6 @@ namespace Property_Management.DAL.Entities
         public string? UpcomingTenant { get; set; }
         public Unit Unit { get; set; }  
         public Tenant Tenant { get; set; }
-        public IEnumerable<Payment> Payment { get; set; }
         public IEnumerable<Property> Property { get; set; }
         public SecurityDepositReturn SecurityDepositReturns { get; set; }
     }

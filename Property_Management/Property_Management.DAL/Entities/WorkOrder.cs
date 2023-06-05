@@ -5,17 +5,13 @@ namespace Property_Management.DAL.Entities
 {
     public class WorkOrder
     {
+        [Key]
         public string WorkOrderId { get; set; }
-        public string MaintenanceRequestId { get; set; }
-        public string StaffId { get; set; }
+        public string? MaintenanceRequestId { get; set; }
+        public string? StaffId { get; set; }
         public bool IsDeleted { get; set; } = false;
 
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DateCreated { get; set; }
-
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? DateCompleted { get; set; }
         [Precision(18, 2)]
         public decimal Cost { get; set; }

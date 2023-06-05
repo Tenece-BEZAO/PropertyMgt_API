@@ -1,4 +1,4 @@
-﻿namespace Property_Management.BLL.DTOs.Request
+﻿namespace Property_Management.DAL.Entities
 {
     public abstract class RequestParameters
     {

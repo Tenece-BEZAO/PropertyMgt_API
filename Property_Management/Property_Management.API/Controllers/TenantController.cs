@@ -11,7 +11,7 @@ namespace Property_Management.API.Controllers
 {
 
     [Authorize(Roles = "manager")]
-    [Route("api/[controller]")]
+    [Route("api/tenant")]
     [ApiController]
     public class TenantController : ControllerBase
     {

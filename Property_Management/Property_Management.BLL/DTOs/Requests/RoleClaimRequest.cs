@@ -1,4 +1,5 @@
 ﻿
+using Property_Management.DAL.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace Property_Management.BLL.DTOs.Request

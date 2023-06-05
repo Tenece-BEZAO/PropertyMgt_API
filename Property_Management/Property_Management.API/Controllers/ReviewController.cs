@@ -8,7 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Property_Management.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/review")]
     [Authorize]
     public class ReviewController : ControllerBase
     {

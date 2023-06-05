@@ -12,10 +12,9 @@ namespace Property_Management.DAL.Entities
         public bool Status { get; set; }
         public bool IsDeleted { get; set; } = false;
         public string? Zipcode { get; set; }
-        public string? NumOfUnits { get; set; }
         [Precision(18, 2)]
         public decimal Price { get; set; }
-        public ICollection<Unit> Units { get; set; }
+        public Unit Unit { get; set; }
         public LandLord LandLord { get; set; }
         public string LandLordId { get; set; }
         public string Image { get; set; }

@@ -43,6 +43,7 @@ namespace Property_Management.BLL.Implementations
             property.LeaseId = leaseId;
             await _leaseRepo.AddAsync(newLease);
             await _propRepo.UpdateAsync(property);
+
             return new Response
             {
                 Action = "Lease Creation.",
@@ -70,8 +71,7 @@ namespace Property_Management.BLL.Implementations
             if (lease == null)
                 throw new InvalidOperationException($"Lease with the Id {leaseId} was not found.");
 
-            lease.IsDeleted = true;
-            await _leaseRepo.UpdateAsync(lease);
+            await _leaseRepo.DeleteAsync(lease);
 
             return new Response { Action = "Delete Lease", Message = $"Lease with id {leaseId} has been removed.", StatusCode = 200, };
         }
