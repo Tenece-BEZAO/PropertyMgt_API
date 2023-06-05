@@ -73,6 +73,5 @@ namespace Property_Management.API.Controllers
             FetchSubcribedUserEmailResponse response = await _emailServices.GetSubscribedEmailAsync(email);
             return Ok(response);
         }
-
     }
 }

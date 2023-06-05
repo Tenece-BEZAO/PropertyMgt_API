@@ -10,6 +10,7 @@ namespace Property_Management.DAL.Entities
         public string ReportedTo { get; set; }
         public string? VendorId { get; set; }
         public Priority Priority { get; set; }
+        public string Priority { get; set; }
         public bool IsDeleted { get; set; } = false;
         public string RequestedBy { get; set; }
         public DateTime DateLogged { get; set; }
